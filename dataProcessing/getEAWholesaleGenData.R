@@ -8,7 +8,7 @@ rm(list=ls(all=TRUE)) # remove all objects from workspace
 
 
 # Load libraries ----
-library(GREENGrid) #load this first - you will need to download & install it locally from this repo
+library(girdCarbon) #load this first - you will need to download & install it locally from this repo
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
@@ -21,7 +21,6 @@ reqLibs <- c("data.table", # data munching
 loadLibraries(reqLibs)
 
 # Parameters ----
-GREENGrid::setup()
 
 local <- 0 # set to 1 for local file storage (see below)
 refresh <- 0 # set to 1 to try to download all files even if we have them
