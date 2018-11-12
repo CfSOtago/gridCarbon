@@ -108,7 +108,7 @@ tidyNum <- function(number) {
 #' @export
 #'
 findParentDirectory <- function(Parent){
-  directory <-getwd()
+  directory <- getwd()
   while(basename(directory) != Parent){
     directory <- dirname(directory)
 

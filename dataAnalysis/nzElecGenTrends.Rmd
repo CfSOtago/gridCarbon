@@ -5,7 +5,10 @@ date: 'Last run at: `r Sys.time()`'
 output:
   bookdown::html_document2:
     self_contained: no
-  bookdown::pdf_document2: default
+    toc: yes
+    toc_float: yes
+  bookdown::pdf_document2:
+      toc: yes
 bibliography: '`r path.expand("~/bibliography.bib")`'
 ---
 
@@ -21,7 +24,7 @@ rm(list=ls(all=TRUE)) # remove all objects from workspace
 # Set start time ----
 startTime <- proc.time()
 
-library(GREENGrid)
+library(gridCarbon)
 
 # Packages needed in this .Rmd file ----
 rmdLibs <- c("data.table", # data munching
@@ -35,23 +38,30 @@ rmdLibs <- c("data.table", # data munching
 # load them
 loadLibraries(rmdLibs)
 
-# run gg set up
-GREENGrid::setup() # sets a load of parameters which are then accessible via ggParams$xxx
 
 # Local paramaters
 local <- 0 # set to 1 for local file storage (see below)
+gcParams <- list() # list of patameters
 
 if(local){ # set data storage location
-  ggParams$lDataLoc <- path.expand("~/Data/NZGreenGrid/safe/ea/")
+  gcParams$wgenDataLoc <- path.expand("~/Data/NZGreenGrid/safe/ea/")
 } else {
-  ggParams$lDataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/EA_Generation_Data/")
+  gcParams$dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/")
+  gcParams$wgenDataLoc <- paste0(gcParams$dataLoc, "EA_Generation_Data/")
 }
 
-ggParams$genCaption <- paste0("Source: NZ Energy Authority",
+gcParams$genCaption <- paste0("Source: NZ Energy Authority",
                               "\nhttps://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/")
-ggParams$soiCaption <- paste0("Source: The Ministry for the Environment and Statistics New Zealand",
+gcParams$soiCaption <- paste0("Source: The Ministry for the Environment and Statistics New Zealand",
                     "\nhttps://data.mfe.govt.nz/table/89381-monthly-el-nino-southern-oscillation-index-19862016")
-ggParams$jointCaption <- paste0(ggParams$genCaption, "\n", ggParams$soiCaption)
+gcParams$jointCaption <- paste0(gcParams$genCaption, "\n", gcParams$soiCaption)
+
+# location of include files
+gcParams$repoLoc <- findParentDirectory("gridCarbon")
+gcParams$historyGenericRmd <- paste0(gcParams$repoLoc, "/includes/historyGeneric.Rmd")
+gcParams$supportGenericRmd <- paste0(gcParams$repoLoc, "/includes/supportGeneric.Rmd")
+gcParams$circulationGenericRmd <- paste0(gcParams$repoLoc, "/includes/circulationGeneric.Rmd")
+
 ```
 
 \newpage
@@ -60,9 +70,9 @@ ggParams$jointCaption <- paste0(ggParams$genCaption, "\n", ggParams$soiCaption)
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r 1900 + as.POSIXlt(Sys.Date())$year`) _NZ Electricity Generation Trends 1998-2017_, `r ggParams$pubLoc`.
+ * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2017_, `r gcParams$pubLoc`.
 
-This work is (c) `r as.POSIXlt(Sys.time())$year + 1900` the University of Southampton.
+This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
 
 \newpage
 
@@ -70,7 +80,7 @@ This work is (c) `r as.POSIXlt(Sys.time())$year + 1900` the University of Southa
 
 ## Circulation
 
-```{r generic circulation, child=ggParams$circulationGenericRmd}
+```{r generic circulation, child=gcParams$circulationGenericRmd}
 ```
  
 ## Purpose
@@ -85,7 +95,7 @@ This report is intended to:
 
 ## History
 
-```{r generic history, child=ggParams$historyGenericRmd}
+```{r generic history, child=gcParams$historyGenericRmd}
 ```
  
 Specific history of this code: 
@@ -94,7 +104,7 @@ Specific history of this code:
 
 ## Support
 
-```{r genric support, child=ggParams$supportGenericRmd}
+```{r genric support, child=gcParams$supportGenericRmd}
 ```
  
 
@@ -110,12 +120,12 @@ Data is kWh - so energy not power.
 
 Load the generation data from files stored in:
 
- * `r ggParams$lDataLoc`
+ * `r gcParams$wgenDataLoc`
  
 These have been [pre-downloaded and cleaned](https://github.com/CfSOtago/GREENGrid/tree/master/dataProcessing/ea) but could be pulled on the fly to be refreshed for other dates...
 
 ```{r loadDataSample}
-filesToDateDT <- data.table::as.data.table(list.files(ggParams$lDataLoc, "long.csv.gz")) # get list of files already downloaded & converted to long form
+filesToDateDT <- data.table::as.data.table(list.files(gcParams$wgenDataLoc, "long.csv.gz")) # get list of files already downloaded & converted to long form
 
 # for our purposes here we will just use Jun & Dec in 1998 & 2017
 filesToDateDT <- filesToDateDT[, c("year","month", "stub") := tstrsplit(V1, "_")]
@@ -125,7 +135,7 @@ filesToLoadDT <- filesToDateDT[(year == 1998 | year == 2017) & (month == "06" | 
 sampleGenDT <- as.data.table(do.call(rbind,
                                lapply(filesToLoadDT,
                                       function(f)
-                                        readr::read_csv(paste0(ggParams$lDataLoc,f),
+                                        readr::read_csv(paste0(gcParams$wgenDataLoc,f),
                                                         progress = FALSE,
                                                         col_types = cols()
                                         ) # decodes .gz on the fly, requires readr, use the NULL col_types to suppress feedback
@@ -166,7 +176,7 @@ ggplot(naPlotDT[kWhisNA == "NA"], aes(x = month, y = Time_Period, fill = nObs)) 
   geom_tile() +
   facet_grid(year  ~ Fuel_Code) +
       labs(x = "Month", title = "NA kWh values only",
-         caption = ggParams$figCaption
+         caption = gcParams$figCaption
     )
 ```
 
@@ -239,7 +249,7 @@ makeMonthlyStackedPlot <- function(dt, yVar, yLabel){
   ggplot(plotDT, aes(x = as.factor(month), y = get(yVar)/1000000, fill = Fuel_Code)) +
     geom_col() + # stack = default
     facet_grid(. ~ year) +
-    labs(caption = ggParams$figCaption, y = eval(yLabel), x = "Month") +
+    labs(caption = gcParams$figCaption, y = eval(yLabel), x = "Month") +
     theme(legend.title=element_blank(), legend.position="right")
 }
 
@@ -248,7 +258,7 @@ makeMonthlyDodgedPlot <- function(dt, yVar, yLabel){
   ggplot(plotDT, aes(x = as.factor(month), y = get(yVar)/1000000, fill = Fuel_Code)) +
     geom_col(position = "dodge") +
     facet_grid(. ~ year) +
-    labs(caption = ggParams$figCaption, y = eval(yLabel), x = "Month") +
+    labs(caption = gcParams$figCaption, y = eval(yLabel), x = "Month") +
     theme(legend.title=element_blank(), legend.position="bottom")
 }
 ```
@@ -298,7 +308,7 @@ makeHalfHourlyColPlot <- function(dt, yVar, yLabel){
   ggplot(dt, aes(x = rTime, y = get(yVar)/1000000, fill = Fuel_Code)) +
     geom_col(alpha = 0.4) +
     facet_grid(month ~ year) +
-    labs(caption = ggParams$figCaption, y = eval(yLabel), x = "Time of Day (local/'civil' time)") +
+    labs(caption = gcParams$figCaption, y = eval(yLabel), x = "Time of Day (local/'civil' time)") +
     theme(legend.title=element_blank()) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
@@ -309,7 +319,7 @@ makeHalfHourlyPointPlot <- function(dt, yVar, yLabel){
   ggplot(dt, aes(x = rTime, y = get(yVar)/1000000, colour = Fuel_Code)) +
     geom_point(alpha = 0.4) +
     facet_grid(month ~ year) +
-    labs(caption = ggParams$figCaption, y = eval(yLabel), x = "Time of Day (local/'civil' time)") +
+    labs(caption = gcParams$figCaption, y = eval(yLabel), x = "Time of Day (local/'civil' time)") +
     theme(legend.title=element_blank(), legend.position="bottom") +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
@@ -363,7 +373,7 @@ makePointProfilePlot <- function(dt, title){
   #print(paste0("Making plot ", title))
   ggplot(dt, aes(x = rDateTime, y = sumkWh/1000000, colour = Fuel_Code)) +
     geom_point(alpha=0.4) +
-    labs(title = title, caption = ggParams$figCaption, y = "Sum GWh per half hour", x = "Date") +
+    labs(title = title, caption = gcParams$figCaption, y = "Sum GWh per half hour", x = "Date") +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
 }
@@ -381,7 +391,7 @@ makeColProfilePlot <- function(dt, title){
   myPlot <- ggplot(dt, 
                    aes(x = rDateTime, y = sumkWh/1000, fill = Fuel_Code)) +
     geom_col(alpha = 0.4) +
-    labs(title = title, caption = ggParams$figCaption, y = "MWh per half hour", x = "Date") +
+    labs(title = title, caption = gcParams$figCaption, y = "MWh per half hour", x = "Date") +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
   return(myPlot)
@@ -414,7 +424,7 @@ allFiles <- filesToDateDT[, V1]
 allGenDT <- as.data.table(do.call(rbind,
                                lapply(allFiles,
                                       function(f)
-                                        readr::read_csv(paste0(ggParams$lDataLoc,f),
+                                        readr::read_csv(paste0(gcParams$wgenDataLoc,f),
                                                         progress = FALSE,
                                                         col_types = cols()
                                         ) # decodes .gz on the fly, requires readr, use the NULL col_types to suppress feedback
@@ -464,7 +474,7 @@ Figure \ref(fig:monthlySOI) shows the monthly El Niño Southern Oscillation Inde
 
 ```{r monthlySOI, fig.cap="Monthly Southern Oscillation"}
 
-soFile <- paste0(ggParams$dataLoc,"externalData/mfe/mfe-monthly-el-nino-southern-oscillation-index-19862016/monthly-el-nino-southern-oscillation-index-19862016.csv")
+soFile <- paste0(gcParams$dataLoc,"mfe/mfe-monthly-el-nino-southern-oscillation-index-19862016/monthly-el-nino-southern-oscillation-index-19862016.csv")
 monthlySODT <- data.table::as.data.table(readr::read_csv(soFile))
 
 head(monthlySODT)
@@ -490,7 +500,7 @@ ggplot(monthlySODT, aes(x = rMonth, y = Southern_oscillation_index)) +
   annotate("text", x = as.Date("1990-01-01"), y = -2.5, label = "El Nino") +
   labs(x = "Date",
        y = "Monthly El Niño Southern Oscillation Index, 1986–2016",
-       caption = ggParams$soiCaption) +
+       caption = gcParams$soiCaption) +
   scale_x_date(date_labels = "%Y", date_breaks = "2 years")
 
 ```
@@ -508,7 +518,7 @@ ggplot(yearlySODT, aes(x = as.integer(rYear), y = meanSOI)) +
   annotate("text", x = 1990, y = -2, label = "El Nino") +
   labs(x = "Year",
        y = "Mean monthly El Niño Southern Oscillation Index, 1986–2016",
-       caption = ggParams$soiCaption)
+       caption = gcParams$soiCaption)
 ```
 
 ## Yearly generation trends
@@ -527,7 +537,7 @@ makePlotCol <- function(dt, xVar, yVar, xLabel, yLabel){
   #print(paste0("Making monthly plot for ", eval(yVar), " with y label ", eval(yLabel)))
   ggplot(dt, aes(x = get(xVar), y = get(yVar), fill = Fuel_Code)) +
     geom_col(alpha = 0.4) +
-    labs(caption = ggParams$figCaption, x = eval(xLabel), y = eval(yLabel)) +
+    labs(caption = gcParams$figCaption, x = eval(xLabel), y = eval(yLabel)) +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
 }
@@ -536,7 +546,7 @@ makePlotPoint <- function(dt, xVar, yVar, xLabel, yLabel){
   #print(paste0("Making monthly plot for ", eval(yVar), " with y label ", eval(yLabel)))
   ggplot(dt, aes(x = get(xVar), y = get(yVar), colour = Fuel_Code)) +
     geom_point(alpha = 0.4) +
-    labs(caption = ggParams$figCaption, x = eval(xLabel), y = eval(yLabel)) +
+    labs(caption = gcParams$figCaption, x = eval(xLabel), y = eval(yLabel)) +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
 }
@@ -545,7 +555,7 @@ makePlotStep <- function(dt, xVar, yVar, xLabel, yLabel){
   #print(paste0("Making monthly plot for ", eval(yVar), " with y label ", eval(yLabel)))
   ggplot(dt, aes(x = get(xVar), y = get(yVar), colour = Fuel_Code)) +
     geom_step(alpha = 0.4) +
-    labs(caption = ggParams$figCaption, x = eval(xLabel), y = eval(yLabel)) +
+    labs(caption = gcParams$figCaption, x = eval(xLabel), y = eval(yLabel)) +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
 }
@@ -633,7 +643,7 @@ ggplot(yearlyPlotDT[!is.na(Fuel_Code) & rYear != 1997], aes(x = sumGWh, y = mean
   geom_hline(yintercept = 0) +
   labs(x = "Total GWh",
        y = "Monthly El Niño Southern Oscillation Index, 1986–2016",
-       caption = ggParams$jointCaption) +
+       caption = gcParams$jointCaption) +
   facet_wrap(~Fuel_Code, ncol = 4, scales = "free")
 ```
 
@@ -760,7 +770,7 @@ rectAlpha <- 0.05
 yMin <- min(monthlyPlotDT[Fuel_Code == "Hydro"]$sumGWh, na.rm = TRUE)
 myPlot <- annotateAllGenMonths(myPlot) 
 annotateSOIMonths(myPlot)+ # add SOI annotations
-  labs(caption = ggParams$jointCaption)
+  labs(caption = gcParams$jointCaption)
 
 ggsave("monthlyNZGenSOI.png", width = 11)
 ```
@@ -784,7 +794,7 @@ ggplot(monthlyPlotDT[!is.na(Fuel_Code) & rYear != 1997], aes(x = sumGWh, y = Sou
   geom_hline(yintercept = 0) +
   labs(x = "Monthly GWh",
        y = "Monthly El Niño Southern Oscillation Index, 1986–2016",
-       caption = ggParams$jointCaption) +
+       caption = gcParams$jointCaption) +
   facet_wrap(~Fuel_Code, ncol = 4, scales = "free")
 ```
 
@@ -828,7 +838,7 @@ myTextSize <- 4
 yMin <- min(dailyPlotDT[Fuel_Code == "Hydro"]$sumGWh, na.rm = TRUE)
 myPlot <- annotateAllGenMonths(myPlot)
 annotateSOIMonths(myPlot) + # add SOI annotations
-  labs(caption = ggParams$jointCaption)
+  labs(caption = gcParams$jointCaption)
 
 ggsave("dailyNZGenSOI.png", width = 11)
 ```
@@ -852,15 +862,17 @@ plotDT <- huntlyDT[, .(sumkWh = sum(kWh)), keyby = .(year, Fuel_Code, Gen_Code)]
 ggplot(plotDT, aes(x = year, y = sumkWh/1000000, fill = Fuel_Code)) +
   geom_col() +
   facet_grid(Gen_Code ~ .) +
-  labs(caption = ggParams$figCaption, x = "Year", y = "Total GWh per year")
+  labs(caption = gcParams$figCaption, x = "Year", y = "Total GWh per year")
 ```
 
 
 ### What to do about TP49 & TP50?
 
+We hate timezones but we hate DST even more!
+
 ### Solar & embedded generation
 
-Should we be adding embedded generation from https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation ?
+Should we be adding embedded generation from https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation ? It seems to be PV which (currently) has a los installed capacity...
  
 # Runtime
 
