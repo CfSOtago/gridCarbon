@@ -20,6 +20,9 @@
 <script src="nzElecGenTrends_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="nzElecGenTrends_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="nzElecGenTrends_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="nzElecGenTrends_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="nzElecGenTrends_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="nzElecGenTrends_files/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="nzElecGenTrends_files/navigation-1.1/tabsets.js"></script>
 <link href="nzElecGenTrends_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="nzElecGenTrends_files/highlightjs-9.12.0/highlight.js"></script>
@@ -115,6 +118,101 @@ $(document).ready(function () {
 
 
 
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
 
 
 <div class="fluid-row" id="header">
@@ -123,7 +221,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">NZ Electricity Generation Trends 1998-2017</h1>
 <h4 class="author"><em>Ben Anderson (<a href="mailto:b.anderson@soton.ac.uk">b.anderson@soton.ac.uk</a> <code>@dataknut</code>)</em></h4>
-<h4 class="date"><em>Last run at: 2018-10-25 16:52:20</em></h4>
+<h4 class="date"><em>Last run at: 2018-11-12 14:54:39</em></h4>
 
 </div>
 
@@ -133,7 +231,7 @@ $(document).ready(function () {
 <h1><span class="header-section-number">1</span> Citation</h1>
 <p>If you wish to use any of the material from this report please cite as:</p>
 <ul>
-<li>Anderson, B. (2018) <em>NZ Electricity Generation Trends 1998-2017</em>, <a href="http://www.otago.ac.nz/centre-sustainability/">Centre for Sustainability</a>, University of Otago: Dunedin, New Zealand.</li>
+<li>Anderson, B. (2018) <em>NZ Electricity Generation Trends 1998-2017</em>, .</li>
 </ul>
 <p>This work is (c) 2018 the University of Southampton.</p>
 
@@ -144,7 +242,7 @@ $(document).ready(function () {
 <h2><span class="header-section-number">2.1</span> Circulation</h2>
 <p>Report circulation:</p>
 <ul>
-<li>Restricted to: <a href="https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html">NZ GREEN Grid</a> project partners and contractors.</li>
+<li>Restricted to University of Otago.</li>
 </ul>
 </div>
 <div id="purpose" class="section level2">
@@ -162,10 +260,10 @@ $(document).ready(function () {
 </div>
 <div id="history" class="section level2">
 <h2><span class="header-section-number">2.4</span> History</h2>
-<p>Generally tracked via our git.soton <a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid">repo</a>:</p>
+<p>Generally tracked via our git.soton <a href="https://github.com/CfSOtago/gridCarbon/">repo</a>:</p>
 <ul>
-<li><a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid/commits/master">history</a></li>
-<li><a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid/issues">issues</a></li>
+<li><a href="https://github.com/CfSOtago/gridCarbon/commits/master">history</a></li>
+<li><a href="https://github.com/CfSOtago/gridCarbon/issues">issues</a></li>
 </ul>
 <p>Specific history of this code:</p>
 <ul>
@@ -177,8 +275,6 @@ $(document).ready(function () {
 <p>This work was supported by:</p>
 <ul>
 <li>The <a href="https://www.otago.ac.nz/">University of Otago</a>;</li>
-<li>The <a href="https://www.southampton.ac.uk/">University of Southampton</a>;</li>
-<li>The New Zealand <a href="http://www.mbie.govt.nz/">Ministry of Business, Innovation and Employment (MBIE)</a> through the <a href="https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html">NZ GREEN Grid</a> project;</li>
 <li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s Sustainable Energy Research Group (2019-2020).</li>
 </ul>
 <p>We do not ‘support’ the code but if you notice a problem please check the <a href="https://github.com/CfSOtago/GREENGrid/issues">issues</a> on our <a href="https://github.com/CfSOtago/GREENGrid">repo</a> and if it doesn’t already exist, please open a new one.</p>
@@ -876,11 +972,11 @@ Figure 5.12: Half-hourly profile plot by fuel type
 <h1><span class="header-section-number">6</span> Analysis: Trends 1998 - 2017</h1>
 <p>Using full dataset for each day, month &amp; year.</p>
 <pre><code>## [1] &quot;Files loaded&quot;</code></pre>
-<pre><code>## [1] &quot;Loaded 22,940,350 rows of data&quot;</code></pre>
+<pre><code>## [1] &quot;Loaded 23,046,850 rows of data&quot;</code></pre>
 <p>As above, in order to avoid future confusion and to save a lot of error checking we again remove NA kWh (i.e. TP49 &amp; TP 50) from the dataset.</p>
 <pre class="r"><code># N rows before:
 nrow(allGenDT)</code></pre>
-<pre><code>## [1] 22940350</code></pre>
+<pre><code>## [1] 23046850</code></pre>
 <pre class="r"><code># N time periods before:
 uniqueN(allGenDT$Time_Period)</code></pre>
 <pre><code>## [1] 50</code></pre>
@@ -888,7 +984,7 @@ uniqueN(allGenDT$Time_Period)</code></pre>
 allGenDT &lt;- allGenDT[!is.na(kWh)]
 # N rows after
 nrow(allGenDT)</code></pre>
-<pre><code>## [1] 22019260</code></pre>
+<pre><code>## [1] 22121358</code></pre>
 <pre class="r"><code># N time periods after:
 uniqueN(allGenDT$Time_Period)</code></pre>
 <pre><code>## [1] 50</code></pre>
@@ -1006,16 +1102,17 @@ Figure 8.1: Huntly fuel sources
 </div>
 <div id="what-to-do-about-tp49-tp50" class="section level3">
 <h3><span class="header-section-number">8.1.2</span> What to do about TP49 &amp; TP50?</h3>
+<p>We hate timezones but we hate DST even more!</p>
 </div>
 <div id="solar-embedded-generation" class="section level3">
 <h3><span class="header-section-number">8.1.3</span> Solar &amp; embedded generation</h3>
-<p>Should we be adding embedded generation from <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</a> ?</p>
+<p>Should we be adding embedded generation from <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</a> ? It seems to be PV which (currently) has a los installed capacity…</p>
 </div>
 </div>
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">9</span> Runtime</h1>
-<p>Analysis completed in 515.63 seconds ( 8.59 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
+<p>Analysis completed in 535.43 seconds ( 8.92 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">10</span> R environment</h1>
@@ -1048,31 +1145,31 @@ Figure 8.1: Huntly fuel sources
 ## 
 ## other attached packages:
 ##  [1] knitr_1.20        Hmisc_4.1-1       Formula_1.2-3    
-##  [4] survival_2.42-3   lattice_0.20-35   skimr_1.0.3      
-##  [7] readr_1.1.1       ggplot2_3.0.0     dplyr_0.7.6      
-## [10] data.table_1.11.8 GREENGrid_0.1.0  
+##  [4] survival_2.42-6   lattice_0.20-35   skimr_1.0.3      
+##  [7] readr_1.1.1       ggplot2_3.1.0     dplyr_0.7.7      
+## [10] data.table_1.11.8 gridCarbon_0.1.0 
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] tidyselect_0.2.4    xfun_0.3            reshape2_1.4.3     
+##  [1] tidyselect_0.2.5    xfun_0.4            reshape2_1.4.3     
 ##  [4] purrr_0.2.5         splines_3.5.1       colorspace_1.3-2   
 ##  [7] htmltools_0.3.6     yaml_2.2.0          base64enc_0.1-3    
-## [10] utf8_1.1.4          rlang_0.2.2         pillar_1.3.0       
-## [13] foreign_0.8-70      glue_1.3.0          withr_2.1.2        
+## [10] utf8_1.1.4          rlang_0.3.0.1       pillar_1.3.0       
+## [13] foreign_0.8-71      glue_1.3.0          withr_2.1.2        
 ## [16] RColorBrewer_1.1-2  bindrcpp_0.2.2      bindr_0.1.1        
 ## [19] plyr_1.8.4          stringr_1.3.1       munsell_0.5.0      
-## [22] gtable_0.2.0        htmlwidgets_1.3     evaluate_0.11      
+## [22] gtable_0.2.0        htmlwidgets_1.3     evaluate_0.12      
 ## [25] labeling_0.3        latticeExtra_0.6-28 fansi_0.4.0        
 ## [28] highr_0.7           htmlTable_1.12      Rcpp_0.12.19       
-## [31] acepack_1.4.1       checkmate_1.8.5     openssl_1.0.2      
-## [34] scales_1.0.0        backports_1.1.2     gridExtra_2.3      
-## [37] hms_0.4.2           digest_0.6.17       stringi_1.2.4      
-## [40] bookdown_0.7        grid_3.5.1          rprojroot_1.3-2    
-## [43] cli_1.0.1           tools_3.5.1         magrittr_1.5       
-## [46] lazyeval_0.2.1      tibble_1.4.2        cluster_2.0.7-1    
-## [49] crayon_1.3.4        pkgconfig_2.0.2     Matrix_1.2-14      
-## [52] lubridate_1.7.4     rstudioapi_0.8      assertthat_0.2.0   
-## [55] rmarkdown_1.10      R6_2.3.0            rpart_4.1-13       
-## [58] nnet_7.3-12         compiler_3.5.1</code></pre>
+## [31] acepack_1.4.1       scales_1.0.0        backports_1.1.2    
+## [34] checkmate_1.8.5     gridExtra_2.3       hms_0.4.2          
+## [37] digest_0.6.18       stringi_1.2.4       bookdown_0.7       
+## [40] grid_3.5.1          rprojroot_1.3-2     cli_1.0.1          
+## [43] tools_3.5.1         magrittr_1.5        lazyeval_0.2.1     
+## [46] tibble_1.4.2        cluster_2.0.7-1     crayon_1.3.4       
+## [49] pkgconfig_2.0.2     Matrix_1.2-14       lubridate_1.7.4    
+## [52] rstudioapi_0.8      assertthat_0.2.0    rmarkdown_1.10     
+## [55] R6_2.3.0            rpart_4.1-13        nnet_7.3-12        
+## [58] compiler_3.5.1</code></pre>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1>References</h1>
@@ -1106,6 +1203,8 @@ Figure 8.1: Huntly fuel sources
 
 
 
+</div>
+</div>
 
 </div>
 
