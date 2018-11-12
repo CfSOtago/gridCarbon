@@ -8,7 +8,7 @@ Downloaded from https://www.emi.ea.govt.nz/Wholesale/Datasets for various purpos
    + NB: checks to see if we already have them and skips if so (can be over-ridden)
  * Converts from wide to long form
  * Sets Time Period (half hour) properly
- * Saves original wide and converted long form data files to /hum-csafe/Research Projects/GREEN Grid/_RAW DATA/EA_Generation_Data/
+ * Saves original wide and converted long form data files to /hum-csafe/Research Projects/GREEN Grid/externalData/EA_Generation_Data/
  * Does not create a fancy report but does save some data quality check plots in the same directory
 
 ## Embedded Generation Data
