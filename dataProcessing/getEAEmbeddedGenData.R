@@ -8,7 +8,7 @@ rm(list=ls(all=TRUE)) # remove all objects from workspace
 
 
 # Load libraries ----
-library(GREENGrid) # load this first - you will need to download & install it locally from this repo
+library(gridCarbon) # load this first - you will need to download & install it locally from this repo
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
@@ -21,7 +21,6 @@ reqLibs <- c("data.table", # data munching
 loadLibraries(reqLibs)
 
 # Parameters ----
-GREENGrid::setup()
 
 local <- 0 # set to 1 for local file storage (see below)
 refresh <- 0 # set to 1 to try to download all files even if we have them
@@ -29,7 +28,7 @@ refresh <- 0 # set to 1 to try to download all files even if we have them
 if(local){ # set data storage location
   lDataLoc <- path.expand("~/Data/NZGreenGrid/safe/ea/")
 } else {
-  lDataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/_RAW DATA/EA_Embedded_Generation_Data/")
+  lDataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/EA_Embedded_Generation_Data/")
 }
 
 rDataLoc <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation/"
@@ -37,6 +36,7 @@ years <- seq(1997, 2018, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 # Local functions ----
+# these need to vary slightly from the EA wholesale data :-()
 cleanEA <- function(df){
   # takes a df, cleans & returns a dt
   dt <- data.table::as.data.table(df) # make dt
