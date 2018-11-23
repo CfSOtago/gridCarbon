@@ -1,5 +1,5 @@
 ---
-title: "NZ Electricity Generation Trends 1998-2017"
+title: "NZ Electricity Generation Trends 1998-2018"
 author: "Ben Anderson (b.anderson@soton.ac.uk `@dataknut`)"
 date: 'Last run at: `r Sys.time()`'
 output:
@@ -70,7 +70,7 @@ gcParams$circulationGenericRmd <- paste0(gcParams$repoLoc, "/includes/circulatio
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2017_, `r gcParams$pubLoc`.
+ * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2018_, `r gcParams$pubLoc`.
 
 This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
 
@@ -87,7 +87,7 @@ This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
 
 This report is intended to: 
 
- * load and test NZ electricity generation data from https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/ from 1998 to 2017.
+ * load and test NZ electricity generation data from https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/ from 1998 to 2018.
 
 ## Requirements:
 
@@ -112,7 +112,7 @@ Specific history of this code:
 
 Inspired by Steffel ([2018](https://www.sciencedirect.com/science/article/pii/S0301421516307017)) which analyses trends in the type and timing of generation in the UK over the same time period. Intended to build on Kahn et al's 2018 CO2 [intensity of peak demand](https://www.sciencedirect.com/science/article/pii/S0959652618306474?via%3Dihub) paper - how have thngs changed over time?
 
-Uses https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/ from 1998 to 2017. Note that this does not appear to include Solar (too low or in a seperate data set?) nor does it appear to include domestic/small-scale generation? It is possible that these are to be found in https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation and should be combined with this data?
+Uses https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/ from 1998 to 2018. Note that this does not appear to include Solar (too low or in a seperate data set?) nor does it appear to include domestic/small-scale generation? It is possible that these are to be found in https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation and should be combined with this data?
 
 Data is kWh - so energy not power.
 
@@ -127,9 +127,9 @@ These have been [pre-downloaded and cleaned](https://github.com/CfSOtago/GREENGr
 ```{r loadDataSample}
 filesToDateDT <- data.table::as.data.table(list.files(gcParams$wgenDataLoc, "long.csv.gz")) # get list of files already downloaded & converted to long form
 
-# for our purposes here we will just use Jun & Dec in 1998 & 2017
+# for our purposes here we will just use Jun & Dec in 1998 & 2018
 filesToDateDT <- filesToDateDT[, c("year","month", "stub") := tstrsplit(V1, "_")]
-filesToLoadDT <- filesToDateDT[(year == 1998 | year == 2017) & (month == "06" | month == "12"), V1]
+filesToLoadDT <- filesToDateDT[(year == 1998 | year == 2018) & (month == "06" | month == "12"), V1]
 
 
 sampleGenDT <- as.data.table(do.call(rbind,
@@ -195,13 +195,13 @@ nrow(sampleGenDT)
 uniqueN(sampleGenDT$Time_Period)
 ```
 
-# Analysis: 1998 & 2017 Comparison
+# Analysis: 1998 & 2018 Comparison
 
 ## Distribution tests
 
-Table \@ref(tab:boxPlot) shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1998 although far less so in 2017. This is also supported by the maximum values which show coal as the 'peaked' energy producer in 1998 although this has faded by 2017 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were [mothballed/retired](https://en.wikipedia.org/wiki/Huntly_Power_Station) during this period.
+Table \@ref(tab:boxPlot) shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1998 although far less so in 2018. This is also supported by the maximum values which show coal as the 'peaked' energy producer in 1998 although this has faded by 2018 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were [mothballed/retired](https://en.wikipedia.org/wiki/Huntly_Power_Station) during this period.
 
-Figure \@ref(fig:boxPlot) shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1998, non-use in December 1998 but re-use in December 2017 where there appears little differnece between winter & summer use for most fuels. We also see the emergence of wind by 2017.
+Figure \@ref(fig:boxPlot) shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1998, non-use in December 1998 but re-use in December 2018 where there appears little differnece between winter & summer use for most fuels. We also see the emergence of wind by 2018.
 
 ```{r boxPlot, fig.cap = "Box plot of energy produced by all fuels"}
 t <- sampleGenDT[, .(sumMWh = sum(kWh)/1000,
@@ -219,7 +219,7 @@ ggplot(sampleGenDT, aes(x = Fuel_Code, y = kWh/1000, colour = Fuel_Code)) +
   labs(x = "Fuel", y = "MWh")
 ```
 
-Figure \@ref(fig:overallHistograms) visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1998 but not 2017 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2017 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.
+Figure \@ref(fig:overallHistograms) visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1998 but not 2018 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2018 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.
 
 ```{r overallHistograms, fig.cap = "Overall energy production histrograms by fuel type"}
 ggplot(sampleGenDT, aes(x = kWh/1000, fill = Fuel_Code), alpha = 0.2) +
@@ -263,7 +263,7 @@ makeMonthlyDodgedPlot <- function(dt, yVar, yLabel){
 }
 ```
 
-The total is simply the sum of all half-hourly values and Figure \@ref(fig:monthlyTotalPlot) shows the dominance of hydro followed by coal in June 1998; the non-use of coal in December 1998; the growth of gas & geo by 2017 but the relative stasis in at-capacity hydro (?).
+The total is simply the sum of all half-hourly values and Figure \@ref(fig:monthlyTotalPlot) shows the dominance of hydro followed by coal in June 1998; the non-use of coal in December 1998; the growth of gas & geo by 2018 but the relative stasis in at-capacity hydro (?).
 
 ```{r monthlyTotalPlot, fig.cap="Monthly total plot by fuel type"}
 makeMonthlyStackedPlot(plotDT, "sumkWh", "Total GWh per month")
@@ -274,7 +274,7 @@ Figure \@ref(fig:monthlyMeanPlot) shows the mean of half-hourly values for each 
 makeMonthlyDodgedPlot(plotDT, "meankWh", "Mean GWh per half hour")
 ```
 
-Figure \@ref(fig:monthlySdPlot) shows the standard deviation of the half-hourly generation data and suggests that coal has the highest absolute variation in June 1998 which may correspond to a particular spike and/or a period of very heavy use. Coal is less variable in 2017 perhaps due to the increased use of Gas.
+Figure \@ref(fig:monthlySdPlot) shows the standard deviation of the half-hourly generation data and suggests that coal has the highest absolute variation in June 1998 which may correspond to a particular spike and/or a period of very heavy use. Coal is less variable in 2018 perhaps due to the increased use of Gas.
 
 ```{r monthlySdPlot, fig.cap="Monthly s.d. plot by fuel type"}
 makeMonthlyDodgedPlot(plotDT, "sdkWh", "S.D. halfhourly GWh")
@@ -342,13 +342,13 @@ makeHalfHourlyColPlot(plotDT, "sumkWh", "Sum GWh per half hour across all days o
 makeHalfHourlyPointPlot(plotDT, "sumkWh", "Sum GWh per half hour across all days of the month")
 ```
 
-Repeat for 2017 only
+Repeat for 2018 only
 
-```{r sumProfilePoint2017, fig.height=6, fig.cap="Half-hourly profile plot by fuel type (sum), 2017 only"}
-makeHalfHourlyPointPlot(plotDT[year == 2017], "sumkWh", "Sum GWh per half hour across all days of the month")
+```{r sumProfilePoint2018, fig.height=6, fig.cap="Half-hourly profile plot by fuel type (sum), 2018 only"}
+makeHalfHourlyPointPlot(plotDT[year == 2018], "sumkWh", "Sum GWh per half hour across all days of the month")
 ```
 
-Figures \@ref(fig:meanProfileCol) and \@ref(fig:meanProfilePoint) repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2017.
+Figures \@ref(fig:meanProfileCol) and \@ref(fig:meanProfilePoint) repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2018.
 
 ```{r meanProfileCol,fig.height=6,fig.cap= "Half-hourly profile plot by fuel type (mean)"}
 makeHalfHourlyColPlot(plotDT, "meankWh", "Mean GWh per half hour")
@@ -360,7 +360,7 @@ makeHalfHourlyPointPlot(plotDT, "meankWh", "Mean GWh per half hour across all da
 
 ## Half hourly profiles by day of the month
 
-The following plots show the profiles for each day of the month. Unfortunately due to the lack of wind generation in 1998 the colour scheme changes from 1998 to 2017. 
+The following plots show the profiles for each day of the month. Unfortunately due to the lack of wind generation in 1998 the colour scheme changes from 1998 to 2018. 
 
 > To be fixed
 
@@ -380,8 +380,8 @@ makePointProfilePlot <- function(dt, title){
 
 makePointProfilePlot(plotDT[year == 1998 & month == 6], "June 1998")
 makePointProfilePlot(plotDT[year == 1998 & month == 12], "December 1998")
-makePointProfilePlot(plotDT[year == 2017 & month == 6], "June 2017")
-makePointProfilePlot(plotDT[year == 2017 & month == 12], "December 2017")
+makePointProfilePlot(plotDT[year == 2018 & month == 6], "June 2018")
+makePointProfilePlot(plotDT[year == 2018 & month == 12], "December 2018")
 ```
 
 Figure \@ref(fig:sumDailyProfilePoint) shows the total as a point plot while Figure \@ref(fig:sumDailyProfileCol) shows the total as stacked column plots to show the proportion of energy generation produced by each fuel.
@@ -406,12 +406,12 @@ makeColProfilePlot <- function(dt, title){
 
 makeColProfilePlot(plotDT[year == 1998 & month == 6], "June 1998")
 makeColProfilePlot(plotDT[year == 1998 & month == 12], "December 1998")
-makeColProfilePlot(plotDT[year == 2017 & month == 6], "June 2017")
-makeColProfilePlot(plotDT[year == 2017 & month == 12], "December 2017")
+makeColProfilePlot(plotDT[year == 2018 & month == 6], "June 2018")
+makeColProfilePlot(plotDT[year == 2018 & month == 12], "December 2018")
 ```
 
 
-# Analysis: Trends 1998 - 2017
+# Analysis: Trends 1998 - 2018
 
 Using full dataset for each day, month & year.
 
@@ -769,10 +769,16 @@ rectAlpha <- 0.05
 # final plot - adds annotations
 yMin <- min(monthlyPlotDT[Fuel_Code == "Hydro"]$sumGWh, na.rm = TRUE)
 myPlot <- annotateAllGenMonths(myPlot) 
-annotateSOIMonths(myPlot)+ # add SOI annotations
+myPlot <- annotateSOIMonths(myPlot)+ # add SOI annotations
   labs(caption = gcParams$jointCaption)
 
+myPlot
+
 ggsave("monthlyNZGenSOI.png", width = 11)
+
+myPlot + facet_grid(Fuel_Code ~ . , scales = "free_x") + geom_step(alpha = 1)
+
+ggsave("monthlyNZGenSOIfacetted.png", width = 11)
 ```
 
 
@@ -837,10 +843,12 @@ myTextSize <- 4
 # final plot - adds annotations
 yMin <- min(dailyPlotDT[Fuel_Code == "Hydro"]$sumGWh, na.rm = TRUE)
 myPlot <- annotateAllGenMonths(myPlot)
-annotateSOIMonths(myPlot) + # add SOI annotations
+myPlot <- annotateSOIMonths(myPlot) + # add SOI annotations
   labs(caption = gcParams$jointCaption)
-
+myPlot
 ggsave("dailyNZGenSOI.png", width = 11)
+
+myPlot + facet_grid(Fuel_Code ~ .) 
 ```
 
 

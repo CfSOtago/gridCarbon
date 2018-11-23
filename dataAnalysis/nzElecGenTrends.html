@@ -12,7 +12,7 @@
 <meta name="author" content="Ben Anderson (b.anderson@soton.ac.uk @dataknut)" />
 
 
-<title>NZ Electricity Generation Trends 1998-2017</title>
+<title>NZ Electricity Generation Trends 1998-2018</title>
 
 <script src="nzElecGenTrends_files/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -219,9 +219,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">NZ Electricity Generation Trends 1998-2017</h1>
+<h1 class="title toc-ignore">NZ Electricity Generation Trends 1998-2018</h1>
 <h4 class="author"><em>Ben Anderson (<a href="mailto:b.anderson@soton.ac.uk">b.anderson@soton.ac.uk</a> <code>@dataknut</code>)</em></h4>
-<h4 class="date"><em>Last run at: 2018-11-13 09:43:27</em></h4>
+<h4 class="date"><em>Last run at: 2018-11-23 14:18:56</em></h4>
 
 </div>
 
@@ -231,7 +231,7 @@ div.tocify {
 <h1><span class="header-section-number">1</span> Citation</h1>
 <p>If you wish to use any of the material from this report please cite as:</p>
 <ul>
-<li>Anderson, B. (2018) <em>NZ Electricity Generation Trends 1998-2017</em>, .</li>
+<li>Anderson, B. (2018) <em>NZ Electricity Generation Trends 1998-2018</em>, .</li>
 </ul>
 <p>This work is (c) 2018 the University of Southampton.</p>
 
@@ -249,7 +249,7 @@ div.tocify {
 <h2><span class="header-section-number">2.2</span> Purpose</h2>
 <p>This report is intended to:</p>
 <ul>
-<li>load and test NZ electricity generation data from <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a> from 1998 to 2017.</li>
+<li>load and test NZ electricity generation data from <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a> from 1998 to 2018.</li>
 </ul>
 </div>
 <div id="requirements" class="section level2">
@@ -283,7 +283,7 @@ div.tocify {
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">3</span> Introduction</h1>
 <p>Inspired by Steffel (<a href="https://www.sciencedirect.com/science/article/pii/S0301421516307017">2018</a>) which analyses trends in the type and timing of generation in the UK over the same time period. Intended to build on Kahn et al’s 2018 CO2 <a href="https://www.sciencedirect.com/science/article/pii/S0959652618306474?via%3Dihub">intensity of peak demand</a> paper - how have thngs changed over time?</p>
-<p>Uses <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a> from 1998 to 2017. Note that this does not appear to include Solar (too low or in a seperate data set?) nor does it appear to include domestic/small-scale generation? It is possible that these are to be found in <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</a> and should be combined with this data?</p>
+<p>Uses <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a> from 1998 to 2018. Note that this does not appear to include Solar (too low or in a seperate data set?) nor does it appear to include domestic/small-scale generation? It is possible that these are to be found in <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</a> and should be combined with this data?</p>
 <p>Data is kWh - so energy not power.</p>
 </div>
 <div id="load-data" class="section level1">
@@ -297,124 +297,120 @@ div.tocify {
 ## &quot;stub&quot;), : Supplied 3 columns to be assigned a list (length 5) of values (2
 ## unused)</code></pre>
 <pre><code>## [1] &quot;Files loaded&quot;</code></pre>
-<pre><code>## [1] &quot;Loaded 352,250 rows of data&quot;</code></pre>
+<pre><code>## [1] &quot;Loaded 245,350 rows of data&quot;</code></pre>
 <pre><code>## sampleGenDT 
 ## 
-##  14  Variables      352250  Observations
+##  14  Variables      245350  Observations
 ## ---------------------------------------------------------------------------
 ## Site_Code 
 ##        n  missing distinct 
-##   352250        0       69 
+##   245350        0       69 
 ## 
 ## lowest : ANI ARA ARG ARI ATI, highest: WPA WPI WRK WTK WWD
 ## ---------------------------------------------------------------------------
 ## POC_Code 
 ##        n  missing distinct 
-##   352250        0       68 
+##   245350        0       68 
 ## 
 ## lowest : ARA2201 ARG1101 ARI1101 ARI1102 ASB0661
 ## highest: WRK0331 WRK2201 WTK0111 WWD1102 WWD1103
 ## ---------------------------------------------------------------------------
 ## Nwk_Code 
 ##        n  missing distinct 
-##   352250        0       27 
+##   245350        0       27 
 ## 
 ## lowest : ALNT BOPD CHHE CTCT EASH, highest: TRPG TRUS TUAR WAIK WATA
 ## ---------------------------------------------------------------------------
 ## Gen_Code 
 ##        n  missing distinct 
-##   352250        0       68 
+##   245350        0       68 
 ## 
 ## lowest : aniwhenua     arapuni       aratiatia     argyle_wairau atiamuri     
 ## highest: whakamaru     whareroa      wheao_flaxy   whirinaki     white_hill   
 ## ---------------------------------------------------------------------------
 ## Fuel_Code 
 ##        n  missing distinct 
-##   352250        0        8 
+##   245350        0        8 
 ##                                                                           
 ## Value         Coal  Diesel     Gas Gas&amp;Oil     Geo   Hydro    Wind    Wood
-## Frequency     6100    6100   44300    6100   42700  213500   27350    6100
-## Proportion   0.017   0.017   0.126   0.017   0.121   0.606   0.078   0.017
+## Frequency     4550    4550   33400    6100   25650  153050   13500    4550
+## Proportion   0.019   0.019   0.136   0.025   0.105   0.624   0.055   0.019
 ## ---------------------------------------------------------------------------
 ## Tech_Code 
 ##        n  missing distinct 
-##   352250        0        5 
+##   245350        0        5 
 ##                                              
 ## Value       Cogen    Geo  Hydro  Thrml   Wind
-## Frequency   27500  42700 213500  41200  27350
-## Proportion  0.078  0.121  0.606  0.117  0.078
+## Frequency   19750  25650 153050  33400  13500
+## Proportion  0.080  0.105  0.624  0.136  0.055
 ## ---------------------------------------------------------------------------
 ## Trading_date 
 ##        n  missing distinct 
-##   352250        0      122 
+##   245350        0       91 
 ## 
 ## lowest : 1998-06-01 1998-06-02 1998-06-03 1998-06-04 1998-06-05
-## highest: 2017-12-27 2017-12-28 2017-12-29 2017-12-30 2017-12-31
+## highest: 2018-06-26 2018-06-27 2018-06-28 2018-06-29 2018-06-30
 ## ---------------------------------------------------------------------------
 ## Time_Period 
 ##        n  missing distinct 
-##   352250        0       50 
+##   245350        0       50 
 ## 
 ## lowest : TP1  TP10 TP11 TP12 TP13, highest: TP50 TP6  TP7  TP8  TP9 
 ## ---------------------------------------------------------------------------
 ## kWh 
 ##        n  missing distinct     Info     Mean      Gmd      .05      .10 
-##   338160    14090   116836    0.997    37186    45162        0        0 
+##   235536     9814    74622    0.997    39767    48729        0        0 
 ##      .25      .50      .75      .90      .95 
-##     6563    19715    48640    82910   150714 
+##     6361    19896    54010    89674   154625 
 ## 
-## lowest : 0.0000e+00 4.5000e-03 8.7000e-03 1.0000e-02 1.0200e-02
+## lowest : 0.0000e+00 1.0000e-02 1.0200e-02 1.0300e-02 2.0300e-02
 ## highest: 4.9213e+05 4.9239e+05 4.9246e+05 4.9266e+05 4.9302e+05
 ## ---------------------------------------------------------------------------
 ## rTime [secs] 
 ##        n  missing distinct 
-##   338160    14090       48 
+##   235536     9814       48 
 ## 
 ## lowest : 00:15:00 00:45:00 01:15:00 01:45:00 02:15:00
 ## highest: 21:45:00 22:15:00 22:45:00 23:15:00 23:45:00
 ## ---------------------------------------------------------------------------
 ## rDate 
 ##        n  missing distinct 
-##   352250        0      122 
+##   245350        0       91 
 ## 
 ## lowest : 1998-06-01 1998-06-02 1998-06-03 1998-06-04 1998-06-05
-## highest: 2017-12-27 2017-12-28 2017-12-29 2017-12-30 2017-12-31
+## highest: 2018-06-26 2018-06-27 2018-06-28 2018-06-29 2018-06-30
 ## ---------------------------------------------------------------------------
 ## rDateTime 
 ##                   n             missing            distinct 
-##              338160               14090                5856 
+##              235536                9814                4368 
 ##                Info                Mean                 Gmd 
-##                   1 2010-03-23 19:23:45 1979-03-18 16:00:26 
+##                   1 2007-04-15 09:27:41 1979-10-15 13:08:01 
 ##                 .05                 .10                 .25 
-## 1998-06-09 00:15:00 1998-06-17 00:15:00 1998-12-10 09:15:00 
+## 1998-06-06 13:45:00 1998-06-12 03:45:00 1998-06-28 21:15:00 
 ##                 .50                 .75                 .90 
-## 2017-06-11 15:45:00 2017-12-06 19:15:00 2017-12-21 22:15:00 
+## 1998-12-25 02:45:00 2018-06-13 17:15:00 2018-06-24 02:15:00 
 ##                 .95 
-## 2017-12-26 23:15:00 
-##                                                                       
-## Value      8.950e+08 9.000e+08 9.100e+08 9.150e+08 1.495e+09 1.500e+09
-## Frequency      20548     42812       752     69184     47600     53200
-## Proportion     0.061     0.127     0.002     0.205     0.141     0.157
-##                               
-## Value      1.510e+09 1.515e+09
-## Frequency      16100     87964
-## Proportion     0.048     0.260
+## 2018-06-27 13:15:00 
+##                                                        
+## Value      8.95e+08 9.00e+08 9.10e+08 9.15e+08 1.53e+09
+## Frequency     20548    42812      752    69184   102240
+## Proportion    0.087    0.182    0.003    0.294    0.434
 ## ---------------------------------------------------------------------------
 ## month 
 ##        n  missing distinct     Info     Mean      Gmd 
-##   352250        0        2    0.749    9.087    2.997 
+##   245350        0        2    0.626    7.782    2.505 
 ##                         
 ## Value           6     12
-## Frequency  171000 181250
-## Proportion  0.485  0.515
+## Frequency  172500  72850
+## Proportion  0.703  0.297
 ## ---------------------------------------------------------------------------
 ## year 
 ##        n  missing distinct     Info     Mean      Gmd 
-##   352250        0        2    0.716     2010    9.075 
+##   245350        0        2    0.737     2007    9.826 
 ##                         
-## Value        1998   2017
-## Frequency  138850 213400
-## Proportion  0.394  0.606
+## Value        1998   2018
+## Frequency  138850 106500
+## Proportion  0.566  0.434
 ## ---------------------------------------------------------------------------</code></pre>
 <p>Table <a href="#tab:finalSummary"><strong>??</strong></a> sumarises the data. Notice that there are missing (NA) values in the kWh column. These are caused by periods 49 and 50:</p>
 <blockquote>
@@ -433,175 +429,175 @@ div.tocify {
 <tbody>
 <tr class="odd">
 <td align="left">TP1</td>
-<td align="right">32193.95</td>
+<td align="right">34216.67</td>
 </tr>
 <tr class="even">
 <td align="left">TP10</td>
-<td align="right">28197.44</td>
+<td align="right">29496.19</td>
 </tr>
 <tr class="odd">
 <td align="left">TP11</td>
-<td align="right">29102.29</td>
+<td align="right">30351.36</td>
 </tr>
 <tr class="even">
 <td align="left">TP12</td>
-<td align="right">30355.92</td>
+<td align="right">31634.09</td>
 </tr>
 <tr class="odd">
 <td align="left">TP13</td>
-<td align="right">32589.18</td>
+<td align="right">34251.02</td>
 </tr>
 <tr class="even">
 <td align="left">TP14</td>
-<td align="right">35307.47</td>
+<td align="right">37355.17</td>
 </tr>
 <tr class="odd">
 <td align="left">TP15</td>
-<td align="right">38153.58</td>
+<td align="right">40649.58</td>
 </tr>
 <tr class="even">
 <td align="left">TP16</td>
-<td align="right">40611.99</td>
+<td align="right">43596.37</td>
 </tr>
 <tr class="odd">
 <td align="left">TP17</td>
-<td align="right">41846.03</td>
+<td align="right">45022.05</td>
 </tr>
 <tr class="even">
 <td align="left">TP18</td>
-<td align="right">42344.12</td>
+<td align="right">45553.60</td>
 </tr>
 <tr class="odd">
 <td align="left">TP19</td>
-<td align="right">42572.59</td>
+<td align="right">45800.49</td>
 </tr>
 <tr class="even">
 <td align="left">TP2</td>
-<td align="right">31058.35</td>
+<td align="right">32943.34</td>
 </tr>
 <tr class="odd">
 <td align="left">TP20</td>
-<td align="right">42364.31</td>
+<td align="right">45563.65</td>
 </tr>
 <tr class="even">
 <td align="left">TP21</td>
-<td align="right">41953.33</td>
+<td align="right">45137.01</td>
 </tr>
 <tr class="odd">
 <td align="left">TP22</td>
-<td align="right">41580.21</td>
+<td align="right">44664.21</td>
 </tr>
 <tr class="even">
 <td align="left">TP23</td>
-<td align="right">41157.60</td>
+<td align="right">44125.07</td>
 </tr>
 <tr class="odd">
 <td align="left">TP24</td>
-<td align="right">40811.56</td>
+<td align="right">43716.02</td>
 </tr>
 <tr class="even">
 <td align="left">TP25</td>
-<td align="right">40331.06</td>
+<td align="right">43146.78</td>
 </tr>
 <tr class="odd">
 <td align="left">TP26</td>
-<td align="right">39886.99</td>
+<td align="right">42594.82</td>
 </tr>
 <tr class="even">
 <td align="left">TP27</td>
-<td align="right">39653.17</td>
+<td align="right">42271.77</td>
 </tr>
 <tr class="odd">
 <td align="left">TP28</td>
-<td align="right">39227.72</td>
+<td align="right">41742.35</td>
 </tr>
 <tr class="even">
 <td align="left">TP29</td>
-<td align="right">38878.22</td>
+<td align="right">41225.36</td>
 </tr>
 <tr class="odd">
 <td align="left">TP3</td>
-<td align="right">30111.71</td>
+<td align="right">31860.12</td>
 </tr>
 <tr class="even">
 <td align="left">TP30</td>
-<td align="right">38668.61</td>
+<td align="right">40900.41</td>
 </tr>
 <tr class="odd">
 <td align="left">TP31</td>
-<td align="right">38707.44</td>
+<td align="right">40876.16</td>
 </tr>
 <tr class="even">
 <td align="left">TP32</td>
-<td align="right">39144.56</td>
+<td align="right">41426.75</td>
 </tr>
 <tr class="odd">
 <td align="left">TP33</td>
-<td align="right">39847.08</td>
+<td align="right">42405.64</td>
 </tr>
 <tr class="even">
 <td align="left">TP34</td>
-<td align="right">41145.00</td>
+<td align="right">44208.48</td>
 </tr>
 <tr class="odd">
 <td align="left">TP35</td>
-<td align="right">42903.35</td>
+<td align="right">46696.45</td>
 </tr>
 <tr class="even">
 <td align="left">TP36</td>
-<td align="right">44126.06</td>
+<td align="right">48342.40</td>
 </tr>
 <tr class="odd">
 <td align="left">TP37</td>
-<td align="right">43686.30</td>
+<td align="right">47878.89</td>
 </tr>
 <tr class="even">
 <td align="left">TP38</td>
-<td align="right">43162.35</td>
+<td align="right">47176.80</td>
 </tr>
 <tr class="odd">
 <td align="left">TP39</td>
-<td align="right">42323.73</td>
+<td align="right">46269.81</td>
 </tr>
 <tr class="even">
 <td align="left">TP4</td>
-<td align="right">29313.75</td>
+<td align="right">30935.05</td>
 </tr>
 <tr class="odd">
 <td align="left">TP40</td>
-<td align="right">41477.26</td>
+<td align="right">45318.58</td>
 </tr>
 <tr class="even">
 <td align="left">TP41</td>
-<td align="right">40763.28</td>
+<td align="right">44482.53</td>
 </tr>
 <tr class="odd">
 <td align="left">TP42</td>
-<td align="right">40360.00</td>
+<td align="right">43868.60</td>
 </tr>
 <tr class="even">
 <td align="left">TP43</td>
-<td align="right">39752.14</td>
+<td align="right">42945.16</td>
 </tr>
 <tr class="odd">
 <td align="left">TP44</td>
-<td align="right">38615.70</td>
+<td align="right">41519.99</td>
 </tr>
 <tr class="even">
 <td align="left">TP45</td>
-<td align="right">36913.02</td>
+<td align="right">39406.13</td>
 </tr>
 <tr class="odd">
 <td align="left">TP46</td>
-<td align="right">35083.01</td>
+<td align="right">37233.14</td>
 </tr>
 <tr class="even">
 <td align="left">TP47</td>
-<td align="right">34647.09</td>
+<td align="right">36864.40</td>
 </tr>
 <tr class="odd">
 <td align="left">TP48</td>
-<td align="right">33234.67</td>
+<td align="right">35293.26</td>
 </tr>
 <tr class="even">
 <td align="left">TP49</td>
@@ -609,7 +605,7 @@ div.tocify {
 </tr>
 <tr class="odd">
 <td align="left">TP5</td>
-<td align="right">28734.70</td>
+<td align="right">30268.84</td>
 </tr>
 <tr class="even">
 <td align="left">TP50</td>
@@ -617,19 +613,19 @@ div.tocify {
 </tr>
 <tr class="odd">
 <td align="left">TP6</td>
-<td align="right">28278.83</td>
+<td align="right">29736.19</td>
 </tr>
 <tr class="even">
 <td align="left">TP7</td>
-<td align="right">28020.79</td>
+<td align="right">29427.16</td>
 </tr>
 <tr class="odd">
 <td align="left">TP8</td>
-<td align="right">27830.14</td>
+<td align="right">29198.74</td>
 </tr>
 <tr class="even">
 <td align="left">TP9</td>
-<td align="right">27905.97</td>
+<td align="right">29240.89</td>
 </tr>
 </tbody>
 </table>
@@ -642,7 +638,7 @@ Figure 4.1: Plot showing presence of NA observations by time period and Fuel Typ
 <p>In order to avoid future confusion and to save a lot of error checking we therefore remove NA kWh (i.e. TP49 &amp; TP 50) from the dataset.</p>
 <pre class="r"><code># N rows before:
 nrow(sampleGenDT)</code></pre>
-<pre><code>## [1] 352250</code></pre>
+<pre><code>## [1] 245350</code></pre>
 <pre class="r"><code># N time periods before:
 uniqueN(sampleGenDT$Time_Period)</code></pre>
 <pre><code>## [1] 50</code></pre>
@@ -650,17 +646,17 @@ uniqueN(sampleGenDT$Time_Period)</code></pre>
 sampleGenDT &lt;- sampleGenDT[!is.na(kWh)]
 # N rows after
 nrow(sampleGenDT)</code></pre>
-<pre><code>## [1] 338160</code></pre>
+<pre><code>## [1] 235536</code></pre>
 <pre class="r"><code># N time periods after:
 uniqueN(sampleGenDT$Time_Period)</code></pre>
 <pre><code>## [1] 48</code></pre>
 </div>
-<div id="analysis-1998-2017-comparison" class="section level1">
-<h1><span class="header-section-number">5</span> Analysis: 1998 &amp; 2017 Comparison</h1>
+<div id="analysis-1998-2018-comparison" class="section level1">
+<h1><span class="header-section-number">5</span> Analysis: 1998 &amp; 2018 Comparison</h1>
 <div id="distribution-tests" class="section level2">
 <h2><span class="header-section-number">5.1</span> Distribution tests</h2>
-<p>Table <a href="#tab:boxPlot">5.1</a> shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1998 although far less so in 2017. This is also supported by the maximum values which show coal as the ‘peaked’ energy producer in 1998 although this has faded by 2017 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were <a href="https://en.wikipedia.org/wiki/Huntly_Power_Station">mothballed/retired</a> during this period.</p>
-<p>Figure <a href="#fig:boxPlot">5.1</a> shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1998, non-use in December 1998 but re-use in December 2017 where there appears little differnece between winter &amp; summer use for most fuels. We also see the emergence of wind by 2017.</p>
+<p>Table <a href="#tab:boxPlot">5.1</a> shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1998 although far less so in 2018. This is also supported by the maximum values which show coal as the ‘peaked’ energy producer in 1998 although this has faded by 2018 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were <a href="https://en.wikipedia.org/wiki/Huntly_Power_Station">mothballed/retired</a> during this period.</p>
+<p>Figure <a href="#fig:boxPlot">5.1</a> shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1998, non-use in December 1998 but re-use in December 2018 where there appears little differnece between winter &amp; summer use for most fuels. We also see the emergence of wind by 2018.</p>
 <table>
 <caption><span id="tab:boxPlot">Table 5.1: </span>Summary of energy produced by all fuels</caption>
 <thead>
@@ -747,74 +743,74 @@ uniqueN(sampleGenDT$Time_Period)</code></pre>
 <td align="right">7.41</td>
 </tr>
 <tr class="even">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Coal</td>
-<td align="right">426606.86</td>
-<td align="right">145.70</td>
-<td align="right">140.41</td>
+<td align="right">93735.66</td>
+<td align="right">65.09</td>
+<td align="right">57.32</td>
 <td align="right">0</td>
-<td align="right">241.88</td>
-<td align="right">64.98</td>
+<td align="right">254.60</td>
+<td align="right">58.34</td>
 </tr>
 <tr class="odd">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Diesel</td>
-<td align="right">941.40</td>
-<td align="right">0.32</td>
+<td align="right">776.63</td>
+<td align="right">0.54</td>
 <td align="right">0.00</td>
 <td align="right">0</td>
-<td align="right">45.39</td>
-<td align="right">2.49</td>
+<td align="right">48.59</td>
+<td align="right">3.90</td>
 </tr>
 <tr class="even">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Gas</td>
-<td align="right">1367101.27</td>
-<td align="right">58.36</td>
-<td align="right">22.78</td>
+<td align="right">492738.77</td>
+<td align="right">38.02</td>
+<td align="right">6.98</td>
 <td align="right">0</td>
-<td align="right">290.87</td>
-<td align="right">75.67</td>
+<td align="right">235.56</td>
+<td align="right">60.39</td>
 </tr>
 <tr class="odd">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Geo</td>
-<td align="right">1222782.96</td>
-<td align="right">37.97</td>
-<td align="right">38.87</td>
+<td align="right">595770.19</td>
+<td align="right">37.61</td>
+<td align="right">35.59</td>
 <td align="right">0</td>
-<td align="right">84.75</td>
-<td align="right">23.46</td>
+<td align="right">82.31</td>
+<td align="right">23.73</td>
 </tr>
 <tr class="even">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Hydro</td>
-<td align="right">3586485.42</td>
-<td align="right">31.41</td>
-<td align="right">19.57</td>
+<td align="right">2366059.55</td>
+<td align="right">42.13</td>
+<td align="right">22.12</td>
 <td align="right">0</td>
-<td align="right">291.82</td>
-<td align="right">39.68</td>
+<td align="right">397.49</td>
+<td align="right">60.79</td>
 </tr>
 <tr class="odd">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Wind</td>
-<td align="right">255368.77</td>
-<td align="right">9.73</td>
-<td align="right">6.30</td>
+<td align="right">134846.74</td>
+<td align="right">10.40</td>
+<td align="right">7.72</td>
 <td align="right">0</td>
-<td align="right">44.27</td>
-<td align="right">9.90</td>
+<td align="right">45.09</td>
+<td align="right">9.86</td>
 </tr>
 <tr class="even">
-<td align="right">2017</td>
+<td align="right">2018</td>
 <td align="left">Wood</td>
-<td align="right">43571.23</td>
-<td align="right">14.88</td>
-<td align="right">16.64</td>
+<td align="right">10738.74</td>
+<td align="right">7.46</td>
+<td align="right">6.34</td>
 <td align="right">0</td>
-<td align="right">19.51</td>
-<td align="right">4.91</td>
+<td align="right">18.86</td>
+<td align="right">6.66</td>
 </tr>
 </tbody>
 </table>
@@ -824,7 +820,7 @@ uniqueN(sampleGenDT$Time_Period)</code></pre>
 Figure 5.1: Box plot of energy produced by all fuels
 </p>
 </div>
-<p>Figure <a href="#fig:overallHistograms">5.2</a> visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1998 but not 2017 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2017 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.</p>
+<p>Figure <a href="#fig:overallHistograms">5.2</a> visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1998 but not 2018 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2018 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.</p>
 <div class="figure"><span id="fig:overallHistograms"></span>
 <img src="nzElecGenTrends_files/figure-html/overallHistograms-1.png" alt="Overall energy production histrograms by fuel type" width="672" />
 <p class="caption">
@@ -835,7 +831,7 @@ Figure 5.2: Overall energy production histrograms by fuel type
 <div id="monthly-generation" class="section level2">
 <h2><span class="header-section-number">5.2</span> Monthly generation</h2>
 <p>The following plots shows the total, mean, s.d. and coefficient of variation plots of half-hourly GWh produced by each fuel source each month and to some extent relfects the previous box plots.</p>
-<p>The total is simply the sum of all half-hourly values and Figure <a href="#fig:monthlyTotalPlot">5.3</a> shows the dominance of hydro followed by coal in June 1998; the non-use of coal in December 1998; the growth of gas &amp; geo by 2017 but the relative stasis in at-capacity hydro (?).</p>
+<p>The total is simply the sum of all half-hourly values and Figure <a href="#fig:monthlyTotalPlot">5.3</a> shows the dominance of hydro followed by coal in June 1998; the non-use of coal in December 1998; the growth of gas &amp; geo by 2018 but the relative stasis in at-capacity hydro (?).</p>
 <div class="figure"><span id="fig:monthlyTotalPlot"></span>
 <img src="nzElecGenTrends_files/figure-html/monthlyTotalPlot-1.png" alt="Monthly total plot by fuel type" width="672" />
 <p class="caption">
@@ -849,7 +845,7 @@ Figure <a href="#fig:monthlyMeanPlot">5.4</a> shows the mean of half-hourly valu
 Figure 5.4: Monthly mean plot by fuel type
 </p>
 </div>
-<p>Figure <a href="#fig:monthlySdPlot">5.5</a> shows the standard deviation of the half-hourly generation data and suggests that coal has the highest absolute variation in June 1998 which may correspond to a particular spike and/or a period of very heavy use. Coal is less variable in 2017 perhaps due to the increased use of Gas.</p>
+<p>Figure <a href="#fig:monthlySdPlot">5.5</a> shows the standard deviation of the half-hourly generation data and suggests that coal has the highest absolute variation in June 1998 which may correspond to a particular spike and/or a period of very heavy use. Coal is less variable in 2018 perhaps due to the increased use of Gas.</p>
 <div class="figure"><span id="fig:monthlySdPlot"></span>
 <img src="nzElecGenTrends_files/figure-html/monthlySdPlot-1.png" alt="Monthly s.d. plot by fuel type" width="672" />
 <p class="caption">
@@ -889,14 +885,14 @@ Figure 5.6: Half-hourly profile plot by fuel type (sum)
 Figure 5.7: Half-hourly profile plot by fuel type (sum)
 </p>
 </div>
-<p>Repeat for 2017 only</p>
-<div class="figure"><span id="fig:sumProfilePoint2017"></span>
-<img src="nzElecGenTrends_files/figure-html/sumProfilePoint2017-1.png" alt="Half-hourly profile plot by fuel type (sum), 2017 only" width="672" />
+<p>Repeat for 2018 only</p>
+<div class="figure"><span id="fig:sumProfilePoint2018"></span>
+<img src="nzElecGenTrends_files/figure-html/sumProfilePoint2018-1.png" alt="Half-hourly profile plot by fuel type (sum), 2018 only" width="672" />
 <p class="caption">
-Figure 5.8: Half-hourly profile plot by fuel type (sum), 2017 only
+Figure 5.8: Half-hourly profile plot by fuel type (sum), 2018 only
 </p>
 </div>
-<p>Figures <a href="#fig:meanProfileCol">5.9</a> and <a href="#fig:meanProfilePoint">5.10</a> repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2017.</p>
+<p>Figures <a href="#fig:meanProfileCol">5.9</a> and <a href="#fig:meanProfilePoint">5.10</a> repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2018.</p>
 <div class="figure"><span id="fig:meanProfileCol"></span>
 <img src="nzElecGenTrends_files/figure-html/meanProfileCol-1.png" alt="Half-hourly profile plot by fuel type (mean)" width="672" />
 <p class="caption">
@@ -912,7 +908,7 @@ Figure 5.10: Half-hourly profile plot by fuel type (mean)
 </div>
 <div id="half-hourly-profiles-by-day-of-the-month" class="section level2">
 <h2><span class="header-section-number">5.4</span> Half hourly profiles by day of the month</h2>
-<p>The following plots show the profiles for each day of the month. Unfortunately due to the lack of wind generation in 1998 the colour scheme changes from 1998 to 2017.</p>
+<p>The following plots show the profiles for each day of the month. Unfortunately due to the lack of wind generation in 1998 the colour scheme changes from 1998 to 2018.</p>
 <blockquote>
 <p>To be fixed</p>
 </blockquote>
@@ -968,8 +964,8 @@ Figure 5.12: Half-hourly profile plot by fuel type
 </div>
 </div>
 </div>
-<div id="analysis-trends-1998---2017" class="section level1">
-<h1><span class="header-section-number">6</span> Analysis: Trends 1998 - 2017</h1>
+<div id="analysis-trends-1998---2018" class="section level1">
+<h1><span class="header-section-number">6</span> Analysis: Trends 1998 - 2018</h1>
 <p>Using full dataset for each day, month &amp; year.</p>
 <pre><code>## [1] &quot;Files loaded&quot;</code></pre>
 <pre><code>## [1] &quot;Loaded 23,046,850 rows of data&quot;</code></pre>
@@ -1112,7 +1108,7 @@ Figure 8.1: Huntly fuel sources
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">9</span> Runtime</h1>
-<p>Analysis completed in 511.58 seconds ( 8.53 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
+<p>Analysis completed in 626.39 seconds ( 10.44 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">10</span> R environment</h1>
