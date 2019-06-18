@@ -26,12 +26,12 @@ local <- 1 # set to 1 for local file storage (see below)
 refresh <- 0 # set to 1 to try to download all files even if we have them
 
 if(local){ # set data storage location
-  iDataPath <- path.expand("~/Data/NZ_EA_EMI/gridGen/raw/")
-  oDataPath <- path.expand("~/Data/NZ_EA_EMI/gridGen/processed/")
+  dataPath <- path.expand("~/Data/NZ_EA_EMI/gridGen/")
 } else {
-  iDataPath <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/EA_Generation_Data/raw/")
-  oDataPath <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/EA_Generation_Data/processed/")
+  dataPath <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/EA_Generation_Data/")
 }
+iDataPath <- path.expand(paste0(dataPath, "raw/"))
+oDataPath <- path.expand(paste0(dataPath, "/processed/monthly/"))
 
 rDataLoc <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/"
 years <- seq(1997, 2019, 1) # change these to restrict or extend the file search
@@ -52,7 +52,8 @@ getMeta <- function(dt){
   dt <- dt[, month := lubridate::month(rDate)]
   dt <- dt[,year := lubridate::year(rDate)]
   testDT <- dt[, .(nObs = .N,
-                   sumkWh = sum(as.numeric(kWh), na.rm = TRUE),
+                   sumMWh = sum(as.numeric(kWh/1000), na.rm = TRUE),
+                   meanMWh = mean(as.numeric(kWh/1000), na.rm = TRUE),
                    nFuels = uniqueN(Fuel_Code),
                    dateFrom = min(rDate),
                    dateTo = max(rDate),
@@ -128,25 +129,27 @@ for(y in years){
 figCaption <- paste0("EA Wholesale Generation data ", min(metaDT$dateFrom), " - ", max(metaDT$dateTo),
                      "\nData: ", oDataPath)
 
-makeCheckPlot <- function(dt,fillVar){
-  # makes a tile plot of month by year and fills colour by the indicator chosen
+makeCheckPlot <- function(dt,fillVar, myTitle, myKey){
+  # makes a tile plot of month by year and fills colour by the indicator chosen
   # serves as a data quality check
-  myPlot <- ggplot2::ggplot(dt, aes(x = as.factor(year), y = as.factor(month), fill = get(fillVar))) +
+  myPlot <- ggplot2::ggplot(dt, aes(x = as.factor(year), y = as.factor(month), alpha = get(fillVar))) +
     geom_tile() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+    scale_alpha_continuous(name = myKey) +
     labs(x = "Year", y = "Month",
-         caption = figCaption,
-         title = paste0("Data check chart:", eval(fillVar))
-         )
-
-  ggplot2::ggsave(oDataPath,paste0(eval(fillVar),"Plot.pdf"))
-
+         caption = paste0(figCaption), # add parameterised caption
+         title = paste0("Check plot: ", myTitle)
+    ) 
+    
+  ggplot2::ggsave(paste0(dataPath,"checkPlots/EA_gridGen_", eval(fillVar), "_Plot.png"),myPlot)
   return(myPlot)
 }
 
-makeCheckPlot(metaDT, "nDays")
-makeCheckPlot(metaDT, "nObs")
-makeCheckPlot(metaDT, "sumkWh")
-makeCheckPlot(metaDT, "nFuels")
+makeCheckPlot(metaDT, "nDays", myTitle = "N days of data by month and year", myKey = "N days")
+makeCheckPlot(metaDT, "nObs", "N observations per month", "N obs")
+makeCheckPlot(metaDT, "sumMWh", "Sum of MWh across all sites per month", "MWh")
+makeCheckPlot(metaDT, "meanMWh", "Mean of half-hourly MWh per site by month", "MWh")
+makeCheckPlot(metaDT, "nFuels", "N different fuels used by month and year", "N fuels")
 
 # write out the meta data ----
 data.table::fwrite(metaDT, paste0(oDataPath, "metaDT.csv"))
