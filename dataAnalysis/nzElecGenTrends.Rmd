@@ -40,11 +40,11 @@ loadLibraries(rmdLibs)
 
 
 # Local paramaters
-local <- 0 # set to 1 for local file storage (see below)
+local <- 1 # set to 1 for local file storage (see below)
 gcParams <- list() # list of patameters
 
 if(local){ # set data storage location
-  gcParams$wgenDataLoc <- path.expand("~/Data/NZGreenGrid/safe/ea/")
+  gcParams$wgenDataLoc <- path.expand("~/Data/NZ_EA_EMI/gridGen/raw/")
 } else {
   gcParams$dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/")
   gcParams$wgenDataLoc <- paste0(gcParams$dataLoc, "EA_Generation_Data/")
@@ -70,7 +70,7 @@ gcParams$circulationGenericRmd <- paste0(gcParams$repoLoc, "/includes/circulatio
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2018_, `r gcParams$pubLoc`.
+ * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2018_, University of Otago/University of Southampton: Dunedin.
 
 This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
 
@@ -80,8 +80,7 @@ This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
 
 ## Circulation
 
-```{r generic circulation, child=gcParams$circulationGenericRmd}
-```
+ * Public (CC-BY unless otherwise noted)
  
 ## Purpose
 
@@ -95,16 +94,13 @@ This report is intended to:
 
 ## History
 
-```{r generic history, child=gcParams$historyGenericRmd}
-```
- 
 Specific history of this code: 
 
- * https://github.com/CfSOtago/GREENGrid/tree/master/analysis/generation
+ * https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/nzElecGenTrends.Rmd
 
 ## Support
 
-```{r genric support, child=gcParams$supportGenericRmd}
+```{r generic support, child=gcParams$supportGenericRmd}
 ```
  
 
