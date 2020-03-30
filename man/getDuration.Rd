@@ -18,7 +18,7 @@ startTime <- proc.time()
    endTime <- proc.time()
    t <- endTime - startTime
 
-and returns a formrated extraction of seconds & minutes for use in feedback.
+   and returns a formrated extraction of seconds & minutes for use in feedback.
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}

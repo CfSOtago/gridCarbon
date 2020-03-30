@@ -12,13 +12,14 @@ Authors@R:
            role = c("aut"),
            email = "marilettelotter@gmail.com"))
 Description: Code here includes functions to:
-    - load, clean and save power generation data from the Electricty Authority
+    - load, clean and save electricity generation data from the Electricty Authority
     - conduct various analyses
 License: Apache License, Version 2.0, January 2004
 Imports: 
   data.table,
+  ggplot2,
   hms,
   lubridate
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 7.1.0

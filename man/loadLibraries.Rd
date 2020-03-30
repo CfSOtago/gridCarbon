@@ -20,7 +20,7 @@ Especially useful when running on virtual machines where package installation
   is not persistent (Like UoS sve). It will fail if the packages need to be
   installed but there is no internet access.
 
-NB: in R 'require' tries to load a package but throws a warning & moves on if it's not there
+  NB: in R 'require' tries to load a package but throws a warning & moves on if it's not there
   whereas 'library' throws an error if it can't load the package. Hence 'loadLibraries'
   https://stackoverflow.com/questions/5595512/what-is-the-difference-between-require-and-library
 }
