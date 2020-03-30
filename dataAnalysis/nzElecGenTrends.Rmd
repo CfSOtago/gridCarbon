@@ -1,5 +1,5 @@
 ---
-title: "NZ Electricity Generation Trends 1998-2018"
+title: "NZ Electricity Generation Trends 1998-2020"
 author: "Ben Anderson (b.anderson@soton.ac.uk `@dataknut`)"
 date: 'Last run at: `r Sys.time()`'
 output:
@@ -36,7 +36,7 @@ rmdLibs <- c("data.table", # data munching
              "knitr" # for kable
 )
 # load them
-loadLibraries(rmdLibs)
+gridCarbon::loadLibraries(rmdLibs)
 
 
 # Local paramaters
@@ -70,7 +70,7 @@ gcParams$circulationGenericRmd <- paste0(gcParams$repoLoc, "/includes/circulatio
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2018_, University of Otago/University of Southampton: Dunedin.
+ * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2020_, University of Otago/University of Southampton: Dunedin.
 
 This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
 
