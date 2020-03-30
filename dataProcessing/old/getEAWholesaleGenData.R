@@ -34,7 +34,7 @@ iDataPath <- path.expand(paste0(dataPath, "raw/"))
 oDataPath <- path.expand(paste0(dataPath, "/processed/monthly/"))
 
 rDataLoc <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/"
-years <- seq(1997, 2019, 1) # change these to restrict or extend the file search
+years <- seq(2018, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 # Local functions ----
