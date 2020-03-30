@@ -29,11 +29,12 @@ library(gridCarbon)
 # Packages needed in this .Rmd file ----
 rmdLibs <- c("data.table", # data munching
              "dplyr", # data munching
+             "drake",
              "ggplot2", # for fancy graphs
-             "readr", # writing to files
-             "skimr", # for skim
-             "Hmisc", # describe
-             "knitr" # for kable
+             "hms", # time stuff
+             "kableExtra", # fancy tables
+             "lubridate", # date & time stuff
+             "skimr" # for skim
 )
 # load them
 gridCarbon::loadLibraries(rmdLibs)
@@ -44,10 +45,10 @@ local <- 1 # set to 1 for local file storage (see below)
 gcParams <- list() # list of patameters
 
 if(local){ # set data storage location
-  gcParams$wgenDataLoc <- path.expand("~/Data/NZ_EA_EMI/gridGen/raw/")
+  gcParams$wgenDataLoc <- path.expand("~/Data/NZ_EA_EMI/gridGen/processed/yearly/")
 } else {
   gcParams$dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/")
-  gcParams$wgenDataLoc <- paste0(gcParams$dataLoc, "EA_Generation_Data/")
+  gcParams$wgenDataLoc <- paste0(gcParams$dataLoc, "EA_Generation_Data/processed/yearly/")
 }
 
 gcParams$genCaption <- paste0("Source: NZ Energy Authority",
@@ -118,95 +119,118 @@ Load the generation data from files stored in:
 
  * `r gcParams$wgenDataLoc`
  
-These have been [pre-downloaded and cleaned](https://github.com/CfSOtago/GREENGrid/tree/master/dataProcessing/ea) but could be pulled on the fly to be refreshed for other dates...
+These have been pre-downloaded and cleaned using [this code](https://github.com/CfSOtago/gridCarbon/tree/master/dataProcessing/) but could be pulled on the fly to be refreshed for other dates...
 
-```{r loadDataSample}
-filesToDateDT <- data.table::as.data.table(list.files(gcParams$wgenDataLoc, "long.csv.gz")) # get list of files already downloaded & converted to long form
+```{r loadData}
+# do this using drake so gets done once
 
-# for our purposes here we will just use Jun & Dec in 1998 & 2018
-filesToDateDT <- filesToDateDT[, c("year","month", "stub") := tstrsplit(V1, "_")]
-filesToLoadDT <- filesToDateDT[(year == 1998 | year == 2018) & (month == "06" | month == "12"), V1]
+loadData <- function(){
+  filesToDateDT <- data.table::as.data.table(list.files(gcParams$wgenDataLoc, ".csv.gz")) # get list of files already downloaded & converted to long form
+  
+  dt <- do.call(rbind,
+                       lapply(filesToDateDT[,V1],
+                              function(f)
+                                data.table::fread(paste0(gcParams$wgenDataLoc,f))
+                       ) # decodes .gz on the fly
+  )
+  return(dt) # large
+}
 
-
-sampleGenDT <- as.data.table(do.call(rbind,
-                               lapply(filesToLoadDT,
-                                      function(f)
-                                        readr::read_csv(paste0(gcParams$wgenDataLoc,f),
-                                                        progress = FALSE,
-                                                        col_types = cols()
-                                        ) # decodes .gz on the fly, requires readr, use the NULL col_types to suppress feedback
-                                      # https://blog.rstudio.org/2016/08/05/readr-1-0-0/
-                               )
+# > drake plan ----
+plan <- drake::drake_plan(
+  genData = loadData()
 )
-)
 
-# fix vars ----
-sampleGenDT <- sampleGenDT[, rTime := hms::as.hms(rTime)]
 
+# > run drake plan ----
+plan # test the plan
+make(plan) # run the plan, re-loading data if needed
+
+origGenDT <- drake::readd(genData)
+# fix vars here so we don't get forced to reload the data when we add new fixes
+origGenDT <- origGenDT[, rTime := hms::as_hms(rTime)]
+origGenDT <- origGenDT[, rDateTimeOrig := rDateTime] # just in case
+origGenDT <- origGenDT[, rDateTime := lubridate::as_datetime(rDateTime)]
+origGenDT <- origGenDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
+origGenDT <- origGenDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
+
+h <- head(origGenDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
+h
 print("Files loaded")
-print(paste0("Loaded ", tidyNum(nrow(sampleGenDT)), " rows of data"))
+message("Loaded ", tidyNum(nrow(origGenDT)), " rows of data")
 ```
 
-```{r finalSummary}
-Hmisc::describe(sampleGenDT, tabular=TRUE)
+```{r skimGenDT}
+h <- head(origGenDT)
+kableExtra::kable(h, caption = "First 6 rows of data")
+skimr::skim(origGenDT)
 ```
 
-Table \@ref(tab:finalSummary) sumarises the data. Notice that there are missing (NA) values in the kWh column. These are caused by periods 49 and 50:
+
+Table \@ref(tab:skimGenDT) sumarises the data. Notice that there are missing (NA) values in the kWh column. These are caused by periods 49 and 50:
 
 > "The data is presented by trading period, TP1, TP2, ... TP48. Trading period 1 starts at midnight, trading period 2 starts at 12:30am, trading period 3 starts at 1:00am, etc. Users of this data should be aware of daylight saving in New Zealand. On the day daylight saving commences there are only 46 trading periods and on the day it ends, there are 50." (https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/)
 
 So on 2 days of the year TP47 & TP48 do not exist and on the following days they are back and we also have TP49 & TP50. There are only two things in life worse than death & taxes: daylight saving time and time-zones.
 
-Daylight saving begins/ends in October and March so we carefully avoid this problem in this section by using June and December. However these TP are still present as labels in the Time_Period variable and so give NA kWh in the data as the following table (Table \@ref(tab:exploreNA)) and plot (Figure \@ref(fig:exploreNA)) of NA observations (only) by Fuel Type and month show.
+Daylight saving begins/ends in October and March and so these TPs should only show up twice a year. However, these TP are still present as labels in the Time_Period variable and so give NA kWh in the data as the following table (Table \@ref(tab:exploreNA)) and plot (Figure \@ref(fig:exploreNA)) of NA observations (only) by Fuel Type and month show. The plot also shows that there are unexplained NA in other months and periods.
 
 ```{r exploreNA, fig.cap="Plot showing presence of NA observations by time period and Fuel Type"}
-dt <- sampleGenDT[, .(mean = mean(kWh)), keyby = .(Time_Period)]
-kable(caption = "Mean kWh by Time Period", dt)
+naDT <- origGenDT[is.na(kWh)]
 
-sampleGenDT <- sampleGenDT[, kWhisNA := ifelse(is.na(kWh), "NA", "Not NA")] # label NAs
+t <- table( naDT$month,naDT$Time_Period)
 
-naPlotDT <- sampleGenDT[, .(nObs = .N), keyby = .(year, month, Time_Period, Fuel_Code, kWhisNA)] # table them for plot
+kableExtra::kable(t, caption = "NA kWh by month and TP") %>%
+  kable_styling()
+
+origGenDT[, kWhisNA := ifelse(is.na(kWh), "NA", "Not NA")] # label NAs
+
+naPlotDT <- origGenDT[, .(nObs = .N), keyby = .(year, month, Time_Period, Fuel_Code, kWhisNA)] # table them for plot
 
 # plot the NAs by Time_Period to look for patterns
-ggplot(naPlotDT[kWhisNA == "NA"], aes(x = month, y = Time_Period, fill = nObs)) + 
+p <- ggplot(naPlotDT[kWhisNA == "NA"], aes(x = month, y = Time_Period, fill = nObs)) + 
   geom_tile() +
-  facet_grid(year  ~ Fuel_Code) +
-      labs(x = "Month", title = "NA kWh values only",
-         caption = gcParams$figCaption
+  scale_fill_continuous(low = "green", high = "red") +
+  facet_grid(.  ~ Fuel_Code) +
+      labs(x = "Month",
+         caption = gcParams$genCaption
     )
+p
 ```
 
-In order to avoid future confusion and to save a lot of error checking we therefore remove NA kWh (i.e. TP49 & TP 50) from the dataset.
+In order to avoid future confusion and to save a lot of error checking we therefore remove NA kWh (i.e. TP49 & TP 50 and a few other data points) from the dataset.
 
 ```{r remove TP49-50, echo = TRUE}
 # N rows before:
-nrow(sampleGenDT)
+nrow(origGenDT)
 # N time periods before:
-uniqueN(sampleGenDT$Time_Period)
+uniqueN(origGenDT$Time_Period)
 # remove NA
-sampleGenDT <- sampleGenDT[!is.na(kWh)]
+genDT <- origGenDT[!is.na(kWh)]
 # N rows after
-nrow(sampleGenDT)
+nrow(genDT)
 # N time periods after:
-uniqueN(sampleGenDT$Time_Period)
+uniqueN(genDT$Time_Period)
 ```
 
-# Analysis: 1998 & 2018 Comparison
+# Analysis: 1999 & 2019 Comparison
 
 ## Distribution tests
 
-Table \@ref(tab:boxPlot) shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1998 although far less so in 2018. This is also supported by the maximum values which show coal as the 'peaked' energy producer in 1998 although this has faded by 2018 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were [mothballed/retired](https://en.wikipedia.org/wiki/Huntly_Power_Station) during this period.
+Table \@ref(tab:boxPlot) shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1999 although far less so in 2019. This is also supported by the maximum values which show coal as the 'peaked' energy producer in 1999 although this has faded by 2019 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were [mothballed/retired](https://en.wikipedia.org/wiki/Huntly_Power_Station) during this period.
 
-Figure \@ref(fig:boxPlot) shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1998, non-use in December 1998 but re-use in December 2018 where there appears little differnece between winter & summer use for most fuels. We also see the emergence of wind by 2018.
+Figure \@ref(fig:boxPlot) shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1999, non-use in December 1999 but re-use in December 2019 where there appears little difference between winter & summer use for most fuels. We also see the emergence of wind by 2019.
 
 ```{r boxPlot, fig.cap = "Box plot of energy produced by all fuels"}
+sampleGenDT <- genDT[year == 1999 | year == 2019]
 t <- sampleGenDT[, .(sumMWh = sum(kWh)/1000,
                meanMWh = mean(kWh)/1000,
            medianMWh =median(kWh)/1000,
            minMWh = min(kWh)/1000,
            maxMWh = max(kWh)/1000,
            sdMWh = sd(kWh)/1000), keyby = .(year, Fuel_Code)]
-kable(caption = "Summary of energy produced by all fuels", t, digits = 2)
+kableExtra::kable(caption = "Summary of energy produced by all fuels", t, digits = 2) %>%
+  kable_styling()
 
 ggplot(sampleGenDT, aes(x = Fuel_Code, y = kWh/1000, colour = Fuel_Code)) + 
   geom_boxplot() + 
@@ -215,7 +239,7 @@ ggplot(sampleGenDT, aes(x = Fuel_Code, y = kWh/1000, colour = Fuel_Code)) +
   labs(x = "Fuel", y = "MWh")
 ```
 
-Figure \@ref(fig:overallHistograms) visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1998 but not 2018 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2018 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.
+Figure \@ref(fig:overallHistograms) visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1999 but not 2019 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2019 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.
 
 ```{r overallHistograms, fig.cap = "Overall energy production histrograms by fuel type"}
 ggplot(sampleGenDT, aes(x = kWh/1000, fill = Fuel_Code), alpha = 0.2) +
@@ -237,12 +261,12 @@ plotDT <- sampleGenDT[,
                   mediankWh = median(kWh, na.rm = TRUE),
                   sdkWh = sd(kWh, na.rm = TRUE),
                   nObs = .N),
-                keyby = .(month, year, Fuel_Code)]
+                keyby = .(rMonth, year, Fuel_Code)]
 
 # create a function to produce identical plots
 makeMonthlyStackedPlot <- function(dt, yVar, yLabel){
   #print(paste0("Making monthly plot for ", eval(yVar), " with y label ", eval(yLabel)))
-  ggplot(plotDT, aes(x = as.factor(month), y = get(yVar)/1000000, fill = Fuel_Code)) +
+  ggplot(plotDT, aes(x = rMonth, y = get(yVar)/1000000, fill = Fuel_Code)) +
     geom_col() + # stack = default
     facet_grid(. ~ year) +
     labs(caption = gcParams$figCaption, y = eval(yLabel), x = "Month") +
@@ -251,7 +275,7 @@ makeMonthlyStackedPlot <- function(dt, yVar, yLabel){
 
 makeMonthlyDodgedPlot <- function(dt, yVar, yLabel){
   #print(paste0("Making monthly plot for ", eval(yVar), " with y label ", eval(yLabel)))
-  ggplot(plotDT, aes(x = as.factor(month), y = get(yVar)/1000000, fill = Fuel_Code)) +
+  ggplot(plotDT, aes(x = rMonth, y = get(yVar)/1000000, fill = Fuel_Code)) +
     geom_col(position = "dodge") +
     facet_grid(. ~ year) +
     labs(caption = gcParams$figCaption, y = eval(yLabel), x = "Month") +
@@ -338,13 +362,13 @@ makeHalfHourlyColPlot(plotDT, "sumkWh", "Sum GWh per half hour across all days o
 makeHalfHourlyPointPlot(plotDT, "sumkWh", "Sum GWh per half hour across all days of the month")
 ```
 
-Repeat for 2018 only
+Repeat for 2019 only
 
 ```{r sumProfilePoint2018, fig.height=6, fig.cap="Half-hourly profile plot by fuel type (sum), 2018 only"}
-makeHalfHourlyPointPlot(plotDT[year == 2018], "sumkWh", "Sum GWh per half hour across all days of the month")
+makeHalfHourlyPointPlot(plotDT[year == 2019], "sumkWh", "Sum GWh per half hour across all days of the month")
 ```
 
-Figures \@ref(fig:meanProfileCol) and \@ref(fig:meanProfilePoint) repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2018.
+Figures \@ref(fig:meanProfileCol) and \@ref(fig:meanProfilePoint) repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2019.
 
 ```{r meanProfileCol,fig.height=6,fig.cap= "Half-hourly profile plot by fuel type (mean)"}
 makeHalfHourlyColPlot(plotDT, "meankWh", "Mean GWh per half hour")
@@ -356,28 +380,23 @@ makeHalfHourlyPointPlot(plotDT, "meankWh", "Mean GWh per half hour across all da
 
 ## Half hourly profiles by day of the month
 
-The following plots show the profiles for each day of the month. Unfortunately due to the lack of wind generation in 1998 the colour scheme changes from 1998 to 2018. 
-
-> To be fixed
-
-Nevertheless the differences between the compositions of each half-hour can be seen.
+The following plots show the profiles for each day of the month.
 
 ```{r sumDailyProfilePoint,fig.cap= "Half-hourly profile plot by fuel type"}
-plotDT <- sampleGenDT[, .(sumkWh = sum(kWh)), by = .(year, month, Fuel_Code, rDateTime)]
+plotDT <- sampleGenDT[, .(sumkWh = sum(kWh)), by = .(year, rMonth, Fuel_Code, rTime)]
   
 makePointProfilePlot <- function(dt, title){
   #print(paste0("Making plot ", title))
-  ggplot(dt, aes(x = rDateTime, y = sumkWh/1000000, colour = Fuel_Code)) +
+  ggplot(dt, aes(x = rTime, y = sumkWh/1000000, colour = Fuel_Code)) +
     geom_point(alpha=0.4) +
     labs(title = title, caption = gcParams$figCaption, y = "Sum GWh per half hour", x = "Date") +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
 }
 
-makePointProfilePlot(plotDT[year == 1998 & month == 6], "June 1998")
-makePointProfilePlot(plotDT[year == 1998 & month == 12], "December 1998")
-makePointProfilePlot(plotDT[year == 2018 & month == 6], "June 2018")
-makePointProfilePlot(plotDT[year == 2018 & month == 12], "December 2018")
+makePointProfilePlot(plotDT[(year == 1999 | year == 2019) &
+                              (rMonth == "Dec" | rMonth == "Jun")], 
+                     "June/December 1999/2019") + facet_grid(rMonth ~ year)
 ```
 
 Figure \@ref(fig:sumDailyProfilePoint) shows the total as a point plot while Figure \@ref(fig:sumDailyProfileCol) shows the total as stacked column plots to show the proportion of energy generation produced by each fuel.
@@ -385,74 +404,24 @@ Figure \@ref(fig:sumDailyProfilePoint) shows the total as a point plot while Fig
 ```{r sumDailyProfileCol,fig.cap= "Half-hourly profile plot by fuel type"}
 makeColProfilePlot <- function(dt, title){
   myPlot <- ggplot(dt, 
-                   aes(x = rDateTime, y = sumkWh/1000, fill = Fuel_Code)) +
+                   aes(x = rTime, y = sumkWh/1000, fill = Fuel_Code)) +
     geom_col(alpha = 0.4) +
-    labs(title = title, caption = gcParams$figCaption, y = "MWh per half hour", x = "Date") +
+    labs(title = title, caption = gcParams$figCaption, y = "MWh per half hour", x = "Time") +
     theme(legend.title=element_blank(), legend.position="bottom") +
     guides(colour = guide_legend(override.aes = list(alpha = 1))) # resets alpha so we can see the legend
   return(myPlot)
 }
 
-# Why doesn't this work??
-# for(y in years){
-#   for(m in months){
-#     makeProfilePlot(sampleGenDT[year == y & month == m], paste0(m, "", y))
-#   }
-# }
-
-makeColProfilePlot(plotDT[year == 1998 & month == 6], "June 1998")
-makeColProfilePlot(plotDT[year == 1998 & month == 12], "December 1998")
-makeColProfilePlot(plotDT[year == 2018 & month == 6], "June 2018")
-makeColProfilePlot(plotDT[year == 2018 & month == 12], "December 2018")
+makeColProfilePlot(plotDT[(year == 1999 | year == 2019) &
+                              (rMonth == "Dec" | rMonth == "Jun")], 
+                     "June/December 1999/2019") + facet_grid(rMonth ~ year)
 ```
 
+XX works to here
 
 # Analysis: Trends 1998 - 2018
 
 Using full dataset for each day, month & year.
-
-```{r loadAllData, include = FALSE}
-# could take a while
-
-# get the list of all files
-allFiles <- filesToDateDT[, V1]
-
-allGenDT <- as.data.table(do.call(rbind,
-                               lapply(allFiles,
-                                      function(f)
-                                        readr::read_csv(paste0(gcParams$wgenDataLoc,f),
-                                                        progress = FALSE,
-                                                        col_types = cols()
-                                        ) # decodes .gz on the fly, requires readr, use the NULL col_types to suppress feedback
-                                      # https://blog.rstudio.org/2016/08/05/readr-1-0-0/
-                               )
-)
-)
-
-# fix vars ----
-allGenDT <- allGenDT[, rTime := hms::as.hms(rTime)]
-```
-
-```{r allDataFb}
-print("Files loaded")
-print(paste0("Loaded ", tidyNum(nrow(allGenDT)), " rows of data"))
-```
-
-
-As above, in order to avoid future confusion and to save a lot of error checking we again remove NA kWh (i.e. TP49 & TP 50) from the dataset.
-
-```{r remove TP49-50 from all, echo = TRUE}
-# N rows before:
-nrow(allGenDT)
-# N time periods before:
-uniqueN(allGenDT$Time_Period)
-# remove NA
-allGenDT <- allGenDT[!is.na(kWh)]
-# N rows after
-nrow(allGenDT)
-# N time periods after:
-uniqueN(allGenDT$Time_Period)
-```
 
 ## Trends over years
 
