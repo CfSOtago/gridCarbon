@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Electricty Authority - 404</title>
+    <style>
+        h1 {
+            color: #007dba;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            text-align: center;
+            font-size: 5vw;
+        }
+
+        h2 {
+            color: #999;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 100%;
+            text-align: center;
+            font-size: 2vw;
+        }
+
+        .img-404 {
+            background-image: url(https://www.emi.ea.govt.nz/Content/Images/404.png);
+            background-size: contain;
+            width: 100%;
+            min-height: 150px;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            margin:34px auto;
+        }
+
+        .hm-link {
+            display: block;
+            width: 300px;
+            background-image: url(https://www.emi.ea.govt.nz/Content/Images/logo.svg);
+            background-repeat: no-repeat;
+            background-size: contain;
+            height: 100px;
+            margin:34px auto;
+        }
+
+        @media (max-width:767px) {
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .hm-link {
+                height: 70px;
+            }
+
+            .img-404 {
+                background-size: 180%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="hm-link" href="https://www.emi.ea.govt.nz/"></a>
+    <h1>404: Page not found</h1>
+    <h2>This page does not exist</h2>
+    <div class="img-404"></div>
+
+</body>
+</html>
+
