@@ -1,6 +1,11 @@
 ---
-title: "NZ Electricity Generation Trends 1998-2020"
-author: "Ben Anderson (b.anderson@soton.ac.uk `@dataknut`)"
+params:
+  subtitle: ""
+  title: ""
+  authors: ""
+title: '`r params$title`'
+subtitle: '`r params$subtitle`'
+author: '`r params$authors`'
 date: 'Last run at: `r Sys.time()`'
 output:
   bookdown::html_document2:
@@ -9,7 +14,7 @@ output:
     toc_float: yes
   bookdown::pdf_document2:
       toc: yes
-bibliography: '`r path.expand("~/bibliography.bib")`'
+bibliography: '`r path.expand(paste0(here::here(),"/bibliography.bib"))`'
 ---
 
 ```{r knitrSetup, include=FALSE}
@@ -64,9 +69,9 @@ localParams$circulationGenericRmd <- paste0(localParams$repoLoc, "/includes/circ
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r lubridate::year(Sys.Date())`) _NZ Electricity Generation Trends 1998-2020_, University of Otago/University of Southampton: Dunedin.
+  * `r params$authors` (`r lubridate::year(today())`) _`r params$title`: `r params$subtitle`_, Dunedin: University of Otago.
 
-This work is (c) `r lubridate::year(Sys.Date())` the University of Southampton.
+This work is (c) `r lubridate::year(today())` the the University of Otago
 
 \newpage
 
@@ -141,11 +146,11 @@ make(plan) # run the plan, re-loading data if needed
 
 origGenDT <- drake::readd(genData)
 # fix vars here so we don't get forced to reload the data when we add new fixes
-origGenDT <- origGenDT[, rTime := hms::as_hms(rTime)]
-origGenDT <- origGenDT[, rDateTimeOrig := rDateTime] # just in case
-origGenDT <- origGenDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-origGenDT <- origGenDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
-origGenDT <- origGenDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
+origGenDT[, rTime := hms::as_hms(rTime)]
+origGenDT[, rDateTimeOrig := rDateTime] # just in case
+origGenDT[, rDateTime := lubridate::as_datetime(rDateTime)]
+origGenDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
+origGenDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
 
 h <- head(origGenDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
 h
@@ -156,7 +161,7 @@ message("Loaded ", tidyNum(nrow(origGenDT)), " rows of data")
 ```{r skimGenDT}
 h <- head(origGenDT)
 kableExtra::kable(h, caption = "First 6 rows of data")
-skimr::skim(origGenDT)
+
 ```
 
 
@@ -410,9 +415,8 @@ makeColProfilePlot(plotDT[(year == 1999 | year == 2019) &
                      "June/December 1999/2019") + facet_grid(rMonth ~ year)
 ```
 
-XX works to here
 
-# Analysis: Trends 1998 - 2018
+# Analysis: Trends 1999 - 2019
 
 Using full dataset for each day, month & year.
 
@@ -432,8 +436,8 @@ Figure \ref(fig:monthlySOI) shows the monthly El Niño Southern Oscillation Inde
 
 ```{r monthlySOI, fig.cap="Monthly Southern Oscillation"}
 
-soFile <- paste0(localParams$dataLoc,"mfe/mfe-monthly-el-nino-southern-oscillation-index-19862016/monthly-el-nino-southern-oscillation-index-19862016.csv")
-monthlySODT <- data.table::as.data.table(readr::read_csv(soFile))
+soFile <- paste0(gcParams$GreenGrid,"/externalData/mfe/mfe-monthly-el-nino-southern-oscillation-index-19862016/monthly-el-nino-southern-oscillation-index-19862016.csv")
+monthlySODT <- data.table::fread(soFile)
 
 head(monthlySODT)
 
@@ -482,7 +486,7 @@ ggplot(yearlySODT, aes(x = as.integer(rYear), y = meanSOI)) +
 ## Yearly generation trends
 
 ```{r yearly summary}
-yearlyPlotDT <- allGenDT[,
+yearlyPlotDT <- genDT[,
                 .(sumGWh = sum(kWh, na.rm = TRUE)/1000000,
                   meankWh = mean(kWh, na.rm = TRUE),
                   mediankWh = median(kWh, na.rm = TRUE),
@@ -587,22 +591,26 @@ If we consider the relationship between generation and the SOI at the yearly lev
 
 ```{r yearlyGenSOI, fig.cap="Yearly generation values by fuel vs yearly SOI"}
 #summary(plotDT)
-yearlyPlotDT <- yearlyPlotDT[, rYear := as.integer(year)]
+yearlyPlotDT[, rYear := as.integer(year)]
 setkey(yearlyPlotDT, rYear)
-yearlySODT <- yearlySODT[, rYear := as.integer(rYear)]
+yearlySODT[, rYear := as.integer(rYear)]
 setkey(yearlySODT, rYear)
 yearlyPlotDT <- yearlyPlotDT[yearlySODT]
 #summary(yearlyPlotDT)
 
 # exclude 1997 as missing data
-ggplot(yearlyPlotDT[!is.na(Fuel_Code) & rYear != 1997], aes(x = sumGWh, y = meanSOI)) +
-  geom_point() +
+library("viridis")
+p <- ggplot(yearlyPlotDT[!is.na(Fuel_Code) & rYear != 1997], aes(x = sumGWh, y = meanSOI)) +
+  geom_point(aes(colour = rYear)) +
+  scale_colour_viridis() +
+  theme(legend.position="bottom") +
   geom_smooth(method = "lm") +
   geom_hline(yintercept = 0) +
   labs(x = "Total GWh",
        y = "Monthly El Niño Southern Oscillation Index, 1986–2016",
        caption = localParams$jointCaption) +
-  facet_wrap(~Fuel_Code, ncol = 4, scales = "free")
+  facet_wrap(~Fuel_Code, ncol = 4, scales = "free") 
+p
 ```
 
 
@@ -611,13 +619,13 @@ ggplot(yearlyPlotDT[!is.na(Fuel_Code) & rYear != 1997], aes(x = sumGWh, y = mean
 This section uses monthly aggregates.
 
 ```{r monthlyTotalPlotPoint, fig.height = 8, fig.cap="Yearly total plot by fuel type"}
-allGenDT <- allGenDT[, dateChar := paste0(lubridate::year(rDate),
+genDT[, dateChar := paste0(lubridate::year(rDate),
                                            "-",
                                            lubridate::month(rDate),
                                            "-01")]
-allGenDT <- allGenDT[, rMonth := lubridate::ymd(dateChar) # <- set to 1st of the month
+genDT[, rMonth := lubridate::ymd(dateChar) # <- set to 1st of the month
                            ]
-monthlyPlotDT <- allGenDT[,
+monthlyPlotDT <- genDT[,
                 .(sumGWh = sum(kWh, na.rm = TRUE)/1000000,
                   meankWh = mean(kWh, na.rm = TRUE),
                   mediankWh = median(kWh, na.rm = TRUE),
@@ -752,8 +760,11 @@ monthlyPlotDT <- monthlyPlotDT[monthlySODT]
 
 
 # exclude 1997 as missing data
+monthlyPlotDT[, rYear := as.integer(rYear)]
 ggplot(monthlyPlotDT[!is.na(Fuel_Code) & rYear != 1997], aes(x = sumGWh, y = Southern_oscillation_index)) +
-  geom_point() +
+  geom_point(aes(colour = rYear)) +
+  scale_colour_viridis() +
+  theme(legend.position="bottom") +
   geom_smooth(method = "lm") +
   geom_hline(yintercept = 0) +
   labs(x = "Monthly GWh",
@@ -771,7 +782,7 @@ Figures \@ref(fig:dailyTotalPlotPoint) and \@ref(fig:dailyTotalPlotCol) show the
  * https://en.wikipedia.org/wiki/Huntly_Power_Station
 
 ```{r dailyTotalPlotPoint, fig.height = 8, fig.cap="Yearly total plot by fuel type"}
-dailyPlotDT <- allGenDT[,
+dailyPlotDT <- genDT[,
                 .(sumGWh = sum(kWh, na.rm = TRUE)/1000000,
                   meankWh = mean(kWh, na.rm = TRUE),
                   mediankWh = median(kWh, na.rm = TRUE),
@@ -779,15 +790,17 @@ dailyPlotDT <- allGenDT[,
                   nObs = .N),
                 keyby = .(rDate, Fuel_Code)]
 
-dateLims <- as.Date(c('1998-01-01','2018-12-01')) # force restriction which also ensures labels are at month 6 & 12 :-)
+dateLims <- as.Date(c('1998-01-01','2020-01-01')) # force restriction which also ensures labels are at month 6 & 12 :-)
 myTitle <- "Total daily New Zealand electricity generation by fuel source 1998-2018"
 
 # step plot
+dailyPlotDT[, rDate := as.Date(rDate)] # just to be sure
 myPlot <- makePlotStep(dailyPlotDT, xVar = "rDate", yVar = "sumGWh", xLabel = "Year", yLabel = "Total daily GWh")
 
 # add formats for scales etc
 myPlot <- myPlot +
-  scale_x_date(date_labels = "%b %Y", date_breaks = "6 months", limits = dateLims) +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "6 months") +
+  xlim(dateLims) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 0.5)) +
   labs(title = myTitle)
 
@@ -816,6 +829,21 @@ here
 # Conclusions
 go here
 
+# Annex
+
+## Data description
+
+### Generation data
+
+```{r skimOrig}
+skimr::skim(origGenDT)
+```
+
+### SOI data
+
+```{r skimSOI}
+skimr::skim(monthlySODT)
+```
 ## Data issues
 
 ### Huntly 1-4 Fuel source
