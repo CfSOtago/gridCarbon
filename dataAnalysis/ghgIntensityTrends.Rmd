@@ -6,7 +6,7 @@ params:
 title: '`r params$title`'
 subtitle: '`r params$subtitle`'
 author: '`r params$authors`'
-date: 'Last run at: `r getRunDateTime()`'
+date: 'Last run at: `r Sys.time()`'
 output:
   bookdown::html_document2:
     fig_caption: yes
@@ -39,7 +39,7 @@ startTime <- proc.time()
 # Local parameters ----
 b2Kb <- 1024 #http://whatsabyte.com/P1/byteconverter.htm
 b2Mb <- 1048576
-plotLoc <- paste0(repoParams$repoLoc, "/docs/plots/") # where to put the plots
+plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
 
 library(gridCarbon)
 # Packages used in the report ----
@@ -49,9 +49,7 @@ rmdLibs <- c("ggplot2", # plots
           )
 gridCarbon::loadLibraries(rmdLibs)
 
-# Local parameters
-
-doSkim <- 1 # set to 1 to get skimmed tables in Data Annex (takes time)
+# Local parameters ----
 
 # Local functions ----
 ```
@@ -62,7 +60,7 @@ doSkim <- 1 # set to 1 to get skimmed tables in Data Annex (takes time)
 
 ## Citation
 
-```{r citation, child=repoParams$citation}
+```{r citation, child=gcParams$citation}
 ```
 
 ## Report circulation
@@ -77,18 +75,18 @@ All code used to create this report is available from:
 
 ## License {#license}
 
-```{r ccby license, child=repoParams$licenseCCBY}
+```{r ccby license, child=gcParams$licenseCCBY}
 ```
 
 ## History
 
-```{r history, child=repoParams$history}
+```{r history, child=gcParams$history}
 ```
  * this [report's edit history](https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/)
  
 ## Support
 
-```{r generic support, child=repoParams$support}
+```{r generic support, child=gcParams$support}
 ```
  * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson);
  * The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)
@@ -97,7 +95,7 @@ All code used to create this report is available from:
 
 # Introduction
 
-Building on [@khan_analysis_2018], we are interested in GHG emissions from the NZ electricity generation over time. We are especially interested in how this might change during the NZ covid-19 lockdown period (`r myParams$lockDownStart` to `r myParams$lockDownEnd`).
+Building on [@khan_analysis_2018], we are interested in GHG emissions from the NZ electricity generation over time. We are especially interested in how this might change during the NZ covid-19 lockdown period (`r localParams$lockDownStart` to `r localParams$lockDownEnd`).
 
 # Load data
 
@@ -106,11 +104,22 @@ Building on [@khan_analysis_2018], we are interested in GHG emissions from the N
 Essentially 'grid' generation from major power stations of various kinds. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/` and pre-processed.
 
 ```{r testGrid}
+h <- head(allGridDT)
+
+kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
+  kable_styling()
 ```
 
 ## Embedded generation data
 
 Essentially 'non-grid' generation from solar photovoltaic and small scale wind. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
+
+```{r testEmbedded}
+h <- head(allEmbeddedDT)
+
+kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
+  kable_styling()
+```
 
 # General trends over time
 
@@ -121,13 +130,13 @@ Essentially 'non-grid' generation from solar photovoltaic and small scale wind. 
 ## Wholesale generation data ('grid')
 
 ```{r skimGrid}
-skimr::skim(gridGenDT)
+skimr::skim(allGridDT)
 ```
 
 ## Embedded generation data ('nongrid')
 
 ```{r skimNonGrid}
-skimr::skim(nonGridGenDT)
+skimr::skim(allEmbeddedDT)
 ```
 
 ## Conversion factors
