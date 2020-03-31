@@ -1,0 +1,164 @@
+---
+params:
+  subtitle: ""
+  title: ""
+  authors: ""
+title: '`r params$title`'
+subtitle: '`r params$subtitle`'
+author: '`r params$authors`'
+date: 'Last run at: `r getRunDateTime()`'
+output:
+  bookdown::html_document2:
+    fig_caption: yes
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    toc_float: TRUE
+  bookdown::pdf_document2:
+    fig_caption: yes
+    number_sections: yes
+  bookdown::word_document2:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    fig_width: 5
+always_allow_html: yes
+bibliography: '`r paste0(here::here(), "/bibliography.bib")`'
+---
+
+```{r knitrSetup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+```
+
+
+```{r codeSetup, include=FALSE}
+# Set start time ----
+startTime <- proc.time()
+# Local parameters ----
+b2Kb <- 1024 #http://whatsabyte.com/P1/byteconverter.htm
+b2Mb <- 1048576
+plotLoc <- paste0(repoParams$repoLoc, "/docs/plots/") # where to put the plots
+
+library(gridCarbon)
+# Packages used in the report ----
+rmdLibs <- c("ggplot2", # plots
+          "kableExtra", # fancy tables
+          "lubridate"
+          )
+gridCarbon::loadLibraries(rmdLibs)
+
+# Local parameters
+
+doSkim <- 1 # set to 1 to get skimmed tables in Data Annex (takes time)
+
+# Local functions ----
+```
+
+\newpage
+
+# About
+
+## Citation
+
+```{r citation, child=repoParams$citation}
+```
+
+## Report circulation
+
+ * Public – this report is intended for publication following EECA approval.
+
+## Code
+
+All code used to create this report is available from:
+
+ * https://github.com/CfSOtago/gridCarbon
+
+## License {#license}
+
+```{r ccby license, child=repoParams$licenseCCBY}
+```
+
+## History
+
+```{r history, child=repoParams$history}
+```
+ * this [report's edit history](https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/)
+ 
+## Support
+
+```{r generic support, child=repoParams$support}
+```
+ * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson);
+ * The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)
+ 
+\newpage
+
+# Introduction
+
+Building on [@khan_analysis_2018], we are interested in GHG emissions from the NZ electricity generation over time. We are especially interested in how this might change during the NZ covid-19 lockdown period (`r myParams$lockDownStart` to `r myParams$lockDownEnd`).
+
+# Load data
+
+## Wholesale generation data
+
+Essentially 'grid' generation from major power stations of various kinds. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/` and pre-processed.
+
+```{r testGrid}
+```
+
+## Embedded generation data
+
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
+
+# General trends over time
+
+# covid19 lockdown (March 2020)
+
+# Annexes
+
+## Wholesale generation data ('grid')
+
+```{r skimGrid}
+skimr::skim(gridGenDT)
+```
+
+## Embedded generation data ('nongrid')
+
+```{r skimNonGrid}
+skimr::skim(nonGridGenDT)
+```
+
+## Conversion factors
+
+
+# Runtime
+
+```{r check runtime, include=FALSE}
+t <- proc.time() - startTime
+elapsed <- t[[3]]
+```
+
+Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` minutes) using [knitr](https://cran.r-project.org/package=knitr) in [RStudio](http://www.rstudio.com) with `r R.version.string` running on `r R.version$platform`.
+
+# R environment
+
+## R packages used
+
+ * base R [@baseR]
+ * bookdown [@bookdown]
+ * data.table [@data.table]
+ * ggplot2 [@ggplot2]
+ * kableExtra [@kableExtra]
+ * knitr [@knitr]
+ * lubridate [@lubridate]
+ * rmarkdown [@rmarkdown]
+
+## Session info
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+
+# References
