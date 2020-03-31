@@ -9,7 +9,7 @@ makeReport <- function(f){
                                   subtitle = subtitle,
                                   authors = authors),
                     output_file = paste0(gcParams$repoLoc,"/docs/", title, "_",
-                                         subtitle, version, ".html")
+                                         subtitle, ".html")
   )
 }
 
