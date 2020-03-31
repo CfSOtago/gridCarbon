@@ -149,7 +149,8 @@ makeReport <- function(f){
                     params = list(title = title,
                                   subtitle = subtitle,
                                   authors = authors),
-                    output_file = paste0(repoParams$repoLoc,"/docs/partC_upscalingAdvice_v", version, ".html")
+                    output_file = paste0(repoParams$repoLoc,"/docs/", f, title,"_",
+                                         subtitle, version,".html")
   )
 }
 
@@ -157,14 +158,14 @@ makeReport <- function(f){
 
 # > Make report ----
 # >> yaml ----
-version <- "1.0_Final"
-title <- paste0("NZ GREEN Grid Household Electricity Demand Data")
-subtitle <- paste0("EECA Data Analysis (Part C) Upscaling Advice Report v", version)
+version <- "1.0"
+title <- paste0("NZ Electricity Generation")
+subtitle <- paste0("Data exploration v", version)
 authors <- "Ben Anderson"
 
 
 # >> run report ----
-rmdFile <- paste0(repoParams$repoLoc, "/reports/partC_upscalingAdvice/upscaling.Rmd")
+rmdFile <- paste0(gcParams$repoLoc, "/analysis/dataExplore.Rmd")
 makeReport(rmdFile)
 
 
