@@ -1,6 +1,6 @@
 # Get NZ Generation data: ----
 # This is:
-# > EA whoelsale generation data - https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/
+# > EA Wholesale generation data - https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/
 # > EA Embedded Generation data - https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation
 
 # - gets or refreshes the EA generation data
@@ -23,52 +23,176 @@ reqLibs <- c("data.table", # data munching
 gridCarbon::loadLibraries(reqLibs)
 
 # Parameters ----
-myParams <- list() # repo level params are in repoParams
+localParams <- list() # repo level params are in gcParams
 
-years <- seq(2020, 2020, 1) # change these to restrict or extend the file search
+years <- seq(2000, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
-local <- 1 # set to 1 for local file storage (see below)
 refresh <- 0 # set to 1 to try to download all files even if we already have them
 
-if(local){ # set data storage location.
-  myParams$dPath <- "~/Data/NZ_EA_EMI/"
-  myParams$embDataPath <- path.expand(paste0(myParams$dPath,"embeddedGen/"))
-  myParams$gridDataPath <- path.expand(paste0(myParams$dPath,"gridGen/"))
-} else {
-  myParams$dPath <- "/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/"
-  myParams$embDataPath <- path.expand(paste0(myParams$dPath,"EA_Embedded_Generation_Data/"))
-  myParams$gridDataPath <- path.expand(paste0(myParams$dPath,"EA_Generation_Data/"))
-}
-myParams$iEmbDataPath <- path.expand(paste0(myParams$embDataPath, "raw/"))
-myParams$oEmbDataPath <- path.expand(paste0(myParams$embDataPath, "/processed/monthly/"))
-myParams$iGridDataPath <- path.expand(paste0(myParams$gridDataPath, "raw/"))
-myParams$oGridDataPath <- path.expand(paste0(myParams$gridDataPath, "/processed/monthly/"))
+localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
+                                  "externalData/EA_Generation_Data/")
+localParams$nonGridDataLoc <- paste0(gcParams$GreenGrid, 
+                                     "externalData/EA_Embedded_Generation_Data/")
 
-myParams$embDataLoc <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation/"
-myParams$gridDataLoc <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/"
+localParams$embDataURL <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation/"
+localParams$gridDataURL <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/"
 
-
+localParams$iEmbDataPath <- path.expand(paste0(localParams$nonGridDataLoc, "raw/"))
+localParams$oEmbDataPath <- path.expand(paste0(localParams$nonGridDataLoc, "processed/monthly/"))
+localParams$iGridDataPath <- path.expand(paste0(localParams$gridDataLoc, "raw/"))
+localParams$oGridDataPath <- path.expand(paste0(localParams$gridDataLoc, "processed/monthly/"))
 
 # Local functions ----
-cleanGridEA <- function(df){
-  # takes a df, cleans & returns a dt
-  dt <- data.table::as.data.table(df) # make dt
-  dt <- gridCarbon::reshapeEAGenDT(dt) # make long
-  dt <- gridCarbon::setEAGenTimePeriod(dt) # set time periods to something intelligible as rTime
-  dt <- dt[, rDate := as.Date(Trading_date)] # fix the dates so R knows what they are
-  dt <- dt[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
-  return(dt)
+# data cleaning - used below
+cleanGridEA <- function(dt){
+  # cleans & returns a dt
+  dtl <- gridCarbon::reshapeGenDT(dt) # make long
+  dtl <- gridCarbon::setGridGenTimePeriod(dtl) # set time periods to something intelligible as rTime
+  dtl[, rDate := as.Date(Trading_date)] # fix the dates so R knows what they are
+  dtl[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
+  # there will be parse errors in the above due to TP49 & TP50
+  table(dtl[is.na(rDateTime)]$Time_Period)
+  return(dtl)
 }
 # these need to vary slightly from the EA wholesale data :-(
-cleanEmbEA <- function(df){
-  # takes a df, cleans & returns a dt
-  dt <- data.table::as.data.table(df) # make dt
-  dt <- gridCarbon::reshapeEAEmbeddedGenDT(dt) # make long
-  dt <- gridCarbon::setEAGenTimePeriod(dt) # set time periods to something intelligible as rTime
-  dt <- dt[, rDate := lubridate::dmy(Trading_date)] # fix the dates so R knows what they are
-  dt <- dt[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
-  return(dt)
+cleanEmbEA <- function(dt){
+  # cleans & returns a long form dt
+  dtl <- gridCarbon::reshapeEmbeddedGenDT(dt) # make long
+  dtl <- gridCarbon::setEmbeddedGenTimePeriod(dtl) # set time periods to something intelligible as rTime
+  dtl[, rDate := lubridate::dmy(Trading_date)] # fix the dates so R knows what they are
+  dtl[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
+  # there will be parse errors in the above due to TP49 & TP50
+  table(dtl[is.na(rDateTime)]$Time_Period)
+  return(dtl)
+}
+
+getEmbData <- function(years,months){
+  message("Embedded Gen: Checking what we have already...")
+  filesToDateDT <- data.table::as.data.table(list.files(localParams$iEmbDataPath)) # get list of files already downloaded
+  metaDT <- data.table::data.table() # stats collector
+  
+  for(y in years){
+    for(mo in months){
+      # construct the filename
+      if(nchar(mo) == 1){
+        # need to add 0 as prefix
+        m <- paste0("0", mo)
+      } else {
+        m <- mo
+      }
+      lfName <- paste0(y,"_", m,"_Embedded_generation.csv") # for ease of future file filtering
+      rfName <- paste0(y, m,"_Embedded_generation.csv")
+      print(paste0("Checking ", lfName))
+      test <- filesToDateDT[V1 %like% lfName] # should catch .csv.gz too
+      if(nrow(test) > 0 & refresh == 0){
+        # Already got it & we don't want to refresh so skip
+        print(paste0("Already have ", lfName, ", loading from local..."))
+        # Load so we can update meta
+        #df <- readr::read_csv(paste0(localParams$iEmbDataPath, lfName))
+        dt <- data.table::fread(paste0(localParams$iEmbDataPath, lfName))
+        dt <- cleanEmbEA(dt) # clean up to a dt, TP49 & TP50 will fail to parse
+        # print(summary(dt))
+        testDT <- getEmbMeta(dt) # get metaData
+        print(head(testDT))
+        testDT <- testDT[, source := lfName]
+        metaDT <- rbind(metaDT, testDT)
+        testDT <- NULL
+      } else {
+        # Get it
+        rFile <- paste0(localParams$embDataURL,rfName)
+        print(paste0("We don't have or need to refresh ", lfName))
+        # use curl function to catch errors
+        # currently this breaks if no net - we need to catch that error too!
+        print(paste0("Trying to download ", rFile))
+        req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
+        if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
+          #df <- readr::read_csv(req$content)
+          dt <- data.table::fread(req$content)
+          print("File downloaded successfully, saving it")
+          data.table::fwrite(dt, paste0(localParams$iEmbDataPath, lfName))
+          dt <- cleanEmbEA(dt) # clean up to a dt
+          testDT <- getEmbMeta(dt) # get metaData
+          testDT <- testDT[, source := rfName]
+          metaDT <- rbind(metaDT, testDT)
+          print("Converted to long form, saving it")
+          lfName <- paste0(y,"_",m,"_Embedded_generation_long.csv")
+          data.table::fwrite(dt, paste0(localParams$oEmbDataPath, lfName))
+          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$oEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed it")
+        } else {
+          print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
+        }
+      }
+    }
+  }
+  # write out the meta data ----
+  data.table::fwrite(metaDT, paste0(localParams$oEmbDataPath, "metaDT.csv"))
+  
+  # remove the temp file
+  file.remove("temp.csv")
+  return(metaDT)
+}
+
+getGridData <- function(years, months){
+  message("Checking what we have already...")
+  filesToDateDT <- data.table::as.data.table(list.files(localParams$iGridDataPath)) # get list of files already downloaded
+  metaDT <- data.table::data.table() # stats collector
+  for(y in years){
+    for(month in months){
+      # construct the filename
+      if(nchar(month) == 1){
+        # need to add 0 as prefix
+        m <- paste0("0", month)
+      } else {
+        m <- month
+      }
+      lfName <- paste0(y,"_", m,"_Generation_MD.csv") # for ease of future file filtering
+      rfName <- paste0(y, m,"_Generation_MD.csv")
+      print(paste0("Checking ", lfName))
+      test <- filesToDateDT[V1 %like% lfName] #should catch .csv.gz too
+      if(nrow(test) > 0 & refresh == 0){
+        # Already got it & we don't want to refresh so skip
+        print(paste0("Already have ", lfName, ", loading from local..."))
+        # Load so we can update meta
+        dt <- data.table::fread(paste0(localParams$iGridDataPath, lfName)) # this loop wants the raw data
+        # should probably change this so it doesn't need to run over _all_ the files every time
+        dt <- cleanGridEA(dt) # clean up to a dt - fixes dateTimes etc
+        print(summary(dt))
+        testDT <- getGridMeta(dt) # get metaData
+        print(head(testDT))
+        testDT <- testDT[, source := lfName]
+        metaDT <- rbind(metaDT, testDT)
+        testDT <- NULL
+      } else {
+        # Get it
+        rFile <- paste0(localParams$gridDataURL,rfName)
+        print(paste0("We don't have or need to refresh ", lfName))
+        # use curl function to catch errors
+        print(paste0("Trying to download ", rFile))
+        req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
+        if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
+          dt <- data.table::fread(req$content)
+          print("File downloaded successfully, saving it")
+          data.table::fwrite(dt, paste0(localParams$iGridDataPath, lfName))
+          dt <- cleanGridEA(dt) # clean up to a dt - this does all the processing
+          testDT <- getGridMeta(dt) # get metaData
+          testDT <- testDT[, source := rfName]
+          metaDT <- rbind(metaDT, testDT)
+          print("Converted to long form, saving it")
+          lfName <- paste0(y,"_",m,"_Generation_MD_long.csv")
+          data.table::fwrite(dt, paste0(localParams$oGridDataPath, lfName))
+          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$oGridDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed it")
+        } else {
+          print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
+        }
+      }
+    }
+  }
+  return(metaDT)
 }
 
 getGridMeta <- function(dt){
@@ -99,137 +223,13 @@ getEmbMeta <- function(dt){
   return(testDT)
 }
 
-
-getEmbData <- function(years,months){
-  message("Checking what we have already...")
-  filesToDateDT <- data.table::as.data.table(list.files(myParams$iEmbDataPath)) # get list of files already downloaded
-  metaDT <- data.table::data.table() # stats collector
-  
-  for(y in years){
-    for(month in months){
-      # construct the filename
-      if(nchar(month) == 1){
-        # need to add 0 as prefix
-        m <- paste0("0", month)
-      } else {
-        m <- month
-      }
-      lfName <- paste0(y,"_", m,"_Embedded_generation.csv") # for ease of future file filtering
-      rfName <- paste0(y, m,"_Embedded_generation.csv")
-      print(paste0("Checking ", lfName))
-      test <- filesToDateDT[V1 %like% lfName] # should catch .csv.gz too
-      if(nrow(test) > 0 & refresh == 0){
-        # Already got it & we don't want to refresh so skip
-        print(paste0("Already have ", lfName, ", loading from local..."))
-        # Load so we can update meta
-        #df <- readr::read_csv(paste0(myParams$iEmbDataPath, lfName))
-        dt <- data.table::fread(paste0(myParams$iEmbDataPath, lfName))
-        dt <- cleanEmbEA(dt) # clean up to a dt
-        # print(summary(dt))
-        testDT <- getEmbMeta(dt) # get metaData
-        print(head(testDT))
-        testDT <- testDT[, source := lfName]
-        metaDT <- rbind(metaDT, testDT)
-        testDT <- NULL
-      } else {
-        # Get it
-        rFile <- paste0(myParams$embDataLoc,rfName)
-        print(paste0("We don't have or need to refresh ", lfName))
-        # use curl function to catch errors
-        # currently this breaks if no net - we need to catch that error too!
-        print(paste0("Trying to download ", rFile))
-        req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
-        if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
-          #df <- readr::read_csv(req$content)
-          dt <- data.table::fread(req$content)
-          print("File downloaded successfully, saving it")
-          data.table::fwrite(dt, paste0(myParams$iEmbDataPath, lfName))
-          dt <- cleanEmbEA(dt) # clean up to a dt
-          testDT <- getEmbMeta(dt) # get metaData
-          testDT <- testDT[, source := rfName]
-          metaDT <- rbind(metaDT, testDT)
-          print("Converted to long form, saving it")
-          lfName <- paste0(y,"_",m,"_Embedded_generation_long.csv")
-          data.table::fwrite(dt, paste0(myParams$oEmbDataPath, lfName))
-          cmd <- paste0("gzip -f ", "'", path.expand(paste0(myParams$oEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
-          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
-          print("Compressed it")
-        } else {
-          print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
-        }
-      }
-    }
+makeYearlyData <- function(genType){ # parameter selects path and thus files
+  if(genType == "gridGen"){
+    path <- paste0(localParams$gridDataLoc, "processed/yearly/")
+  } 
+  if(genType == "embeddedGen"){
+    path <- paste0(localParams$nonGridDataLoc, "processed/yearly/")
   }
-  # write out the meta data ----
-  data.table::fwrite(metaDT, paste0(myParams$oEmbDataPath, "metaDT.csv"))
-  
-  # remove the temp file
-  file.remove("temp.csv")
-  return(metaDT)
-}
-
-getGridData <- function(years, months){
-  message("Checking what we have already...")
-  filesToDateDT <- data.table::as.data.table(list.files(myParams$i)) # get list of files already downloaded
-  metaDT <- data.table::data.table() # stats collector
-  for(y in years){
-    for(month in months){
-      # construct the filename
-      if(nchar(month) == 1){
-        # need to add 0 as prefix
-        m <- paste0("0", month)
-      } else {
-        m <- month
-      }
-      lfName <- paste0(y,"_", m,"_Generation_MD.csv") # for ease of future file filtering
-      rfName <- paste0(y, m,"_Generation_MD.csv")
-      print(paste0("Checking ", lfName))
-      test <- filesToDateDT[V1 %like% lfName] #should catch .csv.gz too
-      if(nrow(test) > 0 & refresh == 0){
-        # Already got it & we don't want to refresh so skip
-        print(paste0("Already have ", lfName, ", loading from local..."))
-        # Load so we can update meta
-        dt <- data.table::fread(paste0(myParams$iGridDataPath, lfName)) # this loop wants the raw data
-        # should probably change this so it doesn't need to run over _all_ the files every time
-        dt <- cleanGridEA(dt) # clean up to a dt - fixes dateTimes etc
-        print(summary(dt))
-        testDT <- getGridMeta(dt) # get metaData
-        print(head(testDT))
-        testDT <- testDT[, source := lfName]
-        metaDT <- rbind(metaDT, testDT)
-        testDT <- NULL
-      } else {
-        # Get it
-        rFile <- paste0(myParams$gridDataLoc,rfName)
-        print(paste0("We don't have or need to refresh ", lfName))
-        # use curl function to catch errors
-        print(paste0("Trying to download ", rFile))
-        req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
-        if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
-          dt <- data.table::fread(req$content)
-          print("File downloaded successfully, saving it")
-          data.table::fwrite(dt, paste0(myParams$iGridDataPath, lfName))
-          dt <- cleanGridEA(dt) # clean up to a dt - this does all the processing
-          testDT <- getGridMeta(dt) # get metaData
-          testDT <- testDT[, source := rfName]
-          metaDT <- rbind(metaDT, testDT)
-          print("Converted to long form, saving it")
-          lfName <- paste0(y,"_",m,"_Generation_MD_long.csv")
-          data.table::fwrite(dt, paste0(myParams$oGridDataPath, lfName))
-          cmd <- paste0("gzip -f ", "'", path.expand(paste0(myParams$oGridDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
-          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
-          print("Compressed it")
-        } else {
-          print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
-        }
-      }
-    }
-  }
-  return(metaDT)
-}
-
-makeYearlyData <- function(which){ # parameter selects path and thus files
-  path <- paste0(myParams$dPath,which, "/processed/monthly/")
   message("Checking what we have already in: ", path)
   filesToDateDT <- data.table::as.data.table(list.files(path)) # get list of files already downloaded
   filesToDateDT[, year := tstrsplit(V1, split = "_", keep = 1)]
@@ -244,25 +244,25 @@ makeYearlyData <- function(which){ # parameter selects path and thus files
                       ) # decodes .gz on the fly
     )
     # write out the year file ----
-    of <- paste0(myParams$dPath, which, "/processed/yearly/",y,"_", which, ".csv")
+    of <- paste0(path,y,"_", genType, ".csv")
     data.table::fwrite(yearDT, of)
     cmd <- paste0("gzip -f ", of)
     message("Gzip file: ", of)
-    try(system(cmd))
+    try(system(cmd)) # seems to throw an error on the CS RStudio server but it still works
   }
   return(yearDT) # return the last year for testing if needed
 }
 
-# Parameters ----
+# Code ----
 # Set start time ----
 startTime <- proc.time()
 
 # drake plan ----
 plan <- drake::drake_plan(
   embMetaData = getEmbData(years = years, months = months), # returns metadata
+  embYearlyResult = makeYearlyData(genType = "embeddedGen"),
   gridMetaData = getGridData(years = years, months = months), # returns metadata
-  embYearlyResult = makeYearlyData(which = "embeddedGen"),
-  gridYearlyResult = makeYearlyData(which = "gridGen")
+  gridYearlyResult = makeYearlyData(genType = "gridGen")
 )
 
 
@@ -276,9 +276,10 @@ make(plan)
 
 # tests
 skimr::skim(drake::readd(embMetaData))
-skimr::skim(drake::readd(gridMetaData))
 skimr::skim(drake::readd(embYearlyResult))
-skimr::skim(drake::readd(gridYearlyResult))
+
+#skimr::skim(drake::readd(gridMetaData))
+#skimr::skim(drake::readd(gridYearlyResult))
 
 # Finish off ----
 
