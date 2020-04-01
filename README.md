@@ -18,6 +18,6 @@ The repo is intentionally structured as an R package. To install it do:
 
 `devtools::install_github("CfSOtago/gridCarbon")`
 
-Re-use terms: [License](License.txt)
+Re-use terms: [License](LICENSE)
 
 # YMMV
