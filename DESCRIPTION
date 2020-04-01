@@ -10,7 +10,11 @@ Authors@R:
     person(given = "Marilette",
            family = "Lotter",
            role = c("aut"),
-           email = "marilettelotter@gmail.com"))
+           email = "marilettelotter@gmail.com"),
+    person(given = "Carsten",
+           family = "Dortans",
+           role = c("aut"),
+           email = "carsten.dortans@web.de"))
 Description: Code here includes functions to:
     - load, clean and save electricity generation data from the Electricty Authority
     - conduct various analyses

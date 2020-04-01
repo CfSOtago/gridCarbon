@@ -1,0 +1,4278 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ben Anderson (@dataknut)" />
+
+
+<title>NZ Electricity Generation Trends 1998-2020</title>
+
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/navigation-1.1/tabsets.js"></script>
+<link href="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/highlightjs-9.12.0/highlight.js"></script>
+<script src="NZ Electricity Generation Trends 1998-2020_Exploring wholesale data v1.0_Final1.0_Final_files/kePrint-0.0.1/kePrint.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">NZ Electricity Generation Trends 1998-2020</h1>
+<h3 class="subtitle">Exploring wholesale data v1.0_Final</h3>
+<h4 class="author">Ben Anderson (<code>@dataknut</code>)</h4>
+<h4 class="date">Last run at: 2020-04-01 04:07:11</h4>
+
+</div>
+
+
+
+<div id="citation" class="section level1">
+<h1><span class="header-section-number">1</span> Citation</h1>
+<p>If you wish to use any of the material from this report please cite as:</p>
+<ul>
+<li>Ben Anderson (<code>@dataknut</code>) (2020) <em>NZ Electricity Generation Trends 1998-2020: Exploring wholesale data v1.0_Final</em>, Dunedin: University of Otago.</li>
+</ul>
+<p>This work is (c) 2020 the the University of Otago</p>
+
+</div>
+<div id="about" class="section level1">
+<h1><span class="header-section-number">2</span> About</h1>
+<div id="circulation" class="section level2">
+<h2><span class="header-section-number">2.1</span> Circulation</h2>
+<ul>
+<li>Public (CC-BY unless otherwise noted)</li>
+</ul>
+</div>
+<div id="purpose" class="section level2">
+<h2><span class="header-section-number">2.2</span> Purpose</h2>
+<p>This report is intended to:</p>
+<ul>
+<li>load and test NZ electricity generation data from <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a> from 1998 to 2018.</li>
+</ul>
+</div>
+<div id="requirements" class="section level2">
+<h2><span class="header-section-number">2.3</span> Requirements:</h2>
+<ul>
+<li>pre-downloaded NZ wholesale generation datasets</li>
+</ul>
+</div>
+<div id="history" class="section level2">
+<h2><span class="header-section-number">2.4</span> History</h2>
+<p>Specific history of this code:</p>
+<ul>
+<li><a href="https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/nzElecGenTrends.Rmd" class="uri">https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/nzElecGenTrends.Rmd</a></li>
+</ul>
+</div>
+<div id="support" class="section level2">
+<h2><span class="header-section-number">2.5</span> Support</h2>
+<p>This work was supported by:</p>
+<ul>
+<li>The <a href="https://www.otago.ac.nz/">University of Otago</a>;</li>
+<li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s Sustainable Energy Research Group (2019-2020).</li>
+</ul>
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">3</span> Introduction</h1>
+<p>Inspired by Steffel (<a href="https://www.sciencedirect.com/science/article/pii/S0301421516307017">2018</a>) which analyses trends in the type and timing of generation in the UK over the same time period. Intended to build on Kahn et al’s 2018 CO2 <a href="https://www.sciencedirect.com/science/article/pii/S0959652618306474?via%3Dihub">intensity of peak demand</a> paper - how have thngs changed over time?</p>
+<p>Uses <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a> from 1998 to 2018. Note that this does not appear to include Solar (too low or in a seperate data set?) nor does it appear to include domestic/small-scale generation? It is possible that these are to be found in <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</a> and should be combined with this data?</p>
+<blockquote>
+<p>Data is kWh - so energy not power.</p>
+</blockquote>
+</div>
+<div id="load-data" class="section level1">
+<h1><span class="header-section-number">4</span> Load data</h1>
+<p>Load the generation data from files stored in:</p>
+<ul>
+<li>/home/dataknut/greenGridData/externalData/EA_Generation_Data/processed/yearly/</li>
+</ul>
+<p>These have been pre-downloaded and cleaned using <a href="https://github.com/CfSOtago/gridCarbon/tree/master/dataProcessing/">this code</a> but could be pulled on the fly to be refreshed for other dates…</p>
+<pre><code>## # A tibble: 1 x 2
+##   target  command   
+##   &lt;chr&gt;   &lt;expr&gt;    
+## 1 genData loadData()</code></pre>
+<pre><code>## Warning: Do not run make() from a subdirectory of your project.
+##   running make() from: /home/dataknut/github/CfSOtago/gridCarbon/dataAnalysis
+##   drake project root:  /home/dataknut/github/CfSOtago/gridCarbon
+##   cache directory:     /home/dataknut/github/CfSOtago/gridCarbon/.drake</code></pre>
+<pre><code>## ✓ All targets are already up to date.</code></pre>
+<pre><code>##           rDateTimeOrig Time_Period           rDateTime
+## 1: 1997-12-01T00:15:00Z         TP1 1997-12-01 00:15:00
+## 2: 1997-12-01T00:15:00Z         TP1 1997-12-01 00:15:00
+## 3: 1997-12-01T00:15:00Z         TP1 1997-12-01 00:15:00
+## 4: 1997-12-01T00:15:00Z         TP1 1997-12-01 00:15:00
+## 5: 1997-12-01T00:15:00Z         TP1 1997-12-01 00:15:00
+## 6: 1997-12-01T00:15:00Z         TP1 1997-12-01 00:15:00</code></pre>
+<pre><code>## [1] &quot;Files loaded&quot;</code></pre>
+<pre><code>## Loaded 24,877,350 rows of data</code></pre>
+<table>
+<caption>
+<span id="tab:skimGenDT">Table 4.1: </span>First 6 rows of data
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Site_Code
+</th>
+<th style="text-align:left;">
+POC_Code
+</th>
+<th style="text-align:left;">
+Nwk_Code
+</th>
+<th style="text-align:left;">
+Gen_Code
+</th>
+<th style="text-align:left;">
+Fuel_Code
+</th>
+<th style="text-align:left;">
+Tech_Code
+</th>
+<th style="text-align:left;">
+Trading_date
+</th>
+<th style="text-align:left;">
+Time_Period
+</th>
+<th style="text-align:right;">
+kWh
+</th>
+<th style="text-align:left;">
+rTime
+</th>
+<th style="text-align:left;">
+rDate
+</th>
+<th style="text-align:left;">
+rDateTime
+</th>
+<th style="text-align:right;">
+month
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:left;">
+rDateTimeOrig
+</th>
+<th style="text-align:left;">
+rMonth
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+28770
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:left;">
+1997-12-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+Dec
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARG
+</td>
+<td style="text-align:left;">
+ARG1101
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+argyle_wairau
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:left;">
+1997-12-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+Dec
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:left;">
+ARI1101
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+arapuni
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+58280
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:left;">
+1997-12-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+Dec
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ATI
+</td>
+<td style="text-align:left;">
+ATI2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+atiamuri
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+9330
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:left;">
+1997-12-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+Dec
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+AVI
+</td>
+<td style="text-align:left;">
+AVI2201
+</td>
+<td style="text-align:left;">
+MERI
+</td>
+<td style="text-align:left;">
+aviemore
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+28440
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:left;">
+1997-12-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+Dec
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BEN
+</td>
+<td style="text-align:left;">
+BEN2202
+</td>
+<td style="text-align:left;">
+MERI
+</td>
+<td style="text-align:left;">
+benmore
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+118180
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+1997-12-01
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:left;">
+1997-12-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+Dec
+</td>
+</tr>
+</tbody>
+</table>
+<p>Table <a href="#tab:skimGenDT">4.1</a> sumarises the data. Notice that there are missing (NA) values in the kWh column. These are caused by periods 49 and 50:</p>
+<blockquote>
+<p>“The data is presented by trading period, TP1, TP2, … TP48. Trading period 1 starts at midnight, trading period 2 starts at 12:30am, trading period 3 starts at 1:00am, etc. Users of this data should be aware of daylight saving in New Zealand. On the day daylight saving commences there are only 46 trading periods and on the day it ends, there are 50.” (<a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</a>)</p>
+</blockquote>
+<p>So on 2 days of the year TP47 &amp; TP48 do not exist and on the following days they are back and we also have TP49 &amp; TP50. There are only two things in life worse than death &amp; taxes: daylight saving time and time-zones.</p>
+<p>Daylight saving begins/ends in October and March and so these TPs should only show up twice a year. However, these TP are still present as labels in the Time_Period variable and so give NA kWh in the data as the following table (Table <a href="#tab:exploreNA">4.2</a>) and plot (Figure <a href="#fig:exploreNA">4.1</a>) of NA observations (only) by Fuel Type and month show. The plot also shows that there are unexplained NA in other months and periods.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:exploreNA">Table 4.2: </span>NA kWh by month and TP
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+TP1
+</th>
+<th style="text-align:right;">
+TP10
+</th>
+<th style="text-align:right;">
+TP11
+</th>
+<th style="text-align:right;">
+TP12
+</th>
+<th style="text-align:right;">
+TP13
+</th>
+<th style="text-align:right;">
+TP14
+</th>
+<th style="text-align:right;">
+TP15
+</th>
+<th style="text-align:right;">
+TP16
+</th>
+<th style="text-align:right;">
+TP17
+</th>
+<th style="text-align:right;">
+TP18
+</th>
+<th style="text-align:right;">
+TP19
+</th>
+<th style="text-align:right;">
+TP2
+</th>
+<th style="text-align:right;">
+TP20
+</th>
+<th style="text-align:right;">
+TP21
+</th>
+<th style="text-align:right;">
+TP22
+</th>
+<th style="text-align:right;">
+TP23
+</th>
+<th style="text-align:right;">
+TP24
+</th>
+<th style="text-align:right;">
+TP25
+</th>
+<th style="text-align:right;">
+TP26
+</th>
+<th style="text-align:right;">
+TP27
+</th>
+<th style="text-align:right;">
+TP28
+</th>
+<th style="text-align:right;">
+TP29
+</th>
+<th style="text-align:right;">
+TP3
+</th>
+<th style="text-align:right;">
+TP30
+</th>
+<th style="text-align:right;">
+TP31
+</th>
+<th style="text-align:right;">
+TP32
+</th>
+<th style="text-align:right;">
+TP33
+</th>
+<th style="text-align:right;">
+TP34
+</th>
+<th style="text-align:right;">
+TP35
+</th>
+<th style="text-align:right;">
+TP4
+</th>
+<th style="text-align:right;">
+TP45
+</th>
+<th style="text-align:right;">
+TP47
+</th>
+<th style="text-align:right;">
+TP48
+</th>
+<th style="text-align:right;">
+TP49
+</th>
+<th style="text-align:right;">
+TP5
+</th>
+<th style="text-align:right;">
+TP50
+</th>
+<th style="text-align:right;">
+TP6
+</th>
+<th style="text-align:right;">
+TP7
+</th>
+<th style="text-align:right;">
+TP8
+</th>
+<th style="text-align:right;">
+TP9
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+43774
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+43774
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39906
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39906
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+41642
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+41642
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39550
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+39550
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+41753
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+41753
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40354
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40354
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+41737
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+41737
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+41733
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+41733
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+883
+</td>
+<td style="text-align:right;">
+883
+</td>
+<td style="text-align:right;">
+40494
+</td>
+<td style="text-align:right;">
+112
+</td>
+<td style="text-align:right;">
+40494
+</td>
+<td style="text-align:right;">
+112
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+470
+</td>
+<td style="text-align:right;">
+470
+</td>
+<td style="text-align:right;">
+41914
+</td>
+<td style="text-align:right;">
+471
+</td>
+<td style="text-align:right;">
+41914
+</td>
+<td style="text-align:right;">
+471
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40598
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+40598
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+43321
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+43321
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:exploreNA"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/exploreNA-1.png" alt="Plot showing presence of NA observations by time period and Fuel Type" width="672" />
+<p class="caption">
+Figure 4.1: Plot showing presence of NA observations by time period and Fuel Type
+</p>
+</div>
+<p>In order to avoid future confusion and to save a lot of error checking we therefore remove NA kWh (i.e. TP49 &amp; TP 50 and a few other data points) from the dataset.</p>
+<pre class="r"><code># N rows before:
+nrow(origGenDT)</code></pre>
+<pre><code>## [1] 24877350</code></pre>
+<pre class="r"><code># N time periods before:
+uniqueN(origGenDT$Time_Period)</code></pre>
+<pre><code>## [1] 50</code></pre>
+<pre class="r"><code># remove NA
+genDT &lt;- origGenDT[!is.na(kWh)]
+# N rows after
+nrow(genDT)</code></pre>
+<pre><code>## [1] 23879690</code></pre>
+<pre class="r"><code># N time periods after:
+uniqueN(genDT$Time_Period)</code></pre>
+<pre><code>## [1] 50</code></pre>
+</div>
+<div id="analysis-1999-2019-comparison" class="section level1">
+<h1><span class="header-section-number">5</span> Analysis: 1999 &amp; 2019 Comparison</h1>
+<div id="distribution-tests" class="section level2">
+<h2><span class="header-section-number">5.1</span> Distribution tests</h2>
+<p>Table <a href="#tab:boxPlot">5.1</a> shows summary statistics for each fuel source by year. Hydro contributes the majority of energy in each year but coal has the highest half-hourly mean in each year suggesting that is makes large contributions at specific times. Comparing the mean and median for coal shows how skewed this distirbution was in 1999 although far less so in 2019. This is also supported by the maximum values which show coal as the ‘peaked’ energy producer in 1999 although this has faded by 2019 where it shows similar maxima to gas and hydro. Note that 2 of the 4 the Huntly coal-fired units were <a href="https://en.wikipedia.org/wiki/Huntly_Power_Station">mothballed/retired</a> during this period.</p>
+<p>Figure <a href="#fig:boxPlot">5.1</a> shows the distribution of half-hourly observations by month and year. It clearly shows the use of coal in June 1999, non-use in December 1999 but re-use in December 2019 where there appears little difference between winter &amp; summer use for most fuels. We also see the emergence of wind by 2019.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:boxPlot">Table 5.1: </span>Summary of energy produced by all fuels
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:left;">
+Fuel_Code
+</th>
+<th style="text-align:right;">
+sumMWh
+</th>
+<th style="text-align:right;">
+meanMWh
+</th>
+<th style="text-align:right;">
+medianMWh
+</th>
+<th style="text-align:right;">
+minMWh
+</th>
+<th style="text-align:right;">
+maxMWh
+</th>
+<th style="text-align:right;">
+sdMWh
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:right;">
+3072221.82
+</td>
+<td style="text-align:right;">
+175.40
+</td>
+<td style="text-align:right;">
+180.50
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+375.06
+</td>
+<td style="text-align:right;">
+85.73
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Diesel
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.49
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Gas
+</td>
+<td style="text-align:right;">
+4464044.41
+</td>
+<td style="text-align:right;">
+28.32
+</td>
+<td style="text-align:right;">
+8.20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+193.50
+</td>
+<td style="text-align:right;">
+47.75
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Gas&amp;Oil
+</td>
+<td style="text-align:right;">
+2679260.39
+</td>
+<td style="text-align:right;">
+76.48
+</td>
+<td style="text-align:right;">
+57.05
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+172.62
+</td>
+<td style="text-align:right;">
+49.60
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Geo
+</td>
+<td style="text-align:right;">
+2016727.54
+</td>
+<td style="text-align:right;">
+26.57
+</td>
+<td style="text-align:right;">
+17.90
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+84.62
+</td>
+<td style="text-align:right;">
+29.65
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:right;">
+22380243.50
+</td>
+<td style="text-align:right;">
+39.31
+</td>
+<td style="text-align:right;">
+20.94
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+295.83
+</td>
+<td style="text-align:right;">
+51.73
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1999
+</td>
+<td style="text-align:left;">
+Wood
+</td>
+<td style="text-align:right;">
+236114.97
+</td>
+<td style="text-align:right;">
+13.48
+</td>
+<td style="text-align:right;">
+15.69
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+19.92
+</td>
+<td style="text-align:right;">
+5.48
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:right;">
+1611666.68
+</td>
+<td style="text-align:right;">
+91.99
+</td>
+<td style="text-align:right;">
+92.43
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+238.18
+</td>
+<td style="text-align:right;">
+72.45
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Diesel
+</td>
+<td style="text-align:right;">
+2682.55
+</td>
+<td style="text-align:right;">
+0.15
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+46.00
+</td>
+<td style="text-align:right;">
+1.71
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Gas
+</td>
+<td style="text-align:right;">
+5465118.86
+</td>
+<td style="text-align:right;">
+34.66
+</td>
+<td style="text-align:right;">
+8.86
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+251.27
+</td>
+<td style="text-align:right;">
+54.21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Geo
+</td>
+<td style="text-align:right;">
+7209659.82
+</td>
+<td style="text-align:right;">
+37.41
+</td>
+<td style="text-align:right;">
+41.08
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+85.62
+</td>
+<td style="text-align:right;">
+23.92
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:right;">
+24656881.05
+</td>
+<td style="text-align:right;">
+36.17
+</td>
+<td style="text-align:right;">
+16.80
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+402.43
+</td>
+<td style="text-align:right;">
+58.53
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Wind
+</td>
+<td style="text-align:right;">
+1829199.86
+</td>
+<td style="text-align:right;">
+11.60
+</td>
+<td style="text-align:right;">
+8.53
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+48.91
+</td>
+<td style="text-align:right;">
+11.50
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+Wood
+</td>
+<td style="text-align:right;">
+249663.54
+</td>
+<td style="text-align:right;">
+14.25
+</td>
+<td style="text-align:right;">
+16.13
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+19.43
+</td>
+<td style="text-align:right;">
+4.97
+</td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:boxPlot"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/boxPlot-1.png" alt="Box plot of energy produced by all fuels" width="672" />
+<p class="caption">
+Figure 5.1: Box plot of energy produced by all fuels
+</p>
+</div>
+<p>Figure <a href="#fig:overallHistograms">5.2</a> visualises the distribution of MWh values within fuel sources. Note that the vertical axis has been allowed to vary by fuel source so that smaller counts are visible. The y axis is constant which enables the higher unit output of coal to be clearly visible. The histogram for coal shows the use of multiple units in June 1999 but not 2019 for example where the output is clearly truncated. It also shows that coal was almost constantly generating in 2019 (very few zero values). Hydro on the other hand shows a large number of zero or low values as does wind and back-up diesel which is to be expected.</p>
+<div class="figure"><span id="fig:overallHistograms"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/overallHistograms-1.png" alt="Overall energy production histrograms by fuel type" width="672" />
+<p class="caption">
+Figure 5.2: Overall energy production histrograms by fuel type
+</p>
+</div>
+</div>
+<div id="monthly-generation" class="section level2">
+<h2><span class="header-section-number">5.2</span> Monthly generation</h2>
+<p>The following plots shows the total, mean, s.d. and coefficient of variation plots of half-hourly GWh produced by each fuel source each month and to some extent relfects the previous box plots.</p>
+<p>The total is simply the sum of all half-hourly values and Figure <a href="#fig:monthlyTotalPlot">5.3</a> shows the dominance of hydro followed by coal in June 1998; the non-use of coal in December 1998; the growth of gas &amp; geo by 2018 but the relative stasis in at-capacity hydro (?).</p>
+<div class="figure"><span id="fig:monthlyTotalPlot"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlyTotalPlot-1.png" alt="Monthly total plot by fuel type" width="672" />
+<p class="caption">
+Figure 5.3: Monthly total plot by fuel type
+</p>
+</div>
+Figure <a href="#fig:monthlyMeanPlot">5.4</a> shows the mean of half-hourly values for each month and indicates that the Coal generation may be skewed, especially for June 1998 by a few very large values (ref the histograms above).
+<div class="figure"><span id="fig:monthlyMeanPlot"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlyMeanPlot-1.png" alt="Monthly mean plot by fuel type" width="672" />
+<p class="caption">
+Figure 5.4: Monthly mean plot by fuel type
+</p>
+</div>
+<p>Figure <a href="#fig:monthlySdPlot">5.5</a> shows the standard deviation of the half-hourly generation data and suggests that coal has the highest absolute variation in June 1998 which may correspond to a particular spike and/or a period of very heavy use. Coal is less variable in 2018 perhaps due to the increased use of Gas.</p>
+<div class="figure"><span id="fig:monthlySdPlot"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlySdPlot-1.png" alt="Monthly s.d. plot by fuel type" width="672" />
+<p class="caption">
+Figure 5.5: Monthly s.d. plot by fuel type
+</p>
+</div>
+<p>Finally, Figure <a href="#fig:monthlyCovPlot"><strong>??</strong></a> shows the coefficient of variation across the half-hourly values (mean/s.d). We take the CoV to indicate <em>relative</em> variability (i.e. relative volatility) in generation load between the different fuels and use it in preference to the standard deviation (shown above) which, as an absolute measure, is affected by the underlying magnitude of each fuel’s use. The plots suggest that Coal and Wood tend to see greatest relative variability although Gas &amp; Oil in 1998 also stand out.</p>
+<pre class="r"><code># coefficient of variation https://en.wikipedia.org/wiki/Coefficient_of_variation
+plotDT &lt;- plotDT[, cov := 1000000 * (meankWh/sdkWh)] # corrct for GW conversion in plot function (doh!)
+
+makeMonthlyDodgedPlot(plotDT, &quot;cov&quot;, &quot;CoV half-hourly GWh&quot;) + geom_col(position = &quot;dodge&quot;)</code></pre>
+<pre><code>## Warning: Removed 11 rows containing missing values (geom_col).
+
+## Warning: Removed 11 rows containing missing values (geom_col).</code></pre>
+<p><img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlyCovPlot-1.png" width="672" /></p>
+</div>
+<div id="half-hourly-profiles-by-month" class="section level2">
+<h2><span class="header-section-number">5.3</span> Half hourly profiles by month</h2>
+<p>However the monthly plots do not tell us about the use of different generation sources by time of day which has clear implications for how peaks in demand have been met over time.</p>
+<p>To do this, the following plots partially replicate one of those found in <a href="https://www.sciencedirect.com/science/article/pii/S0301421516307017#f0025">Staffel, 2018</a> for the UK to show how the different components of generation have changed over time.</p>
+<p>Figure <a href="#fig:sumProfileCol">5.6</a> shows the total half-hourly generation for each month summed over all days whilst Figure <a href="#fig:sumProfilePoint">5.7</a> shows the same data but as a point plot to more clearly show the absolute contribution of each fuel.</p>
+<blockquote>
+<p>Note 1: the half-hours are plotted at mid-points (00:15, 00:45, 01:15 etc…)</p>
+</blockquote>
+<blockquote>
+<p>Note 2: rTime (Time of Day) is originally imputed from the TP1-48 periods (and TP49 &amp; TP50 on DST break days) and is therefore automatically set to the local NZ ‘civil’ time - so NZST or DST as appropriate. See <a href="https://github.com/CfSOtago/GREENGrid/blob/master/R/eaGen.R">?setEAGenTimePeriod</a> and the <a href="https://github.com/CfSOtago/GREENGrid/blob/master/dataProcessing/ea/getEAWholesaleGenData.R">data processing script</a> for more details.</p>
+</blockquote>
+<pre><code>## Warning: Removed 7 rows containing missing values (position_stack).</code></pre>
+<div class="figure"><span id="fig:sumProfileCol"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/sumProfileCol-1.png" alt="Half-hourly profile plot by fuel type (sum)" width="672" />
+<p class="caption">
+Figure 5.6: Half-hourly profile plot by fuel type (sum)
+</p>
+</div>
+<pre><code>## Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<div class="figure"><span id="fig:sumProfilePoint"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/sumProfilePoint-1.png" alt="Half-hourly profile plot by fuel type (sum)" width="672" />
+<p class="caption">
+Figure 5.7: Half-hourly profile plot by fuel type (sum)
+</p>
+</div>
+<p>Repeat for 2019 only</p>
+<pre><code>## Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<div class="figure"><span id="fig:sumProfilePoint2018"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/sumProfilePoint2018-1.png" alt="Half-hourly profile plot by fuel type (sum), 2018 only" width="672" />
+<p class="caption">
+Figure 5.8: Half-hourly profile plot by fuel type (sum), 2018 only
+</p>
+</div>
+<p>Figures <a href="#fig:meanProfileCol">5.9</a> and <a href="#fig:meanProfilePoint">5.10</a> repeat this analysis but shows the mean, again suggesting that the values for coal are skewed by some extremely large values in December 1998 and by high generation values when used in 2019.</p>
+<pre><code>## Warning: Removed 7 rows containing missing values (position_stack).</code></pre>
+<div class="figure"><span id="fig:meanProfileCol"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/meanProfileCol-1.png" alt="Half-hourly profile plot by fuel type (mean)" width="672" />
+<p class="caption">
+Figure 5.9: Half-hourly profile plot by fuel type (mean)
+</p>
+</div>
+<pre><code>## Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<div class="figure"><span id="fig:meanProfilePoint"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/meanProfilePoint-1.png" alt="Half-hourly profile plot by fuel type (mean)" width="672" />
+<p class="caption">
+Figure 5.10: Half-hourly profile plot by fuel type (mean)
+</p>
+</div>
+</div>
+<div id="half-hourly-profiles-by-day-of-the-month" class="section level2">
+<h2><span class="header-section-number">5.4</span> Half hourly profiles by day of the month</h2>
+<p>The following plots show the profiles for each day of the month.</p>
+<div class="figure"><span id="fig:sumDailyProfilePoint"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/sumDailyProfilePoint-1.png" alt="Half-hourly profile plot by fuel type" width="672" />
+<p class="caption">
+Figure 5.11: Half-hourly profile plot by fuel type
+</p>
+</div>
+<p>Figure <a href="#fig:sumDailyProfilePoint">5.11</a> shows the total as a point plot while Figure <a href="#fig:sumDailyProfileCol">5.12</a> shows the total as stacked column plots to show the proportion of energy generation produced by each fuel.</p>
+<div class="figure"><span id="fig:sumDailyProfileCol"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/sumDailyProfileCol-1.png" alt="Half-hourly profile plot by fuel type" width="672" />
+<p class="caption">
+Figure 5.12: Half-hourly profile plot by fuel type
+</p>
+</div>
+</div>
+</div>
+<div id="analysis-trends-1999---2019" class="section level1">
+<h1><span class="header-section-number">6</span> Analysis: Trends 1999 - 2019</h1>
+<p>Using full dataset for each day, month &amp; year.</p>
+<div id="trends-over-years" class="section level2">
+<h2><span class="header-section-number">6.1</span> Trends over years</h2>
+<p>The hydro trends (and the consequences for Carbon-based generation) should be seen in the context of the <a href="https://www.niwa.co.nz/climate/information-and-resources/elnino/el-nino-and-southern-oscillation">Southern Oscilation</a>’s effect on rainfall.</p>
+<div class="figure">
+<img src="https://www.niwa.co.nz/sites/niwa.co.nz/files/styles/sidebar/public/sites/default/files/images/imported/0005/73454/soi_5mthmn_188003-201509_v2.png" alt="Southern Oscillation Index" />
+<p class="caption">Southern Oscillation Index</p>
+</div>
+<p>“Although El Niño and La Niña (collectively known as El Niño-Southern Oscillation or ENSO) have an important influence on New Zealand’s climate, it accounts for less than 25 percent of the year-to year variance in seasonal rainfall and temperature at most locations. Nevertheless, its effects can be significant.” <a href="https://www.niwa.co.nz/climate/information-and-resources/elnino/elnino-impacts-on-newzealand" class="uri">https://www.niwa.co.nz/climate/information-and-resources/elnino/elnino-impacts-on-newzealand</a></p>
+<p>“La Niña events have different impacts on New Zealand’s climate. More north–easterly winds are characteristic, which tend to bring moist, rainy conditions to the north–east of the North Island, and reduced rainfall to the south and south–west of the South Island.</p>
+<p>Therefore, some areas, such as central Otago and South Canterbury, can experience drought in both El Niño and La Niña. &quot;</p>
+<p>Figure (fig:monthlySOI) shows the monthly El Niño Southern Oscillation Index for 1986–2016 and shows at least four strong El Nino periods centred on 1987, 1993, 1997, 2005 and 2015.</p>
+<pre><code>##    Month_year Southern_oscillation_index
+## 1:     Jan-86                        1.0
+## 2:     Feb-86                       -1.0
+## 3:     Mar-86                        0.5
+## 4:     Apr-86                        0.3
+## 5:     May-86                       -0.2
+## 6:     Jun-86                        1.0</code></pre>
+<div class="figure"><span id="fig:monthlySOI"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlySOI-1.png" alt="Monthly Southern Oscillation" width="672" />
+<p class="caption">
+Figure 6.1: Monthly Southern Oscillation
+</p>
+</div>
+<p>Figure (fig:yearlySOI) confirms this overall pattern although the aggregation to calendar years (as opposed to climate years) masks some of the periods.</p>
+<p><img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/yearlySOI-1.png" width="672" /></p>
+</div>
+<div id="yearly-generation-trends" class="section level2">
+<h2><span class="header-section-number">6.2</span> Yearly generation trends</h2>
+<p>Figure <a href="#fig:yearlyTotalPlotPoint">6.2</a> shows the dominance of hydro and decrease in coal use.</p>
+<p>Adding annotations with information from:</p>
+<ul>
+<li><a href="https://www.niwa.co.nz/climate/summaries/seasonal" class="uri">https://www.niwa.co.nz/climate/summaries/seasonal</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Huntly_Power_Station" class="uri">https://en.wikipedia.org/wiki/Huntly_Power_Station</a></li>
+</ul>
+<div class="figure"><span id="fig:yearlyTotalPlotPoint"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/yearlyTotalPlotPoint-1.png" alt="Yearly total plot by fuel type" width="672" />
+<p class="caption">
+Figure 6.2: Yearly total plot by fuel type
+</p>
+</div>
+<p>If we consider the relationship between generation and the SOI at the yearly level, Figure (fig:yearlyGenSOI) suggests that Gas is fairly responsive to increasing SOI above 0 (La Nina years) and hydro is the inverse (with considerable variation/uncertainty) on an annual measure. Presumably this indicates the use of Gas for peaking generation when hydro is at capacity in drier years?</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:yearlyGenSOI"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/yearlyGenSOI-1.png" alt="Yearly generation values by fuel vs yearly SOI" width="672" />
+<p class="caption">
+Figure 6.3: Yearly generation values by fuel vs yearly SOI
+</p>
+</div>
+</div>
+<div id="monthly-trends" class="section level2">
+<h2><span class="header-section-number">6.3</span> Monthly trends</h2>
+<p>This section uses monthly aggregates.</p>
+<pre><code>## Warning: Removed 105 row(s) containing missing values (geom_path).</code></pre>
+<div class="figure"><span id="fig:monthlyTotalPlotPoint1"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlyTotalPlotPoint-1.png" alt="Yearly total plot by fuel type" width="672" />
+<p class="caption">
+Figure 6.4: Yearly total plot by fuel type
+</p>
+</div>
+<pre><code>## Saving 11 x 8 in image</code></pre>
+<pre><code>## Warning: Removed 105 row(s) containing missing values (geom_path).
+
+## Warning: Removed 105 row(s) containing missing values (geom_path).
+
+## Warning: Removed 105 row(s) containing missing values (geom_path).</code></pre>
+<div class="figure"><span id="fig:monthlyTotalPlotPoint2"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlyTotalPlotPoint-2.png" alt="Yearly total plot by fuel type" width="672" />
+<p class="caption">
+Figure 6.5: Yearly total plot by fuel type
+</p>
+</div>
+<pre><code>## Saving 11 x 8 in image</code></pre>
+<pre><code>## Warning: Removed 105 row(s) containing missing values (geom_path).
+
+## Warning: Removed 105 row(s) containing missing values (geom_path).</code></pre>
+<p>Figures <a href="#fig:monthlyTotalPlotPoint"><strong>??</strong></a> shows the same trends as previously but using monthly data to highlight seasonal patterns over time.</p>
+<p>If we consider the relationship between generation and the SOI at the monthly level, Figure (fig:monthlyGenSOI) suggests there is a much less clear relationship although the fit lines are still in the same directions with increased use of gas as the SOI increases and the inverse for hydro.</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:monthlyGenSOI"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/monthlyGenSOI-1.png" alt="Yearly generation values by fuel vs yearly SOI" width="672" />
+<p class="caption">
+Figure 6.6: Yearly generation values by fuel vs yearly SOI
+</p>
+</div>
+</div>
+<div id="daily-trends" class="section level2">
+<h2><span class="header-section-number">6.4</span> Daily trends</h2>
+<p>Figures <a href="#fig:dailyTotalPlotPoint"><strong>??</strong></a> and <a href="#fig:dailyTotalPlotCol"><strong>??</strong></a> show the same trends as previously but using daily data to highlight seasonal patterns over time. Annotations use information from:</p>
+<ul>
+<li><a href="https://www.niwa.co.nz/climate/summaries/seasonal" class="uri">https://www.niwa.co.nz/climate/summaries/seasonal</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Huntly_Power_Station" class="uri">https://en.wikipedia.org/wiki/Huntly_Power_Station</a></li>
+</ul>
+<pre><code>## Scale for &#39;x&#39; is already present. Adding another scale for &#39;x&#39;, which will replace the existing
+## scale.</code></pre>
+<pre><code>## Warning: Removed 630 row(s) containing missing values (geom_path).</code></pre>
+<div class="figure"><span id="fig:dailyTotalPlotPoint1"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/dailyTotalPlotPoint-1.png" alt="Yearly total plot by fuel type" width="672" />
+<p class="caption">
+Figure 6.7: Yearly total plot by fuel type
+</p>
+</div>
+<pre><code>## Saving 11 x 8 in image</code></pre>
+<pre><code>## Warning: Removed 630 row(s) containing missing values (geom_path).
+
+## Warning: Removed 630 row(s) containing missing values (geom_path).</code></pre>
+<div class="figure"><span id="fig:dailyTotalPlotPoint2"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/dailyTotalPlotPoint-2.png" alt="Yearly total plot by fuel type" width="672" />
+<p class="caption">
+Figure 6.8: Yearly total plot by fuel type
+</p>
+</div>
+</div>
+</div>
+<div id="discussion" class="section level1">
+<h1><span class="header-section-number">7</span> Discussion</h1>
+<p>here</p>
+</div>
+<div id="conclusions" class="section level1">
+<h1><span class="header-section-number">8</span> Conclusions</h1>
+<p>go here</p>
+</div>
+<div id="annex" class="section level1">
+<h1><span class="header-section-number">9</span> Annex</h1>
+<div id="data-description" class="section level2">
+<h2><span class="header-section-number">9.1</span> Data description</h2>
+<div id="generation-data" class="section level3">
+<h3><span class="header-section-number">9.1.1</span> Generation data</h3>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+<span id="tab:skimOrig">Table 9.1: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+origGenDT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+24877350
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+difftime
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSIXct
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Site_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+74
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POC_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+78
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nwk_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gen_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fuel_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tech_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trading_date
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8126
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Time_Period
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDate
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8126
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeOrig
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+995094
+</td>
+<td style="text-align:right;">
+390049
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+kWhisNA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: difftime</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rTime
+</td>
+<td style="text-align:right;">
+995094
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:left;">
+900 secs
+</td>
+<td style="text-align:left;">
+85500 secs
+</td>
+<td style="text-align:left;">
+43200 secs
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rMonth
+</td>
+<td style="text-align:right;">
+997800
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+Jan: 2101152, Dec: 2079408, Oct: 2010932, May: 2004144
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+kWh
+</td>
+<td style="text-align:right;">
+997660
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:right;">
+36399.09
+</td>
+<td style="text-align:right;">
+55249.95
+</td>
+<td style="text-align:right;">
+-2407
+</td>
+<td style="text-align:right;">
+4961
+</td>
+<td style="text-align:right;">
+17510
+</td>
+<td style="text-align:right;">
+44535
+</td>
+<td style="text-align:right;">
+526520
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+month
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+6.51
+</td>
+<td style="text-align:right;">
+3.47
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+▇▅▅▅▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+2009.43
+</td>
+<td style="text-align:right;">
+6.30
+</td>
+<td style="text-align:right;">
+1997
+</td>
+<td style="text-align:right;">
+2004
+</td>
+<td style="text-align:right;">
+2010
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:left;">
+▅▆▆▇▆
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rDateTime
+</td>
+<td style="text-align:right;">
+997800
+</td>
+<td style="text-align:right;">
+0.96
+</td>
+<td style="text-align:left;">
+1997-12-01 00:15:00
+</td>
+<td style="text-align:left;">
+2020-02-29 23:45:00
+</td>
+<td style="text-align:left;">
+2010-06-23 13:15:00
+</td>
+<td style="text-align:right;">
+390004
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="soi-data" class="section level3">
+<h3><span class="header-section-number">9.1.2</span> SOI data</h3>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+<span id="tab:skimSOI">Table 9.2: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+monthlySODT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+372
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Date
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Month_year
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+372
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+monthChar
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+yearChar
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rYear
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dateChar
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+372
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: Date</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rMonth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+1986-01-01
+</td>
+<td style="text-align:left;">
+2016-12-01
+</td>
+<td style="text-align:left;">
+2001-06-16
+</td>
+<td style="text-align:right;">
+372
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Southern_oscillation_index
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+-3.1
+</td>
+<td style="text-align:right;">
+-0.6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.8
+</td>
+<td style="text-align:right;">
+2.9
+</td>
+<td style="text-align:left;">
+▁▃▇▅▁
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="data-issues" class="section level2">
+<h2><span class="header-section-number">9.2</span> Data issues</h2>
+<div id="huntly-1-4-fuel-source" class="section level3">
+<h3><span class="header-section-number">9.2.1</span> Huntly 1-4 Fuel source</h3>
+<p>Figure <a href="#fig:checkHuntly">9.1</a> shows the fuel use by each of the Huntly units over time. It appears to show that huntly_1_4 always burns coal although the units are able to also burn gas. It is not clear if this data is correct.</p>
+<pre><code>## Warning: Removed 56 rows containing missing values (position_stack).</code></pre>
+<div class="figure"><span id="fig:checkHuntly"></span>
+<img src="NZ%20Electricity%20Generation%20Trends%201998-2020_Exploring%20wholesale%20data%20v1.0_Final1.0_Final_files/figure-html/checkHuntly-1.png" alt="Huntly fuel sources" width="672" />
+<p class="caption">
+Figure 9.1: Huntly fuel sources
+</p>
+</div>
+</div>
+<div id="what-to-do-about-tp49-tp50" class="section level3">
+<h3><span class="header-section-number">9.2.2</span> What to do about TP49 &amp; TP50?</h3>
+<p>We hate timezones but we hate DST even more!</p>
+</div>
+<div id="solar-embedded-generation" class="section level3">
+<h3><span class="header-section-number">9.2.3</span> Solar &amp; embedded generation</h3>
+<p>Should we be adding embedded generation from <a href="https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation" class="uri">https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</a> ? It seems to be PV which (currently) has a los installed capacity…</p>
+</div>
+</div>
+</div>
+<div id="runtime" class="section level1">
+<h1><span class="header-section-number">10</span> Runtime</h1>
+<p>Analysis completed in 653.57 seconds ( 10.89 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.4.4 (2018-03-15) running on x86_64-pc-linux-gnu.</p>
+</div>
+<div id="r-environment" class="section level1">
+<h1><span class="header-section-number">11</span> R environment</h1>
+<p>R packages used:</p>
+<ul>
+<li>base R - for the basics <span class="citation">(R Core Team 2016)</span></li>
+<li>data.table - for fast (big) data handling <span class="citation">(Dowle et al. 2015)</span></li>
+<li>lubridate - date manipulation <span class="citation">(Grolemund and Wickham 2011)</span></li>
+<li>ggplot2 - for slick graphics <span class="citation">(Wickham 2009)</span></li>
+<li>readr - for csv reading/writing <span class="citation">(Wickham, Hester, and Francois 2016)</span></li>
+<li>Hmisc - for describe <span class="citation">(Harrell Jr, Charles Dupont, and others. 2016)</span></li>
+<li>knitr - to create this document &amp; neat tables <span class="citation">(Xie 2016b)</span></li>
+<li>bookdown - for additional markdown <span class="citation">(Xie 2016a)</span></li>
+<li>GREENGrid - for local NZ GREEN Grid project utilities</li>
+</ul>
+<p>Session info:</p>
+<pre><code>## R version 3.4.4 (2018-03-15)
+## Platform: x86_64-pc-linux-gnu (64-bit)
+## Running under: Ubuntu 16.04.6 LTS
+## 
+## Matrix products: default
+## BLAS: /usr/lib/libblas/libblas.so.3.6.0
+## LAPACK: /usr/lib/lapack/liblapack.so.3.6.0
+## 
+## locale:
+##  [1] LC_CTYPE=en_NZ.UTF-8       LC_NUMERIC=C               LC_TIME=en_NZ.UTF-8       
+##  [4] LC_COLLATE=en_NZ.UTF-8     LC_MONETARY=en_NZ.UTF-8    LC_MESSAGES=en_NZ.UTF-8   
+##  [7] LC_PAPER=en_NZ.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_NZ.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] bookdown_0.18     rmarkdown_2.1     viridis_0.5.1     viridisLite_0.3.0 skimr_2.1        
+##  [6] lubridate_1.7.4   kableExtra_1.1.0  hms_0.5.3         ggplot2_3.3.0     drake_7.12.0     
+## [11] dplyr_0.8.5       data.table_1.12.8 gridCarbon_0.1.0  here_0.1         
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.4        txtq_0.2.0        lattice_0.20-38   tidyr_1.0.2       prettyunits_1.1.1
+##  [6] assertthat_0.2.1  rprojroot_1.3-2   digest_0.6.25     utf8_1.1.4        R6_2.4.1         
+## [11] repr_1.1.0        backports_1.1.5   evaluate_0.14     httr_1.4.1        highr_0.8        
+## [16] pillar_1.4.3      rlang_0.4.5       progress_1.2.2    rstudioapi_0.11   Matrix_1.2-14    
+## [21] labeling_0.3      splines_3.4.4     webshot_0.5.2     readr_1.3.1       stringr_1.4.0    
+## [26] igraph_1.2.5      munsell_0.5.0     compiler_3.4.4    xfun_0.12         pkgconfig_2.0.3  
+## [31] base64enc_0.1-3   mgcv_1.8-28       htmltools_0.4.0   tidyselect_1.0.0  gridExtra_2.3    
+## [36] tibble_3.0.0      fansi_0.4.1       crayon_1.3.4      withr_2.1.2       grid_3.4.4       
+## [41] nlme_3.1-137      jsonlite_1.6.1    gtable_0.3.0      lifecycle_0.2.0   magrittr_1.5     
+## [46] storr_1.2.1       scales_1.1.0      cli_2.0.2         stringi_1.4.6     farver_2.0.3     
+## [51] xml2_1.2.5        ellipsis_0.3.0    filelock_1.0.2    vctrs_0.2.4       forcats_0.5.0    
+## [56] tools_3.4.4       glue_1.3.2        purrr_0.3.3       parallel_3.4.4    yaml_2.2.1       
+## [61] colorspace_1.4-1  base64url_1.4     rvest_0.3.5       knitr_1.28</code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-data.table">
+<p>Dowle, M, A Srinivasan, T Short, S Lianoglou with contributions from R Saporta, and E Antonyan. 2015. <em>Data.table: Extension of Data.frame</em>. <a href="https://CRAN.R-project.org/package=data.table" class="uri">https://CRAN.R-project.org/package=data.table</a>.</p>
+</div>
+<div id="ref-lubridate">
+<p>Grolemund, Garrett, and Hadley Wickham. 2011. “Dates and Times Made Easy with lubridate.” <em>Journal of Statistical Software</em> 40 (3): 1–25. <a href="http://www.jstatsoft.org/v40/i03/" class="uri">http://www.jstatsoft.org/v40/i03/</a>.</p>
+</div>
+<div id="ref-Hmisc">
+<p>Harrell Jr, Frank E, with contributions from Charles Dupont, and many others. 2016. <em>Hmisc: Harrell Miscellaneous</em>. <a href="https://CRAN.R-project.org/package=Hmisc" class="uri">https://CRAN.R-project.org/package=Hmisc</a>.</p>
+</div>
+<div id="ref-baseR">
+<p>R Core Team. 2016. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-ggplot2">
+<p>Wickham, Hadley. 2009. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="http://ggplot2.org" class="uri">http://ggplot2.org</a>.</p>
+</div>
+<div id="ref-readr">
+<p>Wickham, Hadley, Jim Hester, and Romain Francois. 2016. <em>Readr: Read Tabular Data</em>. <a href="https://CRAN.R-project.org/package=readr" class="uri">https://CRAN.R-project.org/package=readr</a>.</p>
+</div>
+<div id="ref-bookdown">
+<p>Xie, Yihui. 2016a. <em>Bookdown: Authoring Books and Technical Documents with R Markdown</em>. Boca Raton, Florida: Chapman; Hall/CRC. <a href="https://github.com/rstudio/bookdown" class="uri">https://github.com/rstudio/bookdown</a>.</p>
+</div>
+<div id="ref-knitr">
+<p>———. 2016b. <em>Knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. <a href="https://CRAN.R-project.org/package=knitr" class="uri">https://CRAN.R-project.org/package=knitr</a>.</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
