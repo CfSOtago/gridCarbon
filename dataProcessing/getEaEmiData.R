@@ -135,6 +135,20 @@ getEmbData <- function(years,months){
   return(metaDT)
 }
 
+getEmbMeta <- function(dt){
+  dt <- dt[, month := lubridate::month(rDate)]
+  dt <- dt[,year := lubridate::year(rDate)]
+  testDT <- dt[, .(nObs = .N,
+                   sumMWh = sum(as.numeric(kWh)/1000, na.rm = TRUE),
+                   meanMWh = mean(as.numeric(kWh)/1000, na.rm = TRUE),
+                   dateFrom = min(rDate),
+                   dateTo = max(rDate),
+                   nDays = uniqueN(rDate)), keyby = .(month,
+                                                      year,
+                                                      Flow_Direction)] # inport/export?
+  return(testDT)
+}
+
 getGridData <- function(years, months){
   message("Checking what we have already...")
   filesToDateDT <- data.table::as.data.table(list.files(localParams$iGridDataPath)) # get list of files already downloaded
@@ -209,19 +223,6 @@ getGridMeta <- function(dt){
   return(testDT)
 }
 
-getEmbMeta <- function(dt){
-  dt <- dt[, month := lubridate::month(rDate)]
-  dt <- dt[,year := lubridate::year(rDate)]
-  testDT <- dt[, .(nObs = .N,
-                   sumMWh = sum(as.numeric(kWh)/1000, na.rm = TRUE),
-                   meanMWh = mean(as.numeric(kWh)/1000, na.rm = TRUE),
-                   dateFrom = min(rDate),
-                   dateTo = max(rDate),
-                   nDays = uniqueN(rDate)), keyby = .(month,
-                                                      year,
-                                                      Flow_Direction)] # inport/export?
-  return(testDT)
-}
 
 makeYearlyData <- function(genType){ # parameter selects path and thus files
   if(genType == "gridGen"){
