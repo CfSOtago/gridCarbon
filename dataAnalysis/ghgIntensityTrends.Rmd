@@ -165,19 +165,22 @@ shortDT <- dcast(shortDT,
            fun = mean, # won't do anything as we should just have 1 value?
            value.var = "meankWh")
 
+
 #Test2
+legend_title <- "Type of Fuel"
 myPlot <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = Coal, colour = grey), stat = "identity")+
-  geom_line(aes(y = Diesel, colour = black))+
-  geom_line(aes(y = Gas, colour = pruple))+
-  geom_line(aes(y = Geo, colour = green))+
-  geom_line(aes(y = Hydro, colour = blue))+
-  geom_line(aes(y = Wind, colour = yellow))+
-  geom_line(aes(y = Wood, colour = brown))
-myPlot
+  geom_line(aes(y = Coal, colour = "Coal"))+
+  geom_line(aes(y = Diesel, colour = "Diesel"))+
+  geom_line(aes(y=Hydro, colour = "Hydro"))+
+  scale_color_manual(legend_title, labels = c("Coal",
+                                              "Diesel",
+                                              "Hydro"), values = c("grey",
+                                                                  "black",
+                                                                  "blue")) 
+  myPlot
   
 
-  
+  #Still does  not look right. Even when I sum Coal and Hydro kWh, Coal is much more which does not make sense. Perhaps the labeling in allGridDT is wrong???
 
 
 
