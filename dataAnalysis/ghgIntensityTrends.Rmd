@@ -147,20 +147,35 @@ selectDT <- allGridDT[month >= 1 &
                       year == 2020]
 
 #Building means by Fuel_Code, rDateTime, Time_Period, rMonth
-shortDT <- selectDT[, meankWh := NA]
-shortDT <- shortDT[, . (meankWh = mean(kWh)), keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth)]
+shortDT <- selectDT[, . (meankWh = mean(kWh),
+                         sumkWh = sum(kWh),
+                        nObs = .N), # number of obs - will show you how rare coal is :-)
+                    keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth)]
+
+# this won't build means by month - it will build them by rDateTime as rMonth is constant for each rDateTime
+
+kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
+                    kable_styling()
 
 #Building a variable with total generation
+# BA: Yes, this is a much better idea!
 #shortDT <- shortDT[, summeankWh := sum(meankWh), keyby = .(rDateTime, Time_Period)]
 
 #Test
-myPlot <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+myPlotMean <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
   geom_line(aes(y = meankWh, colour = Fuel_Code))+
   scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
-myPlot
-  
+myPlotMean
+
+myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+  geom_line(aes(y = sumkWh, colour = Fuel_Code))+
+  scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
+myPlotSum
+
 #By the looks of it I might have to do some data manipulation to have each Fuel_Code in a seperate column...I know how to do this :) 
-shortDT <- dcast(shortDT,
+
+# give it a new name as we've dcast it
+recastDT <- dcast(shortDT,
            rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
            fun = mean, # won't do anything as we should just have 1 value?
            value.var = "meankWh")
@@ -168,7 +183,7 @@ shortDT <- dcast(shortDT,
 
 #Test2
 legend_title <- "Type of Fuel"
-myPlot <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
   geom_line(aes(y = Coal, colour = "Coal"))+
   geom_line(aes(y = Diesel, colour = "Diesel"))+
   geom_line(aes(y=Hydro, colour = "Hydro"))+
@@ -182,7 +197,9 @@ myPlot <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
 
   #Still does  not look right. Even when I sum Coal and Hydro kWh, Coal is much more which does not make sense. Perhaps the labeling in allGridDT is wrong???
 
-
+# BA: No the labels are right, the problem is the mean is only calculated over half-hours which have generation. So all the half-hours where coal = 0 are not included. In other words what you have found is that when coal is used, it produces a lot of MWh. But it is not used very often. So the 'mean in use' is high but you will find the sum of half hourly kWh is low. If you look at the nObs column I have introduced to shortDT you can see this. 
+  
+# Do not sum the mean kWh - the mean will have captured the 'high' coal output. In general one should never sum a mean unless you know how many observations have contributed to each mean...
 
 
 ```
