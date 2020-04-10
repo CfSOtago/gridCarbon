@@ -115,15 +115,75 @@ kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
 Essentially 'non-grid' generation from solar photovoltaic and small scale wind. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
 
 ```{r testEmbedded}
-h <- head(allEmbeddedDT)
+#h <- head(allEmbeddedDT)
 
-kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
-  kable_styling()
+#kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
+ # kable_styling()
 ```
 
 # General trends over time
 
 # covid19 lockdown (March 2020)
+
+```{r lockdownMethodology}
+
+# 1. Select relevant years/months
+  # -> What do we want to find out? 
+   # Reduction in generation (this requires ex ante/post ante data)
+   # Changes in the feed-in of embedded generation
+   # Changes in GhG emissions
+
+# 2. Aggregate data by fuel and time
+# 3. Link GhG emissions to generation data
+# 4. Output of tables/plots embedded in text
+
+```
+
+```{r lockdown1DataSelection}
+
+#Selects Jan and Feb of 2020 as we do not have March data yet
+selectDT <- allGridDT[month >= 1 & 
+                      month <= 2 &
+                      year == 2020]
+
+#Building means by Fuel_Code, rDateTime, Time_Period, rMonth
+shortDT <- selectDT[, meankWh := NA]
+shortDT <- shortDT[, . (meankWh = mean(kWh)), keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth)]
+
+#Building a variable with total generation
+#shortDT <- shortDT[, summeankWh := sum(meankWh), keyby = .(rDateTime, Time_Period)]
+
+#Test
+myPlot <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+  geom_line(aes(y = meankWh, colour = Fuel_Code))+
+  scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
+myPlot
+  
+#By the looks of it I might have to do some data manipulation to have each Fuel_Code in a seperate column...I know how to do this :) 
+shortDT <- dcast(shortDT,
+           rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
+           fun = mean, # won't do anything as we should just have 1 value?
+           value.var = "meankWh")
+
+#Test2
+myPlot <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+  geom_line(aes(y = Coal, colour = grey), stat = "identity")+
+  geom_line(aes(y = Diesel, colour = black))+
+  geom_line(aes(y = Gas, colour = pruple))+
+  geom_line(aes(y = Geo, colour = green))+
+  geom_line(aes(y = Hydro, colour = blue))+
+  geom_line(aes(y = Wind, colour = yellow))+
+  geom_line(aes(y = Wood, colour = brown))
+myPlot
+  
+
+  
+
+
+
+
+```
+
 
 # Annexes
 
