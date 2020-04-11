@@ -151,8 +151,19 @@ shortDT <- selectDT[, . (meankWh = mean(kWh),
                          sumkWh = sum(kWh),
                         nObs = .N), # number of obs - will show you how rare coal is :-)
                     keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth)]
+#This won't build means by month - it will build them by rDateTime as rMonth is constant for each rDateTime
 
-# this won't build means by month - it will build them by rDateTime as rMonth is constant for each rDateTime
+
+#This shows us how many obs there are for each Fuel_Code. There might be an easier way to do it?
+x2 <- by(shortDT$nObs, shortDT$Fuel_Code, sum)
+do.call(rbind,as.list(x2))# Clearly hydro dominates
+
+#Let us try to avoid confusion with kWh and convert it to power MW....
+shortDT <- shortDT[, meanMW := (meankWh*2)/1000]
+shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
+
+
+
 
 kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
                     kable_styling()
@@ -165,14 +176,29 @@ kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
 myPlotMean <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
   geom_line(aes(y = meankWh, colour = Fuel_Code))+
   scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
-myPlotMean
+#myPlotMean
 
+
+
+#Changing order in plot
+
+shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
+                                                    "Gas", "Wind", "Coal", "Wood", "Diesel"))
+
+legend_title <- "Type of Fuel"
 myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = sumkWh, colour = Fuel_Code))+
-  scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
+  geom_line(aes(y = sumMW, colour = Fuel_Code))+
+  scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Time', y='Power (MW)') 
 myPlotSum
 
-#By the looks of it I might have to do some data manipulation to have each Fuel_Code in a seperate column...I know how to do this :) 
+
+
+
+
+
 
 # give it a new name as we've dcast it
 recastDT <- dcast(shortDT,
