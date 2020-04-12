@@ -48,7 +48,7 @@ loadData <- function(path){
   return(dt) # large
 }
 
-# > drake plan ----
+# drake plan ----
 plan <- drake::drake_plan(
   gridData = loadData(localParams$gridDataLoc),
   nonGridData = loadData(localParams$nonGridDataLoc)
@@ -78,13 +78,14 @@ h
 print("Grid gen loaded")
 message("Loaded ", tidyNum(nrow(origGridDT)), " rows of data")
 table(origGridDT[is.na(rDateTime)]$Time_Period)
-allGridDT <- origGridDT[!is.na(rDateTime)] # removes TP 49 & 50
+allGridDT <- origGridDT[!is.na(rDateTime) | # removes TP 49 & 50
+                          !is.na(kWh)] # removes NA kWh
 nrow(allGridDT)
 
 # > non grid data ----
-origNonGridDT[, rTime := hms::as_hms(rTime)]
 origNonGridDT[, rDateTimeOrig := rDateTime] # just in case
 origNonGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
+origNonGridDT[, rTime := hms::as_hms(rDateTime)]
 origNonGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
 origNonGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
 # check
@@ -93,7 +94,8 @@ h
 print("Non grid gen loaded")
 message("Loaded ", tidyNum(nrow(origNonGridDT)), " rows of data")
 table(origNonGridDT[is.na(rDateTime)]$Time_Period)
-allEmbeddedDT <- origNonGridDT[!is.na(rDateTime)] # removes TP 49 & 50
+allEmbeddedDT <- origNonGridDT[!is.na(rDateTime) | # removes TP 49 & 50
+                                 !is.na(kWh)] # removes NA kWh
 nrow(allEmbeddedDT)
 
 
