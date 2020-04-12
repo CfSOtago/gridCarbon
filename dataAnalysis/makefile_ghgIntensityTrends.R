@@ -1,7 +1,7 @@
 # loads data & runs a report
 
 # Load some packages
-library(gridCarbon)
+library(gridCarbon) # load this first - you will need to download & build it locally from this repo
 
 libs <- c("data.table", # data munching
           "drake", # data gets done once (ideally)
