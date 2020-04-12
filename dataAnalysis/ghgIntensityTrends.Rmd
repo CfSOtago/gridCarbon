@@ -114,14 +114,68 @@ kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
 
 Essentially 'non-grid' generation from solar photovoltaic and small scale wind. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
 
-```{r testEmbedded}
-#h <- head(allEmbeddedDT)
+```{r headEmbedded}
+h <- head(allEmbeddedDT)
 
-#kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
- # kable_styling()
+kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
+  kable_styling()
 ```
 
+
+```{r testEmbedded}
+allEmbeddedDT[, year := lubridate::year(rDate)]
+st <- allEmbeddedDT[, .(sumkWh = sum(kWh, na.rm = TRUE),
+                        nObs = .N), keyby = .(Flow_Direction, year)]
+
+rt <- data.table::dcast(st, year ~ Flow_Direction,  value.var = c("sumkWh", "nObs"))
+
+kableExtra::kable(rt, caption = "Mean kWh by flow direction") %>%
+  kable_styling()
+```
+
+Not entirely sure what these codes mean yet. TBC
+
+> For now embedded generation data is _not_ included in the following analysis.
+
 # General trends over time
+
+We use two different GHG emissions indicators:
+
+ * % of total generation in a halfhour which was 'low emissions' where this is defined as wind + solar + hydro
+ * Calculated CO2e emissions per half hour (not yet implemented)
+
+Available fuels are shown in X by year for the data available.
+
+```{r fuelsTab}
+t <- with(allGridDT, table(year, Fuel_Code))
+
+kableExtra::kable(t, caption = "Count of half hours in which fuel coded per year. Note that data for 2020 is incomplete") %>%
+  kable_styling()
+```
+
+```{r codeData}
+allGridDT[, lowEmissions := ifelse(Fuel_Code == "Hydro" |
+                                  Fuel_Code == "Wind", "'No' emissions", "Emissions")]
+allGridDT[, rDate := lubridate::as_date(rDateTime)]
+allGridDT <- addNZSeason(allGridDT, date = "rDate") # add seasons
+
+# check
+t <- with(allGridDT, table(rMonth, season))
+#t
+```
+
+# 2019 (4 seasons)
+
+```{r select2019}
+dt2019 <- allGridDT[year == 2019]
+```
+
+```{r select2019}
+dt2019 <- allGridDT[year == 2019]
+```
+
+
+# January - April 2020
 
 # covid19 lockdown (March 2020)
 
