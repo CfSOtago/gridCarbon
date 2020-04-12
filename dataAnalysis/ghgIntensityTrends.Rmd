@@ -125,7 +125,17 @@ Essentially 'non-grid' generation from solar photovoltaic and small scale wind. 
 
 # covid19 lockdown (March 2020)
 
-```{r lockdownMethodology}
+In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 23. This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.
+
+All non-essential busineeses are closed and staff is asked to work from home. This analysis aims to provide insights on developments in electriicty generation. Essential research questions company this research:
+
+* To what extent has electricty generation shown deviation of 'normal' generation patterns during the level four alert?
+
+* Has the composition of fuel sources supplying electriicty demand in New Zealand changed during the level four alert?
+
+* Has the level four alert impacted greenhouse-gas emissions associated with electriicty generation?
+
+```{r lockdownMethodology, eval=FALSE}
 
 # 1. Select relevant years/months
   # -> What do we want to find out? 
@@ -139,7 +149,7 @@ Essentially 'non-grid' generation from solar photovoltaic and small scale wind. 
 
 ```
 
-```{r lockdown1DataSelection}
+```{r lockdown1SelectData, include=FALSE}
 
 #Selects Jan and Feb of 2020 as we do not have March data yet
 selectDT <- allGridDT[month >= 1 & 
@@ -158,6 +168,17 @@ shortDT <- selectDT[, . (meankWh = mean(kWh),
 x2 <- by(shortDT$nObs, shortDT$Fuel_Code, sum)
 do.call(rbind,as.list(x2))# Clearly hydro dominates
 
+
+#Put this into a table for visualisation
+kableExtra::kable(head(x2), col.names = "nObs", caption = "Number of observations by fuel") %>%
+                    kable_styling()
+
+
+```
+We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:lockdown1SelectData) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
+
+```{r lockdowncalc}
+
 #Let us try to avoid confusion with kWh and convert it to power MW....
 shortDT <- shortDT[, meanMW := (meankWh*2)/1000]
 shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
@@ -167,6 +188,12 @@ shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
 
 kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
                     kable_styling()
+```
+Table \@ref(tab:lockdowncalc)
+
+
+
+```{r test}
 
 #Building a variable with total generation
 # BA: Yes, this is a much better idea!
@@ -229,7 +256,14 @@ myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
 
 
 ```
+```{r usefulCode}
+#\@ref(fig:wattageContributionPeak1Plot)
+#fig.cap="Percentage contribution to peak demand (17:00-21:00) in 2015"
 
+#\@ref(tab:averageAtPeak)
+
+
+```
 
 # Annexes
 
