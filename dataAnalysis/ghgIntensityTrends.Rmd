@@ -112,7 +112,7 @@ kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
 
 ## Embedded generation data
 
-Essentially 'non-grid' generation from solar photovoltaic and small scale wind. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points (GXP). Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
 
 ```{r headEmbedded}
 h <- head(allEmbeddedDT)
@@ -133,7 +133,7 @@ kableExtra::kable(rt, caption = "Mean kWh by flow direction") %>%
   kable_styling()
 ```
 
-Not entirely sure what these codes mean yet. TBC
+Not entirely sure what these codes mean yet. Limited [guidance](https://forum.emi.ea.govt.nz/thread/grid-export-and-embedded-generation-data) available? TBC
 
 > For now embedded generation data is _not_ included in the following analysis.
 
@@ -154,6 +154,8 @@ kableExtra::kable(t, caption = "Count of half hours in which fuel coded per year
 ```
 
 ```{r codeData}
+allGridDT <- allGridDT[!is.na(rDateTime) |
+                        is.na(kWh)] # should remove DST break issues etc
 allGridDT[, lowEmissions := ifelse(Fuel_Code == "Hydro" |
                                   Fuel_Code == "Wind", "'No' emissions", "Emissions")]
 allGridDT[, rDate := lubridate::as_date(rDateTime)]
@@ -162,16 +164,116 @@ allGridDT <- addNZSeason(allGridDT, date = "rDate") # add seasons
 # check
 t <- with(allGridDT, table(rMonth, season))
 #t
+
 ```
 
 # 2019 (4 seasons)
 
 ```{r select2019}
 dt2019 <- allGridDT[year == 2019]
+
+# check
+st <- summary(dt2019$rDate)
 ```
 
-```{r select2019}
-dt2019 <- allGridDT[year == 2019]
+Figure \@ref(fig:plotGWh) shows the total generation in GWh which is classified as 'no emissions'.
+
+```{r plotGWh}
+plotDT <- dt2019[!is.na(kWh), .(sumkWh = sum(kWh)), keyby = .(lowEmissions, rMonth)]
+
+ggplot2::ggplot(plotDT, aes(x = rMonth, y = sumkWh/1000000, fill = lowEmissions)) +
+  geom_col(position = "stack") +
+  labs(y = "Total GWh",
+       x = "Month",
+       caption = "2019")
+```
+
+Figure \@ref(fig:plotProportionByMonth) shows the % of total generation in GWh which is classified as 'no emissions'.
+
+```{r plotProportionByMonth}
+# could dcast but this make it obvious what we are doing:
+
+noE <- plotDT[lowEmissions %like% "No"]
+noE[, sumkWhNoE := sumkWh]
+noE$lowEmissions <- NULL
+noE$sumkWh <- NULL
+E <- plotDT[!(lowEmissions %like% "No")]
+E[, sumkWhE := sumkWh]
+E$lowEmissions <- NULL
+E$sumkWh <- NULL
+setkey(noE, rMonth)
+setkey(E, rMonth)
+
+wideDT <- noE[E]
+wideDT[, pcNoE := sumkWhNoE/(sumkWhNoE+sumkWhE)]
+
+ggplot2::ggplot(wideDT, aes(x = rMonth, y = 100*pcNoE)) +
+  geom_col() +
+  labs(y = "'no emissions' GWh as % of total",
+       x = "Month",
+       caption = "2019")
+
+```
+
+Figure \@ref(fig:plotProportionByDate) shows the % of total generation which is classified as 'no emissions' by time of day and date in 2019.
+
+```{r plotProportionByDate}
+plotDT <- dt2019[!is.na(kWh), .(sumkWh = sum(kWh)),
+                    keyby = .(rTime, rDate, lowEmissions)]
+
+# could dcast but this make it obvious what we are doing:
+noE <- plotDT[lowEmissions %like% "No"]
+noE[, sumkWhNoE := sumkWh]
+noE$lowEmissions <- NULL
+noE$sumkWh <- NULL
+E <- plotDT[!(lowEmissions %like% "No")]
+E[, sumkWhE := sumkWh]
+E$lowEmissions <- NULL
+E$sumkWh <- NULL
+setkey(noE, rTime, rDate)
+setkey(E, rTime, rDate)
+
+
+wideDT <- noE[E]
+wideDT[, pcNoE := sumkWhNoE/(sumkWhNoE+sumkWhE)]
+
+ggplot2::ggplot(wideDT, aes(x = rDate, y = rTime, fill = pcNoE*100)) +
+  geom_tile() +
+  scale_fill_continuous("%", low = "red", high = "green") +
+  labs(y = "Time of Day",
+       x = "Month",
+       caption = "% generation which is 'no emissions'\n2019")
+
+```
+
+Figure \@ref(fig:plotProportionByHalfHour) shows the % of total generation which is classified as 'no emissions' by half-hour in 2019.
+
+```{r plotProportionByHalfHour}
+plotDT <- dt2019[!is.na(kWh), .(sumkWh = sum(kWh)),
+                    keyby = .(rDateTime, lowEmissions)]
+
+# could dcast but this make it obvious what we are doing:
+noE <- plotDT[lowEmissions %like% "No"]
+noE[, sumkWhNoE := sumkWh]
+noE$lowEmissions <- NULL
+noE$sumkWh <- NULL
+E <- plotDT[!(lowEmissions %like% "No")]
+E[, sumkWhE := sumkWh]
+E$lowEmissions <- NULL
+E$sumkWh <- NULL
+setkey(noE, rDateTime)
+setkey(E, rDateTime)
+
+
+wideDT <- noE[E]
+wideDT[, pcNoE := sumkWhNoE/(sumkWhNoE+sumkWhE)]
+
+ggplot2::ggplot(wideDT, aes(x = rDateTime, y = pcNoE*100)) +
+  geom_line() +
+  labs(y = "%",
+       x = "Half hour",
+       caption = "% generation which is 'no emissions'\n2019")
+
 ```
 
 
@@ -310,6 +412,7 @@ myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
 
 
 ```
+
 ```{r usefulCode}
 #\@ref(fig:wattageContributionPeak1Plot)
 #fig.cap="Percentage contribution to peak demand (17:00-21:00) in 2015"
