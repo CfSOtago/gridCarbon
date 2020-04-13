@@ -17,7 +17,7 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded
+localParams$fromYear <- 2009 # a way to limit the number of years of data files loaded
 localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- as.Date("2020-04-24")
 
