@@ -18,14 +18,15 @@ gcParams$login <- gcParams$info[6]
 gcParams$user <- gcParams$info[7]
 
 # > Set data path ----
-if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & gcParams$sysname == "Linux"){
+if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & 
+   gcParams$sysname == "Linux"){ # cs rstudio server
   gcParams$GreenGrid <- path.expand("~/greenGridData/")
   gcParams$GreenGridData <- path.expand("~/greenGridData/cleanData/safe/")
   gcParams$censusData <- path.expand("~/greenGridData/externalData/nzCensus/") # fix for your platform
   gcParams$gxpData <- path.expand("~/greenGridData/externalData/EA_GXP_Data/") # fix for your platform
 }
 if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
-  gcParams$GreenGrid <- path.expand("~/Data/NZ_GREENGrid/greenGridData/")
+  gcParams$GreenGrid <- path.expand("~/Data/NZ_GREENGrid/")
   gcParams$GreenGridData <- path.expand("~/Data/NZ_GREENGrid/safe/")
   gcParams$censusData <- path.expand("~/Data/NZ_Census/") # fix for your platform
   gcParams$gxpData <- path.expand("~/Data/NZ_EA_EMI/gxp/") # fix for your platform
