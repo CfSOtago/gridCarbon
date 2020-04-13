@@ -4,12 +4,12 @@
 \alias{addNZSeason}
 \title{Add NZ season to a data.table}
 \usage{
-addNZSeason(dt, r_dateTime = r_dateTime)
+addNZSeason(dt, date)
 }
 \arguments{
 \item{dt}{the data table}
 
-\item{r_dateTime}{the column in the dt which is a date that lubridate::month() will work on}
+\item{date}{the column in the dt which is a date that lubridate::month() will work on}
 }
 \description{
 \code{addNZSeason} returns a dt with SOUTHERN hemisphere season added.

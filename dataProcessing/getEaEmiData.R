@@ -14,7 +14,6 @@ library(gridCarbon) # load this first - you will need to download & build it loc
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
              "curl",  #for data download
-             "drake", # for workflow efficiency
              "ggplot2", # for fancy graphs
              "readr", # writing to files
              "skimr" # for skim
@@ -258,29 +257,15 @@ makeYearlyData <- function(genType){ # parameter selects path and thus files
 # Set start time ----
 startTime <- proc.time()
 
-# drake plan ----
-plan <- drake::drake_plan(
-  embMetaData = getEmbData(years = years, months = months), # returns metadata
-  embYearlyResult = makeYearlyData(genType = "embeddedGen"),
-  gridMetaData = getGridData(years = years, months = months), # returns metadata
-  gridYearlyResult = makeYearlyData(genType = "gridGen")
-)
-
-
-# test it ----
-plan
-
-config <- drake_config(plan)
-
-# do it ----
-make(plan)
+# can't use drake as it won't go and get new data
+embMetaDataDT <- getEmbData(years = years, months = months) # returns metadata
+embYearlyResultDT <- makeYearlyData(genType = "embeddedGen")
+gridMetaDataDT <- getGridData(years = years, months = months) # returns metadata
+gridYearlyResultDT <- makeYearlyData(genType = "gridGen")
 
 # tests
-skimr::skim(drake::readd(embMetaData))
-skimr::skim(drake::readd(embYearlyResult))
-
-#skimr::skim(drake::readd(gridMetaData))
-#skimr::skim(drake::readd(gridYearlyResult))
+skimr::skim(embMetaDataDT)
+skimr::skim(embYearlyResultDT)
 
 # Finish off ----
 
