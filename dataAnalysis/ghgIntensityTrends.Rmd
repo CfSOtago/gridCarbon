@@ -355,7 +355,7 @@ ggplot2::ggplot(recastDT, aes(x = rMonth, y = year,
 Doesn't seem to be much evidence of substantial change based on this indicator alone. But:
 
  * embedded wind & solar excluded
- * this is not CO2e, it is just an indicator of generation in GW being, in theory, free of emissions as definied by fuel type.
+ * this is not CO2e, it is just an indicator of generation in GWh being, in theory, free of emissions as definied by fuel type.
 
 # Annexes
 
