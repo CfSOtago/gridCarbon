@@ -259,14 +259,17 @@ totalgenDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =
 
 
 legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(totalgenDT, aes(x= rDateTime)) +
-  geom_line(aes(y = totalMW, colour = rMonth))+
+myPlotTot <- ggplot2::ggplot(totalgenDT, 
+                             aes(x= rDateTime,
+                                 y = totalMW, 
+                                 colour = rMonth)) +
+  geom_line() +
   scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)') +
+  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") +
   #facet_grid(rMonth ~ .)
-  stat_smooth(aes(y=totalMW, method = "gam"))
+  stat_smooth(method = "gam")
 myPlotTot
 
 
