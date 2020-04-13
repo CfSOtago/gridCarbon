@@ -159,10 +159,10 @@ allGridDT <- allGridDT[!is.na(rDateTime) |
 allGridDT[, lowEmissions := ifelse(Fuel_Code == "Hydro" |
                                   Fuel_Code == "Wind", "'No' emissions", "Emissions")]
 allGridDT[, rDate := lubridate::as_date(rDateTime)]
-allGridDT <- addNZSeason(allGridDT, date = "rDate") # add seasons
+#allGridDT <- addNZSeason(allGridDT, date = "rDate") # add seasons #Does not not work???
 
 # check
-t <- with(allGridDT, table(rMonth, season))
+#t <- with(allGridDT, table(rMonth, season)) #Does not work based on previous uncomment
 #t
 
 ```
@@ -309,7 +309,7 @@ All non-essential busineeses are closed and staff is asked to work from home. Th
 
 #Selects Jan and Feb of 2020 as we do not have March data yet
 selectDT <- allGridDT[month >= 1 & 
-                      month <= 2 &
+                      month <= 3 &
                       year == 2020]
 
 #Building means by Fuel_Code, rDateTime, Time_Period, rMonth
@@ -323,15 +323,15 @@ shortDT <- selectDT[, . (meankWh = mean(kWh),
 #This shows us how many obs there are for each Fuel_Code. There might be an easier way to do it?
 x2 <- by(shortDT$nObs, shortDT$Fuel_Code, sum)
 do.call(rbind,as.list(x2))# Clearly hydro dominates
+```
 
 
+```{r nobstable}
 #Put this into a table for visualisation
 kableExtra::kable(head(x2), col.names = "nObs", caption = "Number of observations by fuel") %>%
                     kable_styling()
-
-
 ```
-We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:lockdown1SelectData) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
+We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:nobstable) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
 
 ```{r lockdowncalc}
 
@@ -345,15 +345,157 @@ shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
 kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
                     kable_styling()
 ```
-Table \@ref(tab:lockdowncalc)
+Table \@ref(tab:lockdowncalc) shows exemplary data of our data extraction. In addition, Figure \@ref(fig:plotgeneration1) pictures total generation (this is the sum for each fuel type for all generatinfg plants and all trading periods). Hydro had the highest power output in January and February. Geothermnal was used for base load and an increase in Gas output is viible for the second half of February. Wind intermittently generated while Coal was occasionally integrated. Wood and Diesel did not contribute much in January and February.
+
+
+```{r plotgeneration1, fig.cap= "Total generation by fuel"}
+
+#Changing order in plot
+
+shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
+                                                    "Gas", "Wind", "Coal", "Wood", "Diesel"))
+
+legend_title <- "Type of Fuel"
+myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+  geom_line(aes(y = sumMW, colour = Fuel_Code))+
+  scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Time', y='Power (MW)') 
+myPlotSum
 
 
 
-```{r test}
 
-#Building a variable with total generation
-# BA: Yes, this is a much better idea!
-#shortDT <- shortDT[, summeankWh := sum(meankWh), keyby = .(rDateTime, Time_Period)]
+
+```
+Figure \@ref(fig:totalgen) shows total generation data for January and February. In addition, a linear model and its error distribution is highlighted in blue. In summary, variation in electriicty generation was particularly apparent in February.
+
+```{r totalgen, fig.cap= "Total generation data for January and February", warning=FALSE, message=FALSE}
+
+# Here we attempt to compare total generation over time. Monthly/weekly granularity
+# Challenge: Match Monday with Monday and have the same number of days for comparison
+
+#We might need to dcast now...
+
+recastDT <- dcast(shortDT,
+           rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
+           fun = mean, # won't do anything as we should just have 1 value?
+           value.var = "sumMW")
+
+# Adding a weekday column
+recastDT <- recastDT[, weekdays:= wday(rDateTime, label = TRUE)]
+#Adding date column
+recastDT[, date := lubridate::as_date(rDateTime)]
+
+
+
+totalgenDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
+# Adding a weekday column
+
+
+
+legend_title <- "Month"
+myPlotTot <- ggplot2::ggplot(totalgenDT, aes(x= rDateTime)) +
+  geom_line(aes(y = totalMW, colour = rMonth))+
+  scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Date', y='Power (MW)') +
+  #facet_grid(rMonth ~ .)
+  stat_smooth(aes(y=totalMW, method = "gam"))
+myPlotTot
+
+
+#Another plot version
+#legend_title <- "Month"
+#myPlotTot <- ggplot2::ggplot(totalgenDT, aes(x= rDateTime)) +
+#  geom_area(aes(y= totalMW, color = rMonth, fill = rMonth), 
+#            alpha = 0.5, position = position_dodge(0.8)) +
+#  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
+#  scale_fill_manual(values = c("#00AFBB", "#E7B800"))+
+#  #scale_color_manual(legend_title, values = c('Jan'='blue','Feb'='red'))+
+#  theme(axis.text.x = element_text(colour = "black"),
+#        axis.text.y = element_text(colour ="black"))+
+#  labs(x='Time', y='Power (MW)') +
+#  #facet_grid(rMonth ~ .)
+#  stat_smooth(aes(y=totalMW, method = "gam"))
+#myPlotTot
+
+```
+
+In the following we attempt to compare data from January and February. To do this we extract exactly three weeks of data from each month. This is the time interval 06.01.2010-26.01.2020 for Januaray and 03.02.2020-23.02.2020 for February. 
+
+```{r threeweektotal}
+#Perhaps it is time to select three weeks and compare them properly?
+#06.01.2010-26.01.2020 and 03.02.2020-23.02.2020
+
+
+totalSelectDT <- totalgenDT[date >="2020-01-06" & 
+                            date <= "2020-01-26" |
+                            date >= "2020-02-03" &
+                            date <= "2020-02-23"]
+
+# I have to somehow overlay the two variables in rMonth
+```
+This methodology allows us to have the same number of time stamps for each month and is presented in Figure \@ref(fig:threeweekplot). This plot does not show much though. An overlay of the two sets of three week data would be better.
+```{r threeweekplot, fig.cap="Three weeks of extracted data for January and February"}
+
+#This shows us the selected weeks for January and February
+legend_title <- "Month"
+myPlotTot <- ggplot2::ggplot(totalSelectDT, aes(x= rDateTime)) +
+  geom_line(aes(y = totalMW, colour = rMonth))+
+  scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Date', y='Power (MW)') 
+  #facet_grid(rMonth ~ .)
+myPlotTot
+```
+This is conducted in Figure \@ref(fig:overlayedtotalplot). This view of overlaying data requires us to use the idividual time stamps on the x-axis instead of dates. We can identify individual days with two peaks in each day. The first day represents a Monday etc. Electricity generation on the weekends was lower than during the week and January showed a alightly higher overall generation. 
+```{r overlayedtotalplot, fig.cap= "Overlayed three week data for January and February"}
+
+#There must be a way to overlay this data...
+data1 <- data.table(Jan=numeric())
+data1 <-data1[, .(Jan = ifelse(totalSelectDT$rMonth == "Jan", totalSelectDT$totalMW, NA ))]
+data1 <-data1[!is.na(data1$Jan)]
+
+
+data2 <-data.table(Feb=numeric())
+data2 <-data2[, .(Feb = ifelse(totalSelectDT$rMonth == "Feb", totalSelectDT$totalMW, NA ))]
+data2 <-data2[!is.na(data2$Feb)]
+
+
+data1 <- data1[, Feb := data2$Feb]
+data1 <- data1[, ID := .I]
+
+#We lost our sense of time here but we can still see each individual day. Weekends have lower generation. The time stamp number increases over time. Every 15 minutes one stamo is added.
+legend_title <- "Month"
+myPlotTot <- ggplot2::ggplot(data1, aes(x= ID)) +
+geom_line(aes(y = Jan, colour = "Jan"), size = .4)+
+geom_line(aes(y = Feb, colour = "Feb"), size = .4)+
+scale_color_manual(legend_title, labels = c("Jan",
+                                              "Feb"), values = c("#48C9B0",
+                                                                  "#F4D03F")) +
+theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  #scale_fill_discrete(name = "Month", labels = c("Jan", "Feb"))
+  labs(x='Time stamp', y='Power (MW)') 
+  #facet_grid(rMonth ~ .)
+myPlotTot
+
+```
+```{r whatisnext}
+
+#Next we want to find out what happened on a time_period average for three weeks. Furthermore we would like to find out how the generation compostion by fuel source might have changed in the two months. Some fun for tomorrow :)
+
+
+
+```
+
+```{r test, eval=FALSE}
+
+
 
 #Test
 myPlotMean <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
@@ -413,7 +555,7 @@ myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
 
 ```
 
-```{r usefulCode}
+```{r usefulCode, eval=FALSE}
 #\@ref(fig:wattageContributionPeak1Plot)
 #fig.cap="Percentage contribution to peak demand (17:00-21:00) in 2015"
 
