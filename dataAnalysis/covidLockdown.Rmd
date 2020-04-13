@@ -330,7 +330,7 @@ myPlotSum
 
 
 ```
-Figure \@ref(fig:totalgen) shows total generation data for January and February. In addition, a linear model and its error distribution is highlighted in blue. In summary, variation in electriicty generation was particularly apparent in February.
+Figure \@ref(fig:totalgen) shows total generation data for January and February. In addition, a linear model and its error distribution is highlighted in blue. In summary, variation in electricity generation was particularly apparent in February.
 
 ```{r totalgen, fig.cap= "Total generation data for January and February", warning=FALSE, message=FALSE}
 
@@ -349,26 +349,30 @@ recastDT <- recastDT[, weekdays:= wday(rDateTime, label = TRUE)]
 #Adding date column
 recastDT[, date := lubridate::as_date(rDateTime)]
 
-
-
 totalgenDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
 # Adding a weekday column
 
-
+# this is easier?
+plotDT <- shortDT[, .(totalMW = sum(sumMW)),
+                  keyby = .(rDateTime, rMonth)]
 
 legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(totalgenDT, 
+myPlotTot <- ggplot2::ggplot(plotDT, 
                              aes(x= rDateTime,
                                  y = totalMW, 
                                  colour = rMonth)) +
   geom_line() +
+  stat_smooth(method = "gam") + # better than loess
   scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") +
+  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") 
   #facet_grid(rMonth ~ .)
-  stat_smooth(method = "gam")
-myPlotTot
+  
+
+yMax <- max(plotDT$totalMW)
+yMin <- min(plotDT$totalMW)
+addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
 
 
 #Another plot version
