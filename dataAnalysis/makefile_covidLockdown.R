@@ -17,7 +17,7 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2009 # a way to limit the number of years of data files loaded
+localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded
 localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- as.Date("2020-04-24")
 
@@ -160,12 +160,12 @@ nrow(allEmbeddedDT)
 # >> yaml ----
 version <- "1.0"
 title <- paste0("NZ Electricity Generation")
-subtitle <- paste0("GHG intensity trends v", version)
-authors <- "Ben Anderson, Marilette Lotte and Carsten Dortans"
+subtitle <- paste0("covid 19 lockdown v", version)
+authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 
 # >> run report ----
-rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/ghgIntensityTrends.Rmd")
+rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown.Rmd")
 makeReport(rmdFile)
 
 
