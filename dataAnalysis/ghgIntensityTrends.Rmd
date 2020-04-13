@@ -159,10 +159,10 @@ allGridDT <- allGridDT[!is.na(rDateTime) |
 allGridDT[, lowEmissions := ifelse(Fuel_Code == "Hydro" |
                                   Fuel_Code == "Wind", "'No' emissions", "Emissions")]
 allGridDT[, rDate := lubridate::as_date(rDateTime)]
-#allGridDT <- addNZSeason(allGridDT, date = "rDate") # add seasons #Does not not work???
+allGridDT <- addNZSeason(allGridDT, date = "rDate") # add seasons #Does not not work???
 
 # check
-#t <- with(allGridDT, table(rMonth, season)) #Does not work based on previous uncomment
+t <- with(allGridDT, table(rMonth, season)) #Does not work based on previous uncomment
 #t
 
 ```
