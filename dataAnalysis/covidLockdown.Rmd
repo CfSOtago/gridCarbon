@@ -50,8 +50,106 @@ rmdLibs <- c("ggplot2", # plots
 gridCarbon::loadLibraries(rmdLibs)
 
 # Local parameters ----
+localParams$lockDownStartDate <- as.Date("2020-03-25")
+localParams$lockDownStartDateTime <- lubridate::as_datetime("2020-03-25 23:59:00")
+localParams$lockDownEndDate <- lubridate::today()
+localParams$lockDownEndDateTime <- lubridate::now()
+
+localParams$recentCutDate <- as.Date("2020-03-01")
+
+localParams$comparePlotCutDate <- as.Date("2020-02-01")
+
+localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
+localParams$lockdownCap <- "\nColoured rectangle = NZ covid lockdown to date"
+localParams$weekendCap <- "\nShaded rectangle = weekends"
+localParams$noThresh <- "\nNo specified WHO threshold"
+
+localParams$myAlpha <- 0.1
+localParams$vLineAlpha <- 0.4
+localParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+localParams$myTextSize <- 4
 
 # Local functions ----
+addLockdownDate <- function(p){
+  # assumes p has x = obsDate
+  p <- p + annotate("rect", xmin = localParams$lockDownStartDate,
+             xmax = localParams$lockDownEndDate, 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol)
+  return(p)
+}
+addLockdownDateTime <- function(p){
+  # assumes p has x = obsDateTime
+  p <- p + annotate("rect", xmin = localParams$lockDownStartDateTime,
+             xmax = localParams$lockDownEndDateTime, 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol) 
+    
+  return(p)
+}
+
+# only makes sense to use these for x axis covering March onwards
+localParams$weAlpha <- 0.3
+localParams$weFill <- "grey50"
+addWeekendsDate <- function(p){
+  p <- p + annotate("rect", xmin = as.Date("2020-03-07"),
+                    xmax = as.Date("2020-03-08"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-03-14"),
+                    xmax = as.Date("2020-03-15"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-03-21"),
+                    xmax = as.Date("2020-03-22"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-03-28"),
+                    xmax = as.Date("2020-03-29"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-04-04"),
+                    xmax = as.Date("2020-04-05"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-04-10"),
+                    xmax = as.Date("2020-04-13"), # Easter
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  return(p)
+}
+
+addWeekendsDateTime <- function(p){
+   p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-07 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-08 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-14 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-15 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-21 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-22 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-28 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-29 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-04 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-04-05 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill) 
+  p <- p + annotate("rect", xmin = as_datetime("2020-04-10 00:00:00"),
+                    xmax = as_datetime("2020-04-13 23:59:59"), # Easter
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  return(p)
+}
 ```
 
 \newpage
@@ -303,6 +401,8 @@ totalSelectDT <- totalgenDT[date >="2020-01-06" &
                             date <= "2020-02-23"]
 
 # I have to somehow overlay the two variables in rMonth
+# yes. It's not easy, about the only thing you can do is use the day of the month
+# and then shift them to get weekdays/weekends to line up :-)
 ```
 This methodology allows us to have the same number of time stamps for each month and is presented in Figure \@ref(fig:threeweekplot). This plot does not show much though. An overlay of the two sets of three week data would be better.
 ```{r threeweekplot, fig.cap="Three weeks of extracted data for January and February"}
@@ -316,10 +416,15 @@ myPlotTot <- ggplot2::ggplot(totalSelectDT, aes(x= rDateTime)) +
         axis.text.y = element_text(colour ="black"))+
   labs(x='Date', y='Power (MW)') 
   #facet_grid(rMonth ~ .)
-myPlotTot
+
+yMax <- max(totalSelectDT$totalMW)
+yMin <- min(totalSelectDT$totalMW)
+addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
 ```
 This is conducted in Figure \@ref(fig:overlayedtotalplot). This view of overlaying data requires us to use the idividual time stamps on the x-axis instead of dates. We can identify individual days with two peaks in each day. The first day represents a Monday etc. Electricity generation on the weekends was lower than during the week and January showed a alightly higher overall generation. 
+
 ```{r overlayedtotalplot, fig.cap= "Overlayed three week data for January and February"}
+# ha ha. Yes this works quite well
 
 #There must be a way to overlay this data...
 data1 <- data.table(Jan=numeric())
@@ -349,6 +454,7 @@ theme(axis.text.x = element_text(colour = "black"),
   labs(x='Time stamp', y='Power (MW)') 
   #facet_grid(rMonth ~ .)
 myPlotTot
+
 
 ```
 
