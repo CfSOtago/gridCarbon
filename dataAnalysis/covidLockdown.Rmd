@@ -473,6 +473,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
 
 # Applying the same overlaying method on three years now...
 
+date <- plotDT[year==2020]
+
 data1 <- data.table(`2020`=numeric())
 data1 <-data1[, .(`2020` = ifelse(plotDT$year == "2020" , plotDT$totalMW, NA ))]
 data1 <-data1[!is.na(data1$`2020`)]
@@ -488,6 +490,7 @@ data3 <-data3[!is.na(data3$`2018`)]
 data1 <- data1[, `2019` := data2$`2019`]
 data1 <- data1[, `2018` := data3$`2018`]
 data1 <- data1[, ID := .I]
+data1 <- data1[, date := date$date]
 
 ```
 
@@ -495,7 +498,7 @@ data1 <- data1[, ID := .I]
 
 #This shows us the selected weeks for January and February
 legend_title <- "Year"
-myPlotTot <- ggplot2::ggplot(data1, aes(x= ID )) +
+myPlotTot <- ggplot2::ggplot(data1, aes(x= date )) +
   #geom_line(aes(y = `2020`, colour = 'purple'))+
   geom_smooth(aes(y=`2020`, colour = "2020"))+
   geom_smooth(aes(y=`2019`, colour = "2019"))+
@@ -503,7 +506,11 @@ myPlotTot <- ggplot2::ggplot(data1, aes(x= ID )) +
   scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam")+
+  labs(x='Day and Month', y='Power (MW)', caption = "Smoothed fit line via gam")+
+  scale_x_date(date_breaks = '1 week',
+               minor_breaks = 'day',
+                 #date_labels = '%b %a')+
+               date_labels  ='%b %n %a')+
   scale_y_continuous( limits = c(3014,5866))
   #facet_grid(rMonth ~ .)
 
@@ -513,7 +520,7 @@ yMin <- min(plotDT$totalMW)
 
 myPlotTot
 
-
+# date_labels = '%b %d\n%a')+
 
 ```
 
