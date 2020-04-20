@@ -80,6 +80,9 @@ getEmbData <- function(years,months){
       } else {
         m <- mo
       }
+      if(lubridate::today() < as.Date(paste0(y, "-",m,"-", "01"))){
+        break # clearly there won't be any data
+      }
       lfName <- paste0(y,"_", m,"_Embedded_generation.csv") # for ease of future file filtering
       rfName <- paste0(y, m,"_Embedded_generation.csv")
       print(paste0("Checking ", lfName))
@@ -110,16 +113,22 @@ getEmbData <- function(years,months){
           dt <- data.table::fread(req$content)
           print("File downloaded successfully, saving it")
           data.table::fwrite(dt, paste0(localParams$iEmbDataPath, lfName))
+          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$iEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          print("Running: ", cmd)
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed original file")
           dt <- cleanEmbEA(dt) # clean up to a dt
           testDT <- getEmbMeta(dt) # get metaData
           testDT <- testDT[, source := rfName]
           metaDT <- rbind(metaDT, testDT)
           print("Converted to long form, saving it")
           lfName <- paste0(y,"_",m,"_Embedded_generation_long.csv")
-          data.table::fwrite(dt, paste0(localParams$oEmbDataPath, lfName))
-          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$oEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          lF <- paste0(localParams$oEmbDataPath, lfName)
+          data.table::fwrite(dt, lF)
+          cmd <- paste0("gzip -f ", "'", lF, "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          print("Running: ", cmd)
           try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
-          print("Compressed it")
+          print("Compressed long form file")
         } else {
           print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
         }
@@ -154,12 +163,16 @@ getGridData <- function(years, months){
   metaDT <- data.table::data.table() # stats collector
   for(y in years){
     for(month in months){
+      
       # construct the filename
       if(nchar(month) == 1){
         # need to add 0 as prefix
         m <- paste0("0", month)
       } else {
         m <- month
+      }
+      if(lubridate::today() < as.Date(paste0(y, "-",m,"-", "01"))){
+        break # clearly there won't be any data
       }
       lfName <- paste0(y,"_", m,"_Generation_MD.csv") # for ease of future file filtering
       rfName <- paste0(y, m,"_Generation_MD.csv")
@@ -189,6 +202,10 @@ getGridData <- function(years, months){
           dt <- data.table::fread(req$content)
           print("File downloaded successfully, saving it")
           data.table::fwrite(dt, paste0(localParams$iGridDataPath, lfName))
+          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$iGridDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          print("Running: ", cmd)
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed it")
           dt <- cleanGridEA(dt) # clean up to a dt - this does all the processing
           testDT <- getGridMeta(dt) # get metaData
           testDT <- testDT[, source := rfName]
@@ -197,6 +214,7 @@ getGridData <- function(years, months){
           lfName <- paste0(y,"_",m,"_Generation_MD_long.csv")
           data.table::fwrite(dt, paste0(localParams$oGridDataPath, lfName))
           cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$oGridDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          print("Running: ", cmd)
           try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
           print("Compressed it")
         } else {
