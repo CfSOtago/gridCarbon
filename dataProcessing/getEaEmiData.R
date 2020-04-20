@@ -24,7 +24,7 @@ gridCarbon::loadLibraries(reqLibs)
 # Parameters ----
 localParams <- list() # repo level params are in gcParams
 
-years <- seq(2000, 2020, 1) # change these to restrict or extend the file search
+years <- seq(2020, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 refresh <- 0 # set to 1 to try to download all files even if we already have them
@@ -89,7 +89,7 @@ getEmbData <- function(years,months){
         print(paste0("Already have ", lfName, ", loading from local..."))
         # Load so we can update meta
         #df <- readr::read_csv(paste0(localParams$iEmbDataPath, lfName))
-        dt <- data.table::fread(paste0(localParams$iEmbDataPath, lfName))
+        dt <- data.table::fread(paste0(localParams$iEmbDataPath, paste0(lfName, ".gz")))
         dt <- cleanEmbEA(dt) # clean up to a dt, TP49 & TP50 will fail to parse
         # print(summary(dt))
         testDT <- getEmbMeta(dt) # get metaData
@@ -259,8 +259,11 @@ startTime <- proc.time()
 
 # can't use drake as it won't go and get new data
 embMetaDataDT <- getEmbData(years = years, months = months) # returns metadata
+
 embYearlyResultDT <- makeYearlyData(genType = "embeddedGen")
+
 gridMetaDataDT <- getGridData(years = years, months = months) # returns metadata
+
 gridYearlyResultDT <- makeYearlyData(genType = "gridGen")
 
 # tests
