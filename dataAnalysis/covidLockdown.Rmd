@@ -402,8 +402,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2020-02-05"&
                    date <= "2020-02-25"|
                      
-                  # date >= "2020-03-10"&
-                  # date <= "2020-03-30"|
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
                      
                   # date >= "2020-04-01"&
                   # date <= "2020-04-21"|
@@ -415,8 +415,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2019-02-06"&
                    date <= "2019-02-26"|
                      
-                  # date >= "2019-03-05"&
-                  # date <= "2019-03-25"|
+                   date >= "2019-03-05"&
+                   date <= "2019-03-25"|
                      
                   # date >= "2019-04-03"&
                   # date <= "2019-04-23"| 
@@ -426,10 +426,10 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date <= "2018-01-30"|
                      
                    date >= "2018-02-07"&
-                   date <= "2018-02-27"]
+                   date <= "2018-02-27"|
                      
-                  # date >= "2018-03-06"&
-                  # date <= "2018-03-26"|
+                   date >= "2018-03-06"&
+                   date <= "2018-03-26"]
                      
                   # date >= "2018-04-04"&
                   # date <= "2018-04-24"]
@@ -466,8 +466,8 @@ In order to provide information on how generation changed over time it is helpfu
 
 #Do the weekdays really match up?
 
-plotDT <- data1[date >= "2020-02-05"&
-                   date <= "2020-02-25"]
+plotDT <- data1[date >= "2020-03-10"&
+                   date <= "2020-03-30"]
 
 legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
@@ -480,7 +480,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Extracted days for February', y='Power (MW)')+
+  labs(x='Extracted days for March', y='Power (MW)')+
   scale_x_datetime(date_breaks = '3 days',
                minor_breaks = 'day',
               # date_labels = '%b %a')+
@@ -494,6 +494,45 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
 #addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
 
 myPlotTot
+
+```
+
+```{r closeupplot}
+
+# Does tht timing of demand change too?
+
+plotDT <- data1[date == "2020-03-28"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+  geom_line(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2019`, colour = "2019"))+ 
+   geom_line(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Fourth Saturday of March', y='Power (MW)')+
+  scale_x_datetime(date_breaks = '1 hour',
+               #minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%H')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+
+
+
+
 
 ```
 
@@ -555,8 +594,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2020-02-05"&
                    date <= "2020-02-25"|
                      
-                  # date >= "2020-03-10"&
-                  # date <= "2020-03-30"|
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
                      
                   # date >= "2020-04-01"&
                   # date <= "2020-04-21"|
@@ -568,8 +607,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2019-02-06"&
                    date <= "2019-02-26"|
                      
-                  # date >= "2019-03-05"&
-                  # date <= "2019-03-25"|
+                   date >= "2019-03-05"&
+                   date <= "2019-03-25"|
                      
                   # date >= "2019-04-03"&
                   # date <= "2019-04-23"| 
@@ -579,10 +618,10 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date <= "2018-01-30"|
                      
                    date >= "2018-02-07"&
-                   date <= "2018-02-27"]
+                   date <= "2018-02-27"|
                      
-                  # date >= "2018-03-06"&
-                  # date <= "2018-03-26"|
+                   date >= "2018-03-06"&
+                   date <= "2018-03-26"]
                      
                   # date >= "2018-04-04"&
                   # date <= "2018-04-24"]
@@ -723,8 +762,8 @@ data1 <- data1[, rMonth := selectyearDT$rMonth]
 
 ```{r hydroplot}
 
-plotDT <- data1[date >= "2020-02-05"&
-                   date <= "2020-02-25"]
+plotDT <- data1[date >= "2020-03-10"&
+                   date <= "2020-03-30"]
 
 
 legend_title <- "Year"
@@ -732,13 +771,13 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   #geom_smooth(aes(y=`2020`, colour = "2020"))+
   #geom_smooth(aes(y=`2019`, colour = "2019"))+
   #geom_smooth(aes(y=`2018`, colour = "2018"))+
-   geom_line(aes(y=`gas20`, colour = "gas20"))+
-   geom_line(aes(y=`gas19`, colour = "gas19"))+ 
-   geom_line(aes(y=`gas18`, colour = "gas18"))+
-  scale_color_manual(legend_title, values = c(`gas20`='#3498DB',`gas19`='#229954', `gas18`='#CA6F1E'))+
+   geom_line(aes(y=`coal20`, colour = "coal20"))+
+   geom_line(aes(y=`coal19`, colour = "coal19"))+ 
+   geom_line(aes(y=`coal18`, colour = "coal18"))+
+  scale_color_manual(legend_title, values = c(`coal20`='#3498DB',`coal19`='#229954', `coal18`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Extracted days for February', y='Power (MW)')+
+  labs(x='Extracted days for March', y='Power (MW)')+
  # facet_grid(date ~ .) +
   scale_x_datetime(date_breaks = '3 days',
                minor_breaks = 'day',
@@ -783,7 +822,7 @@ summaryDT <- setnames(summaryDT, old=c("variable"), new=c("year"))
 
 
 
-plotDT <- summaryDT[Fuel_Code=="Gas"]
+plotDT <- summaryDT[Fuel_Code=="Coal"]
 
 legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
@@ -795,7 +834,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
         axis.text.y = element_text(colour ="black"))+
   labs(x='Extracted days for February', y='Power (MW)')+
  facet_grid(vars(Fuel_Code), vars(rMonth), scales = "free")+
- scale_color_manual(legend_title, values = c("gas20"='#3498DB',"gas19"='#229954', "gas18"='#CA6F1E', labels =c("a", "b", "c")))+
+ scale_color_manual(legend_title, values = c("coal20"='#3498DB',"coal19"='#229954', "coal18"='#CA6F1E', labels =c("a", "b", "c")))+
  theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
   labs(x='Extracted days for February', y='Power (MW)')+
@@ -810,17 +849,6 @@ myPlotTot
 
 ```
 
-```{r usefulCode, eval=FALSE}
-#\@ref(fig:wattageContributionPeak1Plot)
-#fig.cap="Percentage contribution to peak demand (17:00-21:00) in 2015"
-
-#\@ref(tab:averageAtPeak)
-
-
-
-
-
-```
 
 # Annexes
 
