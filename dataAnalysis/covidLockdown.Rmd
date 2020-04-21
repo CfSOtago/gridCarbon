@@ -268,21 +268,30 @@ All non-essential busineeses are closed and staff is asked to work from home. Th
 
 ```{r lockdown1SelectData, include=FALSE}
 
-#Selects Jan and Feb of 2020 as we do not have March data yet
+#Selects Jan and Feb of 2020, 2019, 2018 as we do not have March data yet
 selectDT <- allGridDT[month >= 1 & 
-                      month <= 3 &
-                      year == 2020]
+                      month <= 4 &
+                      year == 2020 |
+                        
+                      month >= 1 & 
+                      month <= 4 &
+                      year == 2019 |
+                        
+                      month >= 1 & 
+                      month <= 4 &
+                      year == 2018]
 
 #Building means by Fuel_Code, rDateTime, Time_Period, rMonth
 shortDT <- selectDT[, . (meankWh = mean(kWh),
                          sumkWh = sum(kWh),
                         nObs = .N), # number of obs - will show you how rare coal is :-)
-                    keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth)]
+                    keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth, year)]
 #This won't build means by month - it will build them by rDateTime as rMonth is constant for each rDateTime
 
 
 #This shows us how many obs there are for each Fuel_Code. There might be an easier way to do it?
-x2 <- by(shortDT$nObs, shortDT$Fuel_Code, sum)
+plotDT <- shortDT[year==2020]
+x2 <- by(plotDT$nObs, plotDT$Fuel_Code, sum)
 do.call(rbind,as.list(x2))# Clearly hydro dominates
 ```
 
@@ -316,8 +325,10 @@ Table \@ref(tab:lockdowncalc) shows exemplary data of our data extraction. In ad
 shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
                                                     "Gas", "Wind", "Coal", "Wood", "Diesel"))
 
+plotDT <- shortDT[year==2020]
+
 legend_title <- "Type of Fuel"
-myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
+myPlotSum <- ggplot2::ggplot(plotDT, aes(x= rDateTime)) +
   geom_line(aes(y = sumMW, colour = Fuel_Code))+
   scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
   theme(axis.text.x = element_text(colour = "black"),
@@ -330,9 +341,8 @@ myPlotSum
 
 
 ```
-Figure \@ref(fig:totalgen) shows total generation data for January and February. In addition, a linear model and its error distribution is highlighted in blue. In summary, variation in electriicty generation was particularly apparent in February.
 
-```{r totalgen, fig.cap= "Total generation data for January and February", warning=FALSE, message=FALSE}
+```{r totalgen, warning=FALSE, message=FALSE}
 
 # Here we attempt to compare total generation over time. Monthly/weekly granularity
 # Challenge: Match Monday with Monday and have the same number of days for comparison
@@ -340,7 +350,7 @@ Figure \@ref(fig:totalgen) shows total generation data for January and February.
 #We might need to dcast now...
 
 recastDT <- dcast(shortDT,
-           rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
+           rDateTime + Time_Period + rMonth + year  ~ Fuel_Code, 
            fun = mean, # won't do anything as we should just have 1 value?
            value.var = "sumMW")
 
@@ -351,146 +361,418 @@ recastDT[, date := lubridate::as_date(rDateTime)]
 
 
 
-totalgenDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
-# Adding a weekday column
-
-
-
-legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(totalgenDT, 
-                             aes(x= rDateTime,
-                                 y = totalMW, 
-                                 colour = rMonth)) +
-  geom_line() +
-  scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
-  theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") +
-  #facet_grid(rMonth ~ .)
-  stat_smooth(method = "gam")
-myPlotTot
-
-
-#Another plot version
-#legend_title <- "Month"
-#myPlotTot <- ggplot2::ggplot(totalgenDT, aes(x= rDateTime)) +
-#  geom_area(aes(y= totalMW, color = rMonth, fill = rMonth), 
-#            alpha = 0.5, position = position_dodge(0.8)) +
-#  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
-#  scale_fill_manual(values = c("#00AFBB", "#E7B800"))+
-#  #scale_color_manual(legend_title, values = c('Jan'='blue','Feb'='red'))+
-#  theme(axis.text.x = element_text(colour = "black"),
-#        axis.text.y = element_text(colour ="black"))+
-#  labs(x='Time', y='Power (MW)') +
-#  #facet_grid(rMonth ~ .)
-#  stat_smooth(aes(y=totalMW, method = "gam"))
-#myPlotTot
+recastDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
 
 ```
 
-In the following we attempt to compare data from January and February. To do this we extract exactly three weeks of data from each month. This is the time interval 06.01.2010-26.01.2020 for Januaray and 03.02.2020-23.02.2020 for February. 
+Figure \@ref(fig:fourmonthsplot) shows total generation for the first four months of 2020. A red box indicates the alert level four period.
 
-```{r threeweektotal}
-#Perhaps it is time to select three weeks and compare them properly?
-#06.01.2010-26.01.2020 and 03.02.2020-23.02.2020
+```{r fourmonths}
 
+plotDT <- recastDT[year==2020]
 
-totalSelectDT <- totalgenDT[date >="2020-01-06" & 
-                            date <= "2020-01-26" |
-                            date >= "2020-02-03" &
-                            date <= "2020-02-23"]
-
-# I have to somehow overlay the two variables in rMonth
-# yes. It's not easy, about the only thing you can do is use the day of the month
-# and then shift them to get weekdays/weekends to line up :-)
 ```
-This methodology allows us to have the same number of time stamps for each month and is presented in Figure \@ref(fig:threeweekplot). This plot does not show much though. An overlay of the two sets of three week data would be better.
-```{r threeweekplot, fig.cap="Three weeks of extracted data for January and February"}
+
+```{r fourmonthsplot, fig.cap="Four months of total generation for 2020"}
 
 #This shows us the selected weeks for January and February
 legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(totalSelectDT, aes(x= rDateTime)) +
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTime )) +
   geom_line(aes(y = totalMW, colour = rMonth))+
-  scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
+  geom_smooth(aes(y=totalMW, colour=rMonth))+
+  scale_color_manual(legend_title, values = c('Jan'='#A9DFBF','Feb'='#FAD7A0', 'Mar'='#AED6F1', 'Apr' ='#F5B7B1'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)') 
+  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") 
   #facet_grid(rMonth ~ .)
 
-yMax <- max(totalSelectDT$totalMW)
-yMin <- min(totalSelectDT$totalMW)
+yMax <- max(plotDT$totalMW)
+yMin <- min(plotDT$totalMW)
 addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
 ```
-This is conducted in Figure \@ref(fig:overlayedtotalplot). This view of overlaying data requires us to use the idividual time stamps on the x-axis instead of dates. We can identify individual days with two peaks in each day. The first day represents a Monday etc. Electricity generation on the weekends was lower than during the week and January showed a alightly higher overall generation. 
 
-```{r overlayedtotalplot, fig.cap= "Overlayed three week data for January and February"}
-# ha ha. Yes this works quite well
+```{r annualcomparision}
 
-#There must be a way to overlay this data...
-data1 <- data.table(Jan=numeric())
-data1 <-data1[, .(Jan = ifelse(totalSelectDT$rMonth == "Jan", totalSelectDT$totalMW, NA ))]
-data1 <-data1[!is.na(data1$Jan)]
+#Now we woild like to compare the first four months of 2020 with the previous years. Challenge lining up Monday with Monday etc. 
 
+                            #2020
+plotDT <- recastDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                  # date >= "2020-03-10"&
+                  # date <= "2020-03-30"|
+                     
+                  # date >= "2020-04-01"&
+                  # date <= "2020-04-21"|
+                     
+                          #2019     
+                   date >= "2019-01-09"&
+                   date <= "2019-01-29"|
+                     
+                   date >= "2019-02-06"&
+                   date <= "2019-02-26"|
+                     
+                  # date >= "2019-03-05"&
+                  # date <= "2019-03-25"|
+                     
+                  # date >= "2019-04-03"&
+                  # date <= "2019-04-23"| 
+                     
+                          #2018
+                   date >= "2018-01-10"&
+                   date <= "2018-01-30"|
+                     
+                   date >= "2018-02-07"&
+                   date <= "2018-02-27"]
+                     
+                  # date >= "2018-03-06"&
+                  # date <= "2018-03-26"|
+                     
+                  # date >= "2018-04-04"&
+                  # date <= "2018-04-24"]
 
-data2 <-data.table(Feb=numeric())
-data2 <-data2[, .(Feb = ifelse(totalSelectDT$rMonth == "Feb", totalSelectDT$totalMW, NA ))]
-data2 <-data2[!is.na(data2$Feb)]
+# Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
 
+# Applying the same overlaying method on three years now...
 
-data1 <- data1[, Feb := data2$Feb]
+select <- plotDT[year==2020]
+
+data1 <- data.table(`2020`=numeric())
+data1 <-data1[, .(`2020` = ifelse(plotDT$year == "2020" , plotDT$totalMW, NA ))]
+data1 <-data1[!is.na(data1$`2020`)]
+
+data2 <- data.table(`2019`=numeric())
+data2 <-data2[, .(`2019` = ifelse(plotDT$year == "2019" , plotDT$totalMW, NA ))]
+data2 <-data2[!is.na(data2$`2019`)]
+
+data3 <- data.table(`2018`=numeric())
+data3 <-data3[, .(`2018` = ifelse(plotDT$year == "2018" , plotDT$totalMW, NA ))]
+data3 <-data3[!is.na(data3$`2018`)]
+
+data1 <- data1[, `2019` := data2$`2019`]
+data1 <- data1[, `2018` := data3$`2018`]
 data1 <- data1[, ID := .I]
-
-#We lost our sense of time here but we can still see each individual day. Weekends have lower generation. The time stamp number increases over time. Every 15 minutes one stamo is added.
-legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(data1, aes(x= ID)) +
-geom_line(aes(y = Jan, colour = "Jan"), size = .4)+
-geom_line(aes(y = Feb, colour = "Feb"), size = .4)+
-scale_color_manual(legend_title, labels = c("Jan",
-                                              "Feb"), values = c("#48C9B0",
-                                                                  "#F4D03F")) +
-theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  #scale_fill_discrete(name = "Month", labels = c("Jan", "Feb"))
-  labs(x='Time stamp', y='Power (MW)') 
-  #facet_grid(rMonth ~ .)
-myPlotTot
-
+data1 <- data1[, date := select$date]
+data1 <- data1[, dateTime := select$rDateTime]
 
 ```
+
+In order to provide information on how generation changed over time it is helpful to compare it with previous years. Twenty matching weekdays were extracted for January and February for 2020, 2019, and 2018. We would like to make sure that the weekdays really 'match up'. Figure \@ref(fig:checkplot) shows twenty days of extracted data for the three years for February. We see that the weekdays match up and can use this methodology now for further analysis. 
+
+```{r checkplot, fig.cap="Twenty days of February for 2020, 2019, and 2018"}
+
+#Do the weekdays really match up?
+
+plotDT <- data1[date >= "2020-02-05"&
+                   date <= "2020-02-25"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+  geom_line(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2019`, colour = "2019"))+ 
+   geom_line(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for February', y='Power (MW)')+
+  scale_x_datetime(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+```
+
+
+```{r annualcomparisonplot, fig.cap="Three years with each 20 days of data for January and February so far", include=FALSE, eval=FALSE}
+
+#Do we need this plot? Probably not! Especially not with the misleading smoothed line. Better use either facet grid for each month or plot each month seperately.
+
+
+#This shows us the selected weeks for January and February
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(data1, aes(x= dateTime)) +
+  geom_smooth(aes(y=`2020`, colour = "2020"))+
+  geom_smooth(aes(y=`2019`, colour = "2019"))+
+  geom_smooth(aes(y=`2018`, colour = "2018"))+
+  #geom_line(aes(y=`2020`, colour = "2020"))+
+  #geom_line(aes(y=`2019`, colour = "2019"))+ 
+  #geom_line(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Day and Month', y='Power (MW)', caption = "Smoothed fit line via gam")
+  #scale_x_date(#date_breaks = 'day',
+               #minor_breaks = 'day',
+               #date_labels = '%b %a')+
+               #date_labels  ='%b %n %a')
+#limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+# date_labels = '%b %d\n%a')+
+
+```
+
+
+
+
 
 ```{r whatisnext}
 
-#Next we want to find out what happened on a time_period average for three weeks. Furthermore we would like to find out how the generation compostion by fuel source might have changed in the two months. Some fun for tomorrow :)
+#Next we want to find out what happened on a time_period average for three weeks. Furthermore we would like to find out how the generation composition by fuel source might have changed in the two months. Some fun for tomorrow :)
 
+#Is there variation by fuel type in the months and years? Use facet grid to compare fuel type for the extracted days...
 # we need to compare Feb/March 2020 with the mean for Feb/March in previous years, also allowing for different temperatures etc?
 
 ```
 
-```{r test, eval=FALSE}
+```{r fuelcomparison}
+                            #2020
+plotDT <- recastDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                  # date >= "2020-03-10"&
+                  # date <= "2020-03-30"|
+                     
+                  # date >= "2020-04-01"&
+                  # date <= "2020-04-21"|
+                     
+                          #2019     
+                   date >= "2019-01-09"&
+                   date <= "2019-01-29"|
+                     
+                   date >= "2019-02-06"&
+                   date <= "2019-02-26"|
+                     
+                  # date >= "2019-03-05"&
+                  # date <= "2019-03-25"|
+                     
+                  # date >= "2019-04-03"&
+                  # date <= "2019-04-23"| 
+                     
+                          #2018
+                   date >= "2018-01-10"&
+                   date <= "2018-01-30"|
+                     
+                   date >= "2018-02-07"&
+                   date <= "2018-02-27"]
+                     
+                  # date >= "2018-03-06"&
+                  # date <= "2018-03-26"|
+                     
+                  # date >= "2018-04-04"&
+                  # date <= "2018-04-24"]
+
+# Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
+
+selectyearDT <- plotDT[year==2020]
+
+hydro20 <- data.table(`H20`=numeric())
+hydro20 <-hydro20[, .(`H20` = ifelse(plotDT$year == "2020" , plotDT$Hydro, NA ))]
+hydro20 <-hydro20[!is.na(hydro20$`H20`)]
+
+hydro19  <- data.table(`H19`=numeric())
+hydro19 <-hydro19[, .(`H19` = ifelse(plotDT$year == "2019" , plotDT$Hydro, NA ))]
+hydro19 <-hydro19[!is.na(hydro19$`H19`)]
+
+hydro18  <- data.table(`H18`=numeric())
+hydro18 <-hydro18[, .(`H18` = ifelse(plotDT$year == "2018" , plotDT$Hydro, NA ))]
+hydro18 <-hydro18[!is.na(hydro18$`H18`)]
+
+
+geo20 <- data.table(`Ge20`=numeric())
+geo20 <-geo20[, .(`Ge20` = ifelse(plotDT$year == "2020" , plotDT$Geo, NA ))]
+geo20 <-geo20[!is.na(geo20$`Ge20`)]
+
+geo19 <- data.table(`Ge19`=numeric())
+geo19 <-geo19[, .(`Ge19` = ifelse(plotDT$year == "2019" , plotDT$Geo, NA ))]
+geo19 <-geo19[!is.na(geo19$`Ge19`)]
+
+geo18 <- data.table(`Ge18`=numeric())
+geo18 <-geo18[, .(`Ge18` = ifelse(plotDT$year == "2018" , plotDT$Geo, NA ))]
+geo18 <-geo18[!is.na(geo18$`Ge18`)]
+
+
+gas20 <- data.table(`Ga20`=numeric())
+gas20 <-gas20[, .(`Ga20` = ifelse(plotDT$year == "2020" , plotDT$Gas, NA ))]
+gas20 <-gas20[!is.na(gas20$`Ga20`)]
+
+gas19 <- data.table(`Ga19`=numeric())
+gas19 <-gas19[, .(`Ga19` = ifelse(plotDT$year == "2019" , plotDT$Gas, NA ))]
+gas19 <-gas19[!is.na(gas19$`Ga19`)]
+
+gas18 <- data.table(`Ga18`=numeric())
+gas18 <-gas18[, .(`Ga18` = ifelse(plotDT$year == "2018" , plotDT$Gas, NA ))]
+gas18 <-gas18[!is.na(gas18$`Ga18`)]
+
+
+wind20 <- data.table(`Wi20`=numeric())
+wind20 <-wind20[, .(`Wi20` = ifelse(plotDT$year == "2020" , plotDT$Wind, NA ))]
+wind20 <-wind20[!is.na(wind20$`Wi20`)]
+
+wind19 <- data.table(`Wi19`=numeric())
+wind19 <-wind19[, .(`Wi19` = ifelse(plotDT$year == "2019" , plotDT$Wind, NA ))]
+wind19 <-wind19[!is.na(wind19$`Wi19`)]
+
+wind18 <- data.table(`Wi18`=numeric())
+wind18 <-wind18[, .(`Wi18` = ifelse(plotDT$year == "2018" , plotDT$Wind, NA ))]
+wind18 <-wind18[!is.na(wind18$`Wi18`)]
+
+
+coal20 <- data.table(`C20`=numeric())
+coal20 <-coal20[, .(`C20` = ifelse(plotDT$year == "2020" , plotDT$Coal, NA ))]
+coal20 <-coal20[!is.na(coal20$`C20`)]
+
+coal19 <- data.table(`C19`=numeric())
+coal19 <-coal19[, .(`C19` = ifelse(plotDT$year == "2019" , plotDT$Coal, NA ))]
+coal19 <-coal19[!is.na(coal19$`C19`)]
+
+coal18 <- data.table(`C18`=numeric())
+coal18 <-coal18[, .(`C18` = ifelse(plotDT$year == "2018" , plotDT$Coal, NA ))]
+coal18 <-coal18[!is.na(coal18$`C18`)]
+
+
+wood20 <- data.table(`Wo20`=numeric())
+wood20 <-wood20[, .(`Wo20` = ifelse(plotDT$year == "2020" , plotDT$Wood, NA ))]
+wood20 <-wood20[!is.na(wood20$`Wo20`)]
+
+wood19 <- data.table(`Wo19`=numeric())
+wood19 <-wood19[, .(`Wo19` = ifelse(plotDT$year == "2019" , plotDT$Wood, NA ))]
+wood19 <-wood19[!is.na(wood19$`Wo19`)]
+
+wood18 <- data.table(`Wo18`=numeric())
+wood18 <-wood18[, .(`Wo18` = ifelse(plotDT$year == "2018" , plotDT$Wood, NA ))]
+wood18 <-wood18[!is.na(wood18$`Wo18`)]
+
+diesel20 <- data.table(`D20`=numeric())
+diesel20 <-diesel20[, .(`D20` = ifelse(plotDT$year == "2020" , plotDT$Diesel, NA ))]
+diesel20 <-diesel20[!is.na(diesel20$`D20`)]
+
+diesel19 <- data.table(`D19`=numeric())
+diesel19 <-diesel19[, .(`D19` = ifelse(plotDT$year == "2019" , plotDT$Diesel, NA ))]
+diesel19 <-diesel19[!is.na(diesel19$`D19`)]
+
+diesel18 <- data.table(`D18`=numeric())
+diesel18 <-diesel18[, .(`D18` = ifelse(plotDT$year == "2018" , plotDT$Diesel, NA ))]
+diesel18 <-diesel18[!is.na(diesel18$`D18`)]
+
+# Putting the DTs togetehr
+
+
+data1 <- data.table()
+
+data1 <- data1[, `hydro20` := hydro20$H20]
+data1 <- data1[, `hydro19` := hydro19$`H19`]
+data1 <- data1[, `hydro18` := hydro18$`H18`]
+
+data1 <- data1[, `geo20` := geo20$`Ge20`]
+data1 <- data1[, `geo19` := geo19$`Ge19`]
+data1 <- data1[, `geo18` := geo18$`Ge18`]
+
+data1 <- data1[, `gas20` := gas20$`Ga20`]
+data1 <- data1[, `gas19` := gas19$`Ga19`]
+data1 <- data1[, `gas18` := gas18$`Ga18`]
+
+data1 <- data1[, `wind20` := wind20$`Wi20`]
+data1 <- data1[, `wind19` := wind19$`Wi19`]
+data1 <- data1[, `wind18` := wind18$`Wi18`]
+
+data1 <- data1[, `coal20` := coal20$`C20`]
+data1 <- data1[, `coal19` := coal19$`C19`]
+data1 <- data1[, `coal18` := coal18$`C18`]
+
+data1 <- data1[, `wood20` := wood20$`Wo20`]
+data1 <- data1[, `wood19` := wood19$`Wo19`]
+data1 <- data1[, `wood18` := wood18$`Wo18`]
+
+data1 <- data1[, `diesel20` := diesel20$`D20`]
+data1 <- data1[, `diesel19` := diesel19$`D19`]
+data1 <- data1[, `diesel18` := diesel18$`D18`]
 
 
 
-#Test
-myPlotMean <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = meankWh, colour = Fuel_Code))+
-  scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
-#myPlotMean
+data1 <- data1[, date := selectyearDT$date]
+data1 <- data1[, dateTime := selectyearDT$rDateTime]
+data1 <- data1[, rMonth := selectyearDT$rMonth]
+
+```
+
+```{r hydroplot}
+
+plotDT <- data1[date >= "2020-02-05"&
+                   date <= "2020-02-25"]
 
 
-
-#Changing order in plot
-
-shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
-                                                    "Gas", "Wind", "Coal", "Wood", "Diesel"))
-
-legend_title <- "Type of Fuel"
-myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = sumMW, colour = Fuel_Code))+
-  scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+   geom_line(aes(y=`gas20`, colour = "gas20"))+
+   geom_line(aes(y=`gas19`, colour = "gas19"))+ 
+   geom_line(aes(y=`gas18`, colour = "gas18"))+
+  scale_color_manual(legend_title, values = c(`gas20`='#3498DB',`gas19`='#229954', `gas18`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Time', y='Power (MW)') 
-myPlotSum
+  labs(x='Extracted days for February', y='Power (MW)')+
+ # facet_grid(date ~ .) +
+  scale_x_datetime(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+myPlotTot
+
+#Perhaps it is easier if we gather?
+
+
+
+summaryDT = melt(data1, id.vars = c("date", "dateTime", "rMonth"),
+                measure.vars = c("hydro20", "hydro19", "hydro18",
+                                 "geo20", "geo19", "geo18",
+                                 "gas20", "gas19", "gas18",
+                                 "wind20", "wind19","wind18",
+                                 "coal20", "coal19", "coal18",
+                                 "wood20", "wood19", "wood18",
+                                 "diesel20","diesel19", "diesel20"))
+
+summaryDT <- summaryDT[, Fuel_Code := NA]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="hydro20"|variable=="hydro19"|variable=="hydro18", "Hydro", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="geo20"|variable=="geo19"|variable=="geo18", "Geo", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="gas20"|variable=="gas19"|variable=="gas18", "Gas", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="wind20"|variable=="wind19"|variable=="wind18", "Wind", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="coal20"|variable=="coal19"|variable=="coal18", "Coal", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="wood20"|variable=="wood19"|variable=="wood18", "Wood", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="diesel20"|variable=="diesel19"|variable=="diesel18", "Diesel", Fuel_Code)]
+
+
+summaryDT <- setnames(summaryDT, old=c("variable"), new=c("year"))
 
 
 
@@ -498,32 +780,32 @@ myPlotSum
 
 
 
-# give it a new name as we've dcast it
-recastDT <- dcast(shortDT,
-           rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
-           fun = mean, # won't do anything as we should just have 1 value?
-           value.var = "meankWh")
 
 
-#Test2
-legend_title <- "Type of Fuel"
-myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
-  geom_line(aes(y = Coal, colour = "Coal"))+
-  geom_line(aes(y = Diesel, colour = "Diesel"))+
-  geom_line(aes(y=Hydro, colour = "Hydro"))+
-  scale_color_manual(legend_title, labels = c("Coal",
-                                              "Diesel",
-                                              "Hydro"), values = c("grey",
-                                                                  "black",
-                                                                  "blue")) 
-  myPlot
-  
 
-  #Still does  not look right. Even when I sum Coal and Hydro kWh, Coal is much more which does not make sense. Perhaps the labeling in allGridDT is wrong???
+plotDT <- summaryDT[Fuel_Code=="Gas"]
 
-# BA: No the labels are right, the problem is the mean is only calculated over half-hours which have generation. So all the half-hours where coal = 0 are not included. In other words what you have found is that when coal is used, it produces a lot of MWh. But it is not used very often. So the 'mean in use' is high but you will find the sum of half hourly kWh is low. If you look at the nObs column I have introduced to shortDT you can see this. 
-  
-# Do not sum the mean kWh - the mean will have captured the 'high' coal output. In general one should never sum a mean unless you know how many observations have contributed to each mean...
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+   geom_line(aes(y=`value`, colour=`year`))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for February', y='Power (MW)')+
+ facet_grid(vars(Fuel_Code), vars(rMonth), scales = "free")+
+ scale_color_manual(legend_title, values = c("gas20"='#3498DB',"gas19"='#229954', "gas18"='#CA6F1E', labels =c("a", "b", "c")))+
+ theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for February', y='Power (MW)')+
+  scale_x_datetime(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+myPlotTot
 
 
 ```
@@ -533,6 +815,9 @@ myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
 #fig.cap="Percentage contribution to peak demand (17:00-21:00) in 2015"
 
 #\@ref(tab:averageAtPeak)
+
+
+
 
 
 ```
