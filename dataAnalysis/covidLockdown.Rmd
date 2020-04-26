@@ -330,10 +330,11 @@ plotDT <- shortDT[year==2020]
 legend_title <- "Type of Fuel"
 myPlotSum <- ggplot2::ggplot(plotDT, aes(x= rDateTime)) +
   geom_line(aes(y = sumMW, colour = Fuel_Code))+
+  geom_smooth(aes(y= sumMW, colour = Fuel_Code))+
   scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Time', y='Power (MW)') 
+  labs(x='Time', y='Power (MW)', caption = "Smoothed fit line via gam") 
 myPlotSum
 
 
@@ -363,6 +364,22 @@ recastDT[, date := lubridate::as_date(rDateTime)]
 
 recastDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
 
+
+# Let us create a daily mean too
+recast_d_meanDT <- recastDT[, .(Hydro = mean(Hydro),
+                                Geo = mean(Geo),
+                                Gas = mean(Gas),
+                                Wind = mean(Wind),
+                                Coal = mean(Coal),
+                                Wood = mean(Wood),
+                                Diesel = mean(Diesel),
+                        nObs = .N), # number of obs - will show you how rare coal is :-)
+                        keyby= .(date, year,rMonth)]
+
+recast_d_meanDT <- recast_d_meanDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(date)]
+recast_d_meanDT <- recast_d_meanDT[, totalMW18_19 := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(date)]
+
+
 ```
 
 Figure \@ref(fig:fourmonthsplot) shows total generation for the first four months of 2020. A red box indicates the alert level four period.
@@ -379,7 +396,7 @@ plotDT <- recastDT[year==2020]
 legend_title <- "Month"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTime )) +
   geom_line(aes(y = totalMW, colour = rMonth))+
-  geom_smooth(aes(y=totalMW, colour=rMonth))+
+  geom_smooth(aes(y=totalMW, colour=NULL))+
   scale_color_manual(legend_title, values = c('Jan'='#A9DFBF','Feb'='#FAD7A0', 'Mar'='#AED6F1', 'Apr' ='#F5B7B1'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
@@ -457,6 +474,7 @@ data1 <- data1[, `2018` := data3$`2018`]
 data1 <- data1[, ID := .I]
 data1 <- data1[, date := select$date]
 data1 <- data1[, dateTime := select$rDateTime]
+data1 <- data1[, rMonth := select$rMonth]
 
 ```
 
@@ -525,7 +543,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
 
 #yMax <- max(plotDT$totalMW)
 #yMin <- min(plotDT$totalMW)
-addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
 
 myPlotTot
 
@@ -535,7 +553,120 @@ myPlotTot
 
 
 ```
+```{r dmeancomparison}
+# How would that look like for daily means for Jan-Apr?
 
+
+                            #2020
+plotDT <- recast_d_meanDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
+                     
+                  # date >= "2020-04-01"&
+                  # date <= "2020-04-21"|
+                     
+                          #2019     
+                   date >= "2019-01-09"&
+                   date <= "2019-01-29"|
+                     
+                   date >= "2019-02-06"&
+                   date <= "2019-02-26"|
+                     
+                   date >= "2019-03-05"&
+                   date <= "2019-03-25"|
+                     
+                  # date >= "2019-04-03"&
+                  # date <= "2019-04-23"| 
+                     
+                          #2018
+                   date >= "2018-01-10"&
+                   date <= "2018-01-30"|
+                     
+                   date >= "2018-02-07"&
+                   date <= "2018-02-27"|
+                     
+                   date >= "2018-03-06"&
+                   date <= "2018-03-26"]
+                     
+                  # date >= "2018-04-04"&
+                  # date <= "2018-04-24"]
+
+# Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
+
+# Applying the same overlaying method on three years now...
+
+select <- plotDT[year==2020]
+
+data1 <- data.table(`2020`=numeric())
+data1 <-data1[, .(`2020` = ifelse(plotDT$year == "2020" , plotDT$totalMW, NA ))]
+data1 <-data1[!is.na(data1$`2020`)]
+
+data2 <- data.table(`2019`=numeric())
+data2 <-data2[, .(`2019` = ifelse(plotDT$year == "2019" , plotDT$totalMW, NA ))]
+data2 <-data2[!is.na(data2$`2019`)]
+
+data3 <- data.table(`2018`=numeric())
+data3 <-data3[, .(`2018` = ifelse(plotDT$year == "2018" , plotDT$totalMW, NA ))]
+data3 <-data3[!is.na(data3$`2018`)]
+
+data1 <- data1[, `2019` := data2$`2019`]
+data1 <- data1[, `2018` := data3$`2018`]
+data1 <- data1[, ID := .I]
+data1 <- data1[, date := select$date]
+data1 <- data1[, rMonth := select$rMonth]
+
+data1 <- data1[, `2018-2019` := (`2019` + `2018`)/2] #Used for a refernce period
+data1 <- data1[, `PerDiff` := (1-(`2020` / `2018-2019`))*100] #Used for a differnece in %
+
+#data1 <- data1[, dateTime := select$rDateTime]
+
+```
+
+
+```{r dailymeanplot, fig.cap="Daily mean generation by year for March"}
+
+
+#Do the weekdays really match up?
+
+plotDT <- data1[date >= "2020-03-10"&
+                   date <= "2020-03-30"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+  geom_line(aes(y=`2020`, colour = "2020"))+
+  geom_point(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2019`, colour = "2019"))+
+  geom_point(aes(y=`2019`, colour = "2019"))+
+   geom_line(aes(y=`2018`, colour = "2018"))+
+  geom_point(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for March', y='Daily mean power (MW)')+
+  scale_x_date(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+
+```
 
 ```{r annualcomparisonplot, fig.cap="Three years with each 20 days of data for January and February so far", include=FALSE, eval=FALSE}
 
@@ -573,9 +704,99 @@ myPlotTot
 
 ```
 
+```{r dailymeanplot2}
+
+plotDT <- data1
+
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+  geom_line(aes(y=`2020`, colour = "2020"))+
+  geom_point(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2018-2019`, colour = "2018-2019"))+
+  geom_point(aes(y=`2018-2019`, colour = "2018-2019"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB', `2018-2019`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for January-March', y='Daily mean power (MW)')+
+  scale_x_date(date_breaks = '5 days',
+               minor_breaks = '1 day',
+              # date_labels = '%b %a')+
+               date_labels  ='%a')+
+  facet_grid(cols = vars(rMonth), scales = "free")
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+```
+```{r dailyperdiffplot, fig.cap="Percentage difference in daily mean between 2018-2019 and 2020"}
+
+plotDT <- data1
+
+
+addLockdownDate <- function(p){
+  # assumes p has x = obsDate
+  p <- p + annotate("rect", xmin = as.Date("2020-03-26"),
+             xmax = as.Date("2020-04-24"), 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol) 
+    
+  return(p)
+}
 
 
 
+ann_rect <- data.frame(date %between% ("2020-03-26") & as.Date("2020-04-24"),wt = 5,lab = "Text",
+                       cyl = factor("Mar",levels = c("Jan","Feb","Mar")))
+p + geom_text(data = ann_text,label = "Text")
+
+
+
+
+
+
+
+anno <- data.table(x1 = c(as.Date("2020-03-26"), as.Date("2020-04-24")), 
+                   y1 = c(0, 8000), 
+                   rMonth = c("Mar", "Apr"))
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
+  geom_step(aes(y=`PerDiff`))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for January-March', y='Percentage difference')+
+  scale_x_date(date_breaks = '5 days',
+               minor_breaks = '1 day',
+              # date_labels = '%b %a')+
+               date_labels  ='%a')+
+  facet_grid(cols = vars(rMonth), scales = "free")+
+  geom_hline(yintercept=0, linetype="dashed")
+
+
+yMax <- max(plotDT$PerDiff)
+yMin <- min(plotDT$PerDiff)
+addLockdownDate(myPlotTot)
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+
+```
 
 ```{r whatisnext}
 
@@ -771,10 +992,10 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   #geom_smooth(aes(y=`2020`, colour = "2020"))+
   #geom_smooth(aes(y=`2019`, colour = "2019"))+
   #geom_smooth(aes(y=`2018`, colour = "2018"))+
-   geom_line(aes(y=`coal20`, colour = "coal20"))+
-   geom_line(aes(y=`coal19`, colour = "coal19"))+ 
-   geom_line(aes(y=`coal18`, colour = "coal18"))+
-  scale_color_manual(legend_title, values = c(`coal20`='#3498DB',`coal19`='#229954', `coal18`='#CA6F1E'))+
+   geom_line(aes(y=`hydro20`, colour = "hydro20"))+
+   geom_line(aes(y=`hydro19`, colour = "hydro19"))+ 
+   geom_line(aes(y=`hydro18`, colour = "hydro18"))+
+  scale_color_manual(legend_title, values = c(`hydro20`='#3498DB',`hydro19`='#229954', `hydro18`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
   labs(x='Extracted days for March', y='Power (MW)')+
