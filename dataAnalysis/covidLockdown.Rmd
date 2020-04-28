@@ -710,7 +710,7 @@ myPlotTot
 
 ```
 
-```{r dailymeanplot2}
+```{r dailymeanplot2, fig.cap="Daily mean total generation for 2020 and reference period by month"}
 
 plotDT <- data1
 
@@ -965,7 +965,7 @@ data1 <- data1[, rMonth := selectyearDT$rMonth]
 
 ```
 
-```{r hydroplot}
+```{r coalplot, fig.cap="Total generation for coal by year and month"}
 
 plotDT <- data1[date >= "2020-03-10"&
                    date <= "2020-03-30"]
@@ -991,7 +991,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   #limits = as.Date(c('2020-01-08','2020-01-13')))
   #scale_y_continuous( limits = c(3014,5866))
 
-myPlotTot
+#myPlotTot
 
 #Perhaps it is easier if we gather?
 
@@ -1042,7 +1042,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
  scale_color_manual(legend_title, values = c("coal20"='#3498DB',"coal19"='#229954', "coal18"='#CA6F1E', labels =c("a", "b", "c")))+
  theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Extracted days for February', y='Power (MW)')+
+  labs(x='Extracted days for March', y='Power (MW)')+
   scale_x_datetime(date_breaks = '3 days',
                minor_breaks = 'day',
               # date_labels = '%b %a')+
