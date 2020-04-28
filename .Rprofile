@@ -12,10 +12,10 @@ gcParams$repoLoc <- here::here()
 # Data ----
 # attempt to guess the platform & user
 gcParams$info <- Sys.info()
-gcParams$sysname <- gcParams$info[1]
-gcParams$nodename <- gcParams$info[4]
-gcParams$login <- gcParams$info[6]
-gcParams$user <- gcParams$info[7]
+gcParams$sysname <- gcParams$info[[1]]
+gcParams$nodename <- gcParams$info[[4]]
+gcParams$login <- gcParams$info[[6]]
+gcParams$user <- gcParams$info[[7]]
 
 # > Set data path ----
 if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & 
@@ -35,9 +35,14 @@ if(gcParams$user == "carsten.dortans" & gcParams$sysname == "Darwin"){
   # check this path is OK - HCS
   gcParams$GreenGridData <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/cleanData/safe/")
 }
+if(gcParams$user == "ba1e12" & startsWith(gcParams$nodename, "srv02405")){
+  # UoS RStudio server
+  # does not currently work
+  gcParams$GreenGridData <- path.expand("/mnt/research_filestore/resource/CivilEnvResearch/Public/SERG/data/")
+}
 
-message("We're ", gcParams$user, " using " , gcParams$sysname)
-message("Base data path : ", gcParams$GreenGrid)
+message("We're ", gcParams$user, " using " , gcParams$sysname, " on ", gcParams$nodename)
+message("=> Base data path : ", gcParams$GreenGrid)
 
 # > Misc data ----
 gcParams$bytesToMb <- 0.000001
