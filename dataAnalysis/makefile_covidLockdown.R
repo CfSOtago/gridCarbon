@@ -17,10 +17,10 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded. Change this value
+localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded. Change this value
 # to get drake to refresh the data
 localParams$lockDownStart <- as.Date("2020-03-24")
-localParams$lockDownEnd <- as.Date("2020-04-24")
+localParams$lockDownEnd <- lubridate::today()
 
 # > data paths ----
 localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
@@ -172,6 +172,6 @@ authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 # >> run report ----
 rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown.Rmd")
-makeReport(rmdFile)
+#makeReport(rmdFile)
 
 
