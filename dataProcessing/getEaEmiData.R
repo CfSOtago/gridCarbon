@@ -13,7 +13,8 @@ library(gridCarbon) # load this first - you will need to download & build it loc
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
-             "curl",  #for data download
+             "curl",  # for data download
+             "here", # for here
              "ggplot2", # for fancy graphs
              "readr", # writing to files
              "skimr" # for skim
@@ -22,6 +23,8 @@ reqLibs <- c("data.table", # data munching
 gridCarbon::loadLibraries(reqLibs)
 
 # Parameters ----
+source(paste0(here::here(), "/.Rprofile")) # to set default repo lovel params
+
 localParams <- list() # repo level params are in gcParams
 
 years <- seq(2000, 2020, 1) # change these to restrict or extend the file search
@@ -110,6 +113,9 @@ getEmbData <- function(years,months){
           dt <- data.table::fread(req$content)
           print("File downloaded successfully, saving it")
           data.table::fwrite(dt, paste0(localParams$iEmbDataPath, lfName))
+          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$iEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed it")
           dt <- cleanEmbEA(dt) # clean up to a dt
           testDT <- getEmbMeta(dt) # get metaData
           testDT <- testDT[, source := rfName]
@@ -249,6 +255,7 @@ makeYearlyData <- function(genType){ # parameter selects path and thus files
     cmd <- paste0("gzip -f ", of)
     message("Gzip file: ", of)
     try(system(cmd)) # seems to throw an error on the CS RStudio server but it still works
+    message("Done")
   }
   return(yearDT) # return the last year for testing if needed
 }
