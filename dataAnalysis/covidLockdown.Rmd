@@ -242,7 +242,7 @@ Not entirely sure what these codes mean yet. Limited [guidance](https://forum.em
 
 # Analysis
 
-In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 2020 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 23. This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.
+In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 2020 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 28 This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.
 
 All non-essential busineeses are closed and staff is asked to work from home. This analysis aims to provide insights on developments in electriicty generation. Essential research questions company this research:
 
@@ -478,9 +478,9 @@ data1 <- data1[, rMonth := select$rMonth]
 
 ```
 
-In order to provide information on how generation changed over time it is helpful to compare it with previous years. Twenty matching weekdays were extracted for January and February for 2020, 2019, and 2018. We would like to make sure that the weekdays really 'match up'. Figure \@ref(fig:checkplot) shows twenty days of extracted data for the three years for February. We see that the weekdays match up and can use this methodology now for further analysis. 
+In order to provide information on how generation changed over time it is helpful to compare it with previous years. Twenty matching weekdays were extracted for January to March for 2020, 2019, and 2018. We would like to make sure that the weekdays really 'match up'. Figure \@ref(fig:checkplot) shows twenty days of extracted data for the three years for March We see that the weekdays match up.
 
-```{r checkplot, fig.cap="Twenty days of February for 2020, 2019, and 2018"}
+```{r checkplot, fig.cap="Twenty days of March for 2020, 2019, and 2018"}
 
 #Do the weekdays really match up?
 
@@ -502,20 +502,25 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   scale_x_datetime(date_breaks = '3 days',
                minor_breaks = 'day',
               # date_labels = '%b %a')+
-               date_labels  ='%n %a')
-  #limits = as.Date(c('2020-01-08','2020-01-13')))
-  #scale_y_continuous( limits = c(3014,5866))
-
-
-#yMax <- max(plotDT$totalMW)
-#yMin <- min(plotDT$totalMW)
-#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+               date_labels  ='%n %a')+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as_datetime("2020-03-25 00:15:00"), 
+                xmax = as_datetime("2020-03-30 23:45:00"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.datetime("2020-04-01 00:15:00"), 
+    #            xmax = as.datetime("2020-04-21 23:45:00"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
 
 myPlotTot
 
 ```
+Figure \@ref(fig:closeupplot)
 
-```{r closeupplot}
+```{r closeupplot, fig.cap="Total generation over time for the fourth Saturday in March by year "}
 
 # Does tht timing of demand change too?
 
@@ -638,9 +643,6 @@ plotDT <- data1[date >= "2020-03-10"&
 
 legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
-  #geom_smooth(aes(y=`2020`, colour = "2020"))+
-  #geom_smooth(aes(y=`2019`, colour = "2019"))+
-  #geom_smooth(aes(y=`2018`, colour = "2018"))+
   geom_line(aes(y=`2020`, colour = "2020"))+
   geom_point(aes(y=`2020`, colour = "2020"))+
    geom_line(aes(y=`2019`, colour = "2019"))+
@@ -654,14 +656,18 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
   scale_x_date(date_breaks = '3 days',
                minor_breaks = 'day',
               # date_labels = '%b %a')+
-               date_labels  ='%n %a')
-  #limits = as.Date(c('2020-01-08','2020-01-13')))
-  #scale_y_continuous( limits = c(3014,5866))
-
-
-#yMax <- max(plotDT$totalMW)
-#yMin <- min(plotDT$totalMW)
-#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+               date_labels  ='%n %a')+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as.Date("2020-03-25"), 
+                xmax = as.Date("2020-03-30"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.Date("2020-04-01"), 
+    #            xmax = as.Date("2020-04-21"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
 
 myPlotTot
 
@@ -711,9 +717,6 @@ plotDT <- data1
 
 legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
-  #geom_smooth(aes(y=`2020`, colour = "2020"))+
-  #geom_smooth(aes(y=`2019`, colour = "2019"))+
-  #geom_smooth(aes(y=`2018`, colour = "2018"))+
   geom_line(aes(y=`2020`, colour = "2020"))+
   geom_point(aes(y=`2020`, colour = "2020"))+
    geom_line(aes(y=`2018-2019`, colour = "2018-2019"))+
@@ -726,14 +729,18 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
                minor_breaks = '1 day',
               # date_labels = '%b %a')+
                date_labels  ='%a')+
-  facet_grid(cols = vars(rMonth), scales = "free")
-  #limits = as.Date(c('2020-01-08','2020-01-13')))
-  #scale_y_continuous( limits = c(3014,5866))
-
-
-#yMax <- max(plotDT$totalMW)
-#yMin <- min(plotDT$totalMW)
-#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+  facet_grid(cols = vars(rMonth), scales = "free")+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as.Date("2020-03-25"), 
+                xmax = as.Date("2020-03-30"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.Date("2020-04-01"), 
+    #            xmax = as.Date("2020-04-21"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
 
 myPlotTot
 
@@ -743,35 +750,11 @@ myPlotTot
 plotDT <- data1
 
 
-addLockdownDate <- function(p){
-  # assumes p has x = obsDate
-  p <- p + annotate("rect", xmin = as.Date("2020-03-26"),
-             xmax = as.Date("2020-04-24"), 
-             ymin = yMin, ymax = yMax, 
-             alpha = localParams$myAlpha, 
-             fill = localParams$vLineCol, 
-             colour = localParams$vLineCol) 
-    
-  return(p)
-}
+# lockdown start: 2020-03-26
+# lockdown end: 2020-04-28
 
+#Once we have April data we can add the red box for April. Just reverse the #. This is only possible for the extracted days and not for the whole lockdown period
 
-
-ann_rect <- data.frame(date %between% ("2020-03-26") & as.Date("2020-04-24"),wt = 5,lab = "Text",
-                       cyl = factor("Mar",levels = c("Jan","Feb","Mar")))
-p + geom_text(data = ann_text,label = "Text")
-
-
-
-
-
-
-
-anno <- data.table(x1 = c(as.Date("2020-03-26"), as.Date("2020-04-24")), 
-                   y1 = c(0, 8000), 
-                   rMonth = c("Mar", "Apr"))
-
-legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
   geom_step(aes(y=`PerDiff`))+
   theme(axis.text.x = element_text(colour = "black"),
@@ -779,19 +762,20 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
   labs(x='Extracted days for January-March', y='Percentage difference')+
   scale_x_date(date_breaks = '5 days',
                minor_breaks = '1 day',
-              # date_labels = '%b %a')+
                date_labels  ='%a')+
   facet_grid(cols = vars(rMonth), scales = "free")+
-  geom_hline(yintercept=0, linetype="dashed")
-
-
-yMax <- max(plotDT$PerDiff)
-yMin <- min(plotDT$PerDiff)
-addLockdownDate(myPlotTot)
-
-#yMax <- max(plotDT$totalMW)
-#yMin <- min(plotDT$totalMW)
-#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+  geom_hline(yintercept=0, linetype="dashed")+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as.Date("2020-03-25"), 
+                xmax = as.Date("2020-03-30"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.Date("2020-04-01"), 
+    #            xmax = as.Date("2020-04-21"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
 
 myPlotTot
 
