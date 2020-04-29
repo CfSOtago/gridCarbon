@@ -116,16 +116,6 @@ getEmbData <- function(years,months){
           cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$iEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
           try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
           print("Compressed it")
-          dt <- cleanEmbEA(dt) # clean up to a dt
-          testDT <- getEmbMeta(dt) # get metaData
-          testDT <- testDT[, source := rfName]
-          metaDT <- rbind(metaDT, testDT)
-          print("Converted to long form, saving it")
-          lfName <- paste0(y,"_",m,"_Embedded_generation_long.csv")
-          data.table::fwrite(dt, paste0(localParams$oEmbDataPath, lfName))
-          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$oEmbDataPath, lfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
-          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
-          print("Compressed it")
         } else {
           print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
         }
@@ -228,18 +218,53 @@ getGridMeta <- function(dt){
   return(testDT)
 }
 
-
-makeYearlyData <- function(genType){ # parameter selects path and thus files
+makeMonthlyData <- function(genType){
+  #genType <- "embeddedGen"
   if(genType == "gridGen"){
-    path <- paste0(localParams$gridDataLoc, "processed/yearly/")
+    path <- paste0(localParams$gridDataLoc)
   } 
   if(genType == "embeddedGen"){
-    path <- paste0(localParams$nonGridDataLoc, "processed/yearly/")
+    path <- paste0(localParams$nonGridDataLoc)
   }
-  message("Checking what we have already in: ", path)
-  filesToDateDT <- data.table::as.data.table(list.files(path)) # get list of files already downloaded
+  iPath <- paste0(path, "raw/")
+  oPath <- paste0(path, "processed/monthly/")
+  message("Checking what we have already in: ", iPath)
+  filesToDateDT <- data.table::as.data.table(list.files(iPath)) # get list of files already downloaded
   filesToDateDT[, year := tstrsplit(V1, split = "_", keep = 1)]
-  filesToDateDT[, fullPath := paste0(path,V1)]
+  filesToDateDT[, month := tstrsplit(V1, split = "_", keep = 2)]
+  filesToDateDT[, fullPath := paste0(iPath,V1)]
+  
+  for(y in unique(filesToDateDT[, year])){
+    for(m in unique(filesToDateDT[, month])){
+      f <- filesToDateDT[year == y & month == m, fullPath]
+      message("Loading", f)
+      dt <- data.table::fread(f)
+      dt <- cleanEmbEA(dt) # clean up
+      lfName <- paste0(y,"_",m,"_Embedded_generation.csv")
+      of <- paste0(oPath, lfName)
+      message("Converted to long form, saving it to", of)
+      data.table::fwrite(dt, of)
+      cmd <- paste0("gzip -f ", "'", path.expand(of), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+      try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+      print("Compressed it")
+    }
+  }
+}
+
+makeYearlyData <- function(genType){ # parameter selects path and thus files
+  #genType <- "embeddedGen"
+  if(genType == "gridGen"){
+    path <- paste0(localParams$gridDataLoc)
+  } 
+  if(genType == "embeddedGen"){
+    path <- paste0(localParams$nonGridDataLoc)
+  }
+  iPath <- paste0(path, "processed/monthly/")
+  oPath <- paste0(path, "processed/yearly/")
+  message("Checking what we have in: ", iPath)
+  filesToDateDT <- data.table::as.data.table(list.files(iPath)) # get list of files already downloaded
+  filesToDateDT[, year := tstrsplit(V1, split = "_", keep = 1)]
+  filesToDateDT[, fullPath := paste0(iPath,V1)]
   years <- unique(filesToDateDT[year != "metaDT.csv",]$year) # avoid the metadata file
   for(y in years){
     fList <- filesToDateDT[year == y, fullPath]
@@ -249,8 +274,8 @@ makeYearlyData <- function(genType){ # parameter selects path and thus files
                                data.table::fread(f) # auto-parses nicely
                       ) # decodes .gz on the fly
     )
-    # write out the year file ----
-    of <- paste0(path,y,"_", genType, ".csv")
+    of <- paste0(oPath,y,"_", genType, ".csv")
+    message("Writing: ", of)
     data.table::fwrite(yearDT, of)
     cmd <- paste0("gzip -f ", of)
     message("Gzip file: ", of)
