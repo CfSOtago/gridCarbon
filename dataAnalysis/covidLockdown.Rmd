@@ -331,6 +331,7 @@ legend_title <- "Type of Fuel"
 myPlotSum <- ggplot2::ggplot(plotDT, aes(x= rDateTime)) +
   geom_line(aes(y = sumMW, colour = Fuel_Code))+
   geom_smooth(aes(y= sumMW, colour = Fuel_Code))+
+  theme(legend.position="bottom")+
   scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
@@ -400,12 +401,15 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTime )) +
   scale_color_manual(legend_title, values = c('Jan'='#A9DFBF','Feb'='#FAD7A0', 'Mar'='#AED6F1', 'Apr' ='#F5B7B1'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as_datetime("2020-03-25 00:15:00"), 
+                xmax = as_datetime("2020-03-31 23:45:00"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  theme(legend.position="bottom")+
   labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") 
   #facet_grid(rMonth ~ .)
-
-yMax <- max(plotDT$totalMW)
-yMin <- min(plotDT$totalMW)
-addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+myPlotTot
 ```
 
 ```{r annualcomparision}
@@ -480,7 +484,7 @@ data1 <- data1[, rMonth := select$rMonth]
 
 In order to provide information on how generation changed over time it is helpful to compare it with previous years. Twenty matching weekdays were extracted for January to March for 2020, 2019, and 2018. We would like to make sure that the weekdays really 'match up'. Figure \@ref(fig:checkplot) shows twenty days of extracted data for the three years for March We see that the weekdays match up.
 
-```{r checkplot, fig.cap="Twenty days of March for 2020, 2019, and 2018"}
+```{r checkplot, fig.cap="Twenty days of total generation for March by year"}
 
 #Do the weekdays really match up?
 
@@ -498,6 +502,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
+  theme(legend.position="bottom")+
   labs(x='Extracted days for March', y='Power (MW)')+
   scale_x_datetime(date_breaks = '3 days',
                minor_breaks = 'day',
@@ -518,7 +523,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
 myPlotTot
 
 ```
-Figure \@ref(fig:closeupplot)
+Figure \@ref(fig:closeupplot) shows a close-up for one day in March for the three years. We see that on this particular Saturdays during the lockdown period the morning peak was shifted towards mid-day. Total generation at morning peak dropped by 11% compared to previous years. Interestingly, the evening peak reached almost the same total generation despite the lockdown but was shifted by one hour. 
 
 ```{r closeupplot, fig.cap="Total generation over time for the fourth Saturday in March by year "}
 
@@ -538,6 +543,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
   labs(x='Fourth Saturday of March', y='Power (MW)')+
+  theme(legend.position="bottom")+
   scale_x_datetime(date_breaks = '1 hour',
                #minor_breaks = 'day',
               # date_labels = '%b %a')+
@@ -626,12 +632,12 @@ data1 <- data1[, date := select$date]
 data1 <- data1[, rMonth := select$rMonth]
 
 data1 <- data1[, `2018-2019` := (`2019` + `2018`)/2] #Used for a refernce period
-data1 <- data1[, `PerDiff` := (1-(`2020` / `2018-2019`))*100] #Used for a differnece in %
+data1 <- data1[, `PerDiff` := (1-(`2018-2019` / `2020`))*100] #Used for a differnece in %
 
 #data1 <- data1[, dateTime := select$rDateTime]
 
 ```
-
+A less distorted view on total generation data is provided in Figure \@ref(fig:dailymeanplot). Instead of 15-minute granularity data daily means represent ttoal generation. We can see how close the analysed years were togetehr before the lockdowm and as the lockdown starts a large rop in generation occurs. 
 
 ```{r dailymeanplot, fig.cap="Daily mean generation by year for March"}
 
@@ -653,6 +659,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
   labs(x='Extracted days for March', y='Daily mean power (MW)')+
+  theme(legend.position="bottom")+
   scale_x_date(date_breaks = '3 days',
                minor_breaks = 'day',
               # date_labels = '%b %a')+
@@ -709,6 +716,12 @@ myPlotTot
 # date_labels = '%b %d\n%a')+
 
 ```
+A mean over 2018 and 2019 data was compared with 2020 in Figure \@ref(fig:dailymeanplot2). In addition, previous months were considered in this plot as well and show that the variation apparent during the lockdown period is significant between the two reference periods. 
+
+Figure \@ref(fig:dailyperdiffplot) highlights the percentage difference between 2020 and the reference period of 2018-2019. On a daily mean granularity, generation dropped by over 15% during the lockdown period. 
+
+
+
 
 ```{r dailymeanplot2, fig.cap="Daily mean total generation for 2020 and reference period by month"}
 
@@ -730,6 +743,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
               # date_labels = '%b %a')+
                date_labels  ='%a')+
   facet_grid(cols = vars(rMonth), scales = "free")+
+  theme(legend.position="bottom")+
   geom_rect(data = data.frame(rMonth = "Mar"), 
             aes(xmin = as.Date("2020-03-25"), 
                 xmax = as.Date("2020-03-30"), 
@@ -765,6 +779,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
                date_labels  ='%a')+
   facet_grid(cols = vars(rMonth), scales = "free")+
   geom_hline(yintercept=0, linetype="dashed")+
+  theme(legend.position="bottom")+
   geom_rect(data = data.frame(rMonth = "Mar"), 
             aes(xmin = as.Date("2020-03-25"), 
                 xmax = as.Date("2020-03-30"), 
@@ -979,6 +994,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
    geom_line(aes(y=`hydro20`, colour = "hydro20"))+
    geom_line(aes(y=`hydro19`, colour = "hydro19"))+ 
    geom_line(aes(y=`hydro18`, colour = "hydro18"))+
+  theme(legend.position="bottom")+
   scale_color_manual(legend_title, values = c(`hydro20`='#3498DB',`hydro19`='#229954', `hydro18`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
@@ -1038,6 +1054,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
   labs(x='Extracted days for February', y='Power (MW)')+
+  theme(legend.position="bottom")+
  facet_grid(vars(Fuel_Code), vars(rMonth), scales = "free")+
  scale_color_manual(legend_title, values = c("coal20"='#3498DB',"coal19"='#229954', "coal18"='#CA6F1E', labels =c("a", "b", "c")))+
  theme(axis.text.x = element_text(colour = "black"),
