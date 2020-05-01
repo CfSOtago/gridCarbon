@@ -462,6 +462,91 @@ addWeekendsDate(p, yMin, yMax)
 
 ```
 
+Figure \@ref(fig:compareDaysGWpc) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see 2020 was already slightly lower than previous years but there appears to be a substantial lockdown effect especially on weekdays as we would expect.
+
+```{r compareDaysGWpc, fig.cap="Percentage difference in mean generation levels 2020 vs 2017-2019"}
+
+testDate <- localParams$comparePlotCut
+#testDate <- as.Date("2020-03-21")
+baseDT <- fixedDT[compareYear == "2017-2019", .(baseMean = mean(GENERATION)), 
+               keyby = .(dateFixed, wkdayFixed, compareYear)]
+testDT <- fixedDT[compareYear == "2020", .(testMean = mean(GENERATION)), 
+               keyby = .(dateFixed, wkdayFixed, compareYear)]
+  
+setkey(baseDT, dateFixed, wkdayFixed)
+setkey(baseDT, dateFixed, wkdayFixed)
+  
+plotDT <- baseDT[testDT] # auto drops non matches to 2020
+plotDT[, pcDiffMean := 100*(testMean - baseMean)/baseMean] # -ve value indicates lower
+plotDT[, pos := ifelse(pcDiffMean > 0 , "Pos", "Neg")] # want to colour the line sections - how?
+  # final plot - adds annotations
+  # use means for consistency with comparison plots where we use WHO thresholds (means)
+yMin <- min(plotDT$pcDiffMean)
+print(paste0("Max drop %:", round(yMin)))
+yMax <- max(plotDT$pcDiffMean)
+print(paste0("Max increase %:", round(yMax)))
+p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean 
+                                   #color = pos, group=NA)
+                                   )
+                       ) +
+    geom_step() +
+    scale_x_date(date_breaks = "7 days", date_labels =  "%a %d %b")  +
+    theme(axis.text.x=element_text(angle=90, hjust=1, size = 5)) +
+    labs(x = "Date",
+         y = "% difference 2020 vs 2017-2019",
+         caption = paste0(localParams$lockdownCap, localParams$weekendCap)) +  
+    theme(legend.position="bottom") +
+    geom_hline(yintercept = 0, linetype = 3)
+  
+  p <- addLockdownDate(p, yMin, yMax)
+  
+  p <- addWeekendsDate(p, yMin, yMax)
+  
+  p 
+```
+
+Figure \@ref(fig:compareDaysCIpc) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+
+```{r compareDaysCIpc, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+
+testDate <- localParams$comparePlotCut
+#testDate <- as.Date("2020-03-21")
+baseDT <- fixedDT[compareYear == "2017-2019", .(baseMean = mean(CARBON_INTENSITY)), 
+               keyby = .(dateFixed, wkdayFixed, compareYear)]
+testDT <- fixedDT[compareYear == "2020", .(testMean = mean(CARBON_INTENSITY)), 
+               keyby = .(dateFixed, wkdayFixed, compareYear)]
+  
+setkey(baseDT, dateFixed, wkdayFixed)
+setkey(baseDT, dateFixed, wkdayFixed)
+  
+plotDT <- baseDT[testDT] # auto drops non matches to 2020
+plotDT[, pcDiffMean := 100*(testMean - baseMean)/baseMean] # -ve value indicates lower
+plotDT[, pos := ifelse(pcDiffMean > 0 , "Pos", "Neg")] # want to colour the line sections - how?
+  # final plot - adds annotations
+  # use means for consistency with comparison plots where we use WHO thresholds (means)
+yMin <- min(plotDT$pcDiffMean)
+print(paste0("Max drop %:", round(yMin)))
+yMax <- max(plotDT$pcDiffMean)
+print(paste0("Max increase %:", round(yMax)))
+p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean 
+                                   #color = pos, group=NA)
+                                   )
+                       ) +
+    geom_step() +
+    scale_x_date(date_breaks = "7 days", date_labels =  "%a %d %b")  +
+    theme(axis.text.x=element_text(angle=90, hjust=1, size = 5)) +
+    labs(x = "Date",
+         y = "% difference 2020 vs 2017-2019",
+         caption = paste0(localParams$lockdownCap, localParams$weekendCap)) +  
+    theme(legend.position="bottom") +
+    geom_hline(yintercept = 0, linetype = 3)
+  
+  p <- addLockdownDate(p, yMin, yMax)
+  
+  p <- addWeekendsDate(p, yMin, yMax)
+  
+  p 
+```
 
 # Summary (to date)
 
