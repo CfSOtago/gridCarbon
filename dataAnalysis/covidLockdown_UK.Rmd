@@ -44,14 +44,16 @@ plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
 library(gridCarbon)
 # Packages used in the report ----
 rmdLibs <- c("ggplot2", # plots
+             "hms",
           "kableExtra", # fancy tables
-          "lubridate"
+          "lubridate",
+          "viridis"
           )
 gridCarbon::loadLibraries(rmdLibs)
 
 # Local parameters ----
-localParams$lockDownStartDate <- as.Date("2020-03-25")
-localParams$lockDownStartDateTime <- lubridate::as_datetime("2020-03-25 23:59:00")
+localParams$lockDownStartDate <- as.Date("2020-03-24")
+localParams$lockDownStartDateTime <- lubridate::as_datetime("2020-03-23 23:59:00")
 localParams$lockDownEndDate <- lubridate::today()
 localParams$lockDownEndDateTime <- lubridate::now()
 
@@ -60,9 +62,8 @@ localParams$recentCutDate <- as.Date("2020-03-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
 localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
-localParams$lockdownCap <- "\nColoured rectangle = NZ covid lockdown to date"
+localParams$lockdownCap <- "\nColoured rectangle = UK covid lockdown to date"
 localParams$weekendCap <- "\nShaded rectangle = weekends"
-localParams$noThresh <- "\nNo specified WHO threshold"
 
 localParams$myAlpha <- 0.1
 localParams$vLineAlpha <- 0.4
@@ -70,21 +71,28 @@ localParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2
 localParams$myTextSize <- 4
 
 # Local functions ----
-addLockdownDate <- function(p){
+addLockdownDate <- function(p, yMin, yMax){
   # assumes p has x = obsDate
+  # p <- p + annotate("text", x = localParams$lockDownStartDate, 
+  #            y = yMax * 0.4, angle = 10,size = localParams$myTextSize,
+  #            label = "UK covid lockdown to date", hjust = 0.5)
   p <- p + annotate("rect", xmin = localParams$lockDownStartDate,
              xmax = localParams$lockDownEndDate, 
-             ymin = yMin, ymax = yMax, 
+             ymin = yMin-1, ymax = yMax+1, 
              alpha = localParams$myAlpha, 
              fill = localParams$vLineCol, 
              colour = localParams$vLineCol)
   return(p)
 }
-addLockdownDateTime <- function(p){
+
+addLockdownDateTime <- function(p, yMin, yMax){
   # assumes p has x = obsDateTime
+  # p <- p + annotate("text", x = localParams$lockDownStartDateTime, 
+  #            y = yMax * 0.4, angle = 10,size = localParams$myTextSize,
+  #            label = "UK covid lockdown to date", hjust = 0.5)
   p <- p + annotate("rect", xmin = localParams$lockDownStartDateTime,
              xmax = localParams$lockDownEndDateTime, 
-             ymin = yMin, ymax = yMax, 
+             ymin = yMin-1, ymax = yMax+1, 
              alpha = localParams$myAlpha, 
              fill = localParams$vLineCol, 
              colour = localParams$vLineCol) 
@@ -95,35 +103,47 @@ addLockdownDateTime <- function(p){
 # only makes sense to use these for x axis covering March onwards
 localParams$weAlpha <- 0.3
 localParams$weFill <- "grey50"
-addWeekendsDate <- function(p){
+localParams$labelPos <- 0.9
+addWeekendsDate <- function(p, yMin, yMax){
   p <- p + annotate("rect", xmin = as.Date("2020-03-07"),
-                    xmax = as.Date("2020-03-08"),
+                    xmax = as.Date("2020-03-09"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   p <- p + annotate("rect", xmin = as.Date("2020-03-14"),
-                    xmax = as.Date("2020-03-15"),
+                    xmax = as.Date("2020-03-16"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   p <- p + annotate("rect", xmin = as.Date("2020-03-21"),
-                    xmax = as.Date("2020-03-22"),
+                    xmax = as.Date("2020-03-23"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   p <- p + annotate("rect", xmin = as.Date("2020-03-28"),
-                    xmax = as.Date("2020-03-29"),
+                    xmax = as.Date("2020-03-30"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   p <- p + annotate("rect", xmin = as.Date("2020-04-04"),
-                    xmax = as.Date("2020-04-05"),
+                    xmax = as.Date("2020-04-06"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   p <- p + annotate("rect", xmin = as.Date("2020-04-10"),
-                    xmax = as.Date("2020-04-13"), # Easter
+                    xmax = as.Date("2020-04-14"), # Easter
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("text", x = as.Date("2020-04-10"),
+                    y = yMax*localParams$labelPos,
+                    label = "Easter") # Easter
+  p <- p + annotate("rect", xmin = as.Date("2020-04-18"),
+                    xmax = as.Date("2020-04-20"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-04-25"),
+                    xmax = as.Date("2020-04-27"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   return(p)
 }
 
-addWeekendsDateTime <- function(p){
+addWeekendsDateTime <- function(p, yMin, yMax){
    p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-07 00:00:00"),
                     xmax = lubridate::as_datetime("2020-03-08 23:59:59"),
                     ymin = yMin, ymax = yMax,
@@ -144,8 +164,19 @@ addWeekendsDateTime <- function(p){
                     xmax = lubridate::as_datetime("2020-04-05 23:59:59"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill) 
-  p <- p + annotate("rect", xmin = as_datetime("2020-04-10 00:00:00"),
-                    xmax = as_datetime("2020-04-13 23:59:59"), # Easter
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-10 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-04-13 23:59:59"), # Easter
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("text", x = lubridate::as_datetime("2020-04-10 00:00:00"),
+                    y = yMax*localParams$labelPos,
+                    label = "Easter") # Easter
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-18 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-04-19 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+    p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-25 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-04-26 23:59:59"),
                     ymin = yMin, ymax = yMax,
                     alpha = localParams$weAlpha, fill = localParams$weFill)
   return(p)
@@ -163,7 +194,7 @@ addWeekendsDateTime <- function(p){
 
 ## Report circulation
 
- * Public – this report is intended for publication following EECA approval.
+ * Public – this report is intended for publication.
 
 ## Code
 
@@ -186,373 +217,260 @@ All code used to create this report is available from:
 
 ```{r generic support, child=gcParams$support}
 ```
- * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson);
- * The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)
+ * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson)
  
 \newpage
 
 # Introduction
 
-Building on [@khan_analysis_2018], we are interested in GHG emissions from the NZ electricity generation over time. We are especially interested in how this might change during the NZ covid-19 lockdown period (`r localParams$lockDownStart` to `r localParams$lockDownEnd`).
+Building on [@staffell_measuring_2017] and [@khan_analysis_2018], we are interested in GHG emissions from UK electricity generation over time. We are especially interested in how this might change during the UK covid-19 lockdown period (from `r localParams$lockDownStart`).
 
-We use two different GHG emissions indicators:
+Fortunately the UK Electricity System Operator publishes half-hourly generation data which includes both power generation (and thus 'demand') by fuels and also includes a per-kWh carbon intensity for the enrgy produced per half-hour. We use this data to explore the following research questions:
 
- * % of total generation in a halfhour which was 'low emissions' where this is defined as wind + solar + hydro
- * Calculated CO2e emissions per half hour (not yet implemented)
+ * To what extent has electricty demand shown deviation from 'normal' demand patterns during the lockdown period?
 
+ * Has the composition of fuel sources supplying electriicty changed during this period?
+
+ * Has the lockdown changed greenhouse-gas emissions associated with electriicty generation?
+ 
 # Data
 
-## Wholesale generation data
+## Grid generation data
 
-Essentially 'grid' generation from major power stations of various kinds. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/` and pre-processed.
+Essentially 'grid' generation from major power stations of various kinds. Data downloaded from ` https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix` and pre-processed.
 
 ```{r testGrid}
-h <- head(allGridDT)
+h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
 
 kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
   kable_styling()
 ```
 
+```{r prepData}
+# re-use the method from the airQual analysis to align the years
+# kludgy but works
+
+# this is such a kludge
+gridGenDT[, obsDate := lubridate::date(rDateTimeUTC)]
+gridGenDT[, decimalDate := lubridate::decimal_date(obsDate)] # gives year.% of year
+
+# set to 2020 'dates'
+gridGenDT[, date2020 := lubridate::as_date(lubridate::date_decimal(2020 + (decimalDate - year)))] # sets 'year' portion to 2020 so the lockdown annotation works
+gridGenDT[, day2020 := lubridate::wday(date2020, label = TRUE)] # 
+
+# 2020 Jan 1st = Weds
+dt2020 <- gridGenDT[year == 2020] 
+dt2020[, dateFixed := obsDate] # no need to change
+dt2020[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
+# table(dt2020$origDoW, dt2020$fixedDoW)
+# head(dt2020[origDoW != fixedDoW])
+
+# shift to the closest aligning day
+# 2019 Jan 1st = Tues
+dt2019 <- gridGenDT[year == 2019] 
+dt2019[, dateFixed := date2020 -1]
+dt2019[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
+# table(dt2019$origDoW, dt2019$fixedDoW)
+# head(dt2019[origDoW != fixedDoW])
+
+# 2018 Jan 1st = Mon
+dt2018 <- gridGenDT[year == 2018] 
+dt2018[, dateFixed := date2020 - 2]
+dt2018[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
+# table(dt2018$origDoW, dt2018$fixedDoW)
+# head(dt2018[origDoW != fixedDoW])
+
+# 2017 Jan 1st = Sat
+dt2017 <- gridGenDT[year == 2017] 
+dt2017[, dateFixed := date2020 - 3]
+dt2017[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
+# table(dt2017$origDoW, dt2017$fixedDoW)
+# head(dt2017[origDoW != fixedDoW])
+
+fixedDT <- rbind(dt2017, dt2018, dt2019, dt2020) # leave out 2016 for now
+
+fixedDT[, dateFixed := lubridate::as_date(dateFixed)]
+fixedDT[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
+
+
+fixedDT[, compareYear := ifelse(year == 2020, "2020",
+                              "2017-2019")
+        ]
+
+fixedDT[, wkdayObs := lubridate::wday(obsDate, label = TRUE, )]
+
+t <- fixedDT[, .(meanHalfHourlyMW = mean(GENERATION),
+                 meanCI = mean(CARBON_INTENSITY),
+                 nObs = .N), keyby = .(year)]
+
+kableExtra::kable(t, caption = "Mean half hourly power (MW) and carbon intensity (CO2e) by year - note that 2020 is incomplete") %>%
+  kable_styling()
+
+```
+
 ## Embedded generation data
 
-Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points (GXP). Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
 
-```{r headEmbedded}
-h <- head(allEmbeddedDT)
+> We have not yet found a source of this data.
 
-kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
-  kable_styling()
-```
-
-
-```{r testEmbedded}
-allEmbeddedDT[, year := lubridate::year(rDate)]
-st <- allEmbeddedDT[, .(sumkWh = sum(kWh, na.rm = TRUE),
-                        nObs = .N), keyby = .(Flow_Direction, year)]
-
-rt <- data.table::dcast(st, year ~ Flow_Direction,  value.var = c("sumkWh", "nObs"))
-
-kableExtra::kable(rt, caption = "Mean kWh by flow direction") %>%
-  kable_styling()
-```
-
-Not entirely sure what these codes mean yet. Limited [guidance](https://forum.emi.ea.govt.nz/thread/grid-export-and-embedded-generation-data) available? TBC
-
-> For now embedded generation data is _not_ included in the following analysis.
+> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when the sun is shining and the wind is blowing.
 
 # Analysis
 
-In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 2020 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 23. This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.
+In this section we analyse changes in electricity demand during the UK Covid-19 lockdown via analysis of the generation data. 
 
-All non-essential busineeses are closed and staff is asked to work from home. This analysis aims to provide insights on developments in electriicty generation. Essential research questions company this research:
+## Deviation from 'normal'
 
-* To what extent has electricty generation shown deviation of 'normal' generation patterns during the level four alert?
+Several [articles](https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606?utm_source=twitter&utm_medium=bylinetwitterbutton) and [analyses](https://twitter.com/DrIAGWilson/status/1255100828781883394) have suggested that demand (and thus generation) patterns have shifted so that [weekdays have become more like weekends](http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html).
 
-* Has the composition of fuel sources supplying electriicty demand in New Zealand changed during the level four alert?
+Figure \@ref(fig:recentHalfHourlyGW) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
-* Has the level four alert impacted greenhouse-gas emissions associated with electriicty generation?
+```{r recentHalfHourlyGW, fig.cap="Half-hourly generation, UK (recent)"}
+recentDT <- fixedDT[obsDate > localParams$recentCutDate]
 
-```{r lockdownMethodology, eval=FALSE}
+p <- ggplot2::ggplot(recentDT, aes(x = rDateTimeUTC, 
+                                   y = GENERATION/1000,
+                                   colour = wkdayObs)) +
+  geom_point() +
+  scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
+                        "\n", localParams$gamCap),
+       x = "Time",
+       y = "Total generation (GW)") +
+  theme(legend.position = "bottom") + 
+  geom_smooth(aes(colour = NULL)) +
+  scale_color_viridis_d(name = "Day of the week") +
+  guides(colour=guide_legend(nrow=2))
 
-# 1. Select relevant years/months
-  # -> What do we want to find out? 
-   # Reduction in generation (this requires ex ante/post ante data)
-   # Changes in the feed-in of embedded generation
-   # Changes in GhG emissions
+# final plot - adds annotations
+yMin <- min(recentDT$GENERATION/1000)
+yMax <- max(recentDT$GENERATION/1000)
 
-# 2. Aggregate data by fuel and time
-# 3. Link GhG emissions to generation data
-# 4. Output of tables/plots embedded in text
+p <- addLockdownDateTime(p, yMin, yMax)
+addWeekendsDateTime(p,yMin, yMax) 
+
+```
+
+Figure \@ref(fig:recentHalfHourlyGWProfiles) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
+
+```{r recentHalfHourlyGWProfiles, fig.cap="Half-hourly generation, UK (recent)"}
+recentDT[, rTime:=hms::as_hms(rDateTimeUTC)]
+
+p <- ggplot2::ggplot(recentDT, aes(x = rTime, 
+                                   y = GENERATION/1000,
+                                   colour = obsDate)) +
+  geom_point() +
+  #scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  labs(x = "Time",
+       y = "Total generation (GW)") +
+  facet_wrap(. ~ wkdayObs)
+
+  p +
+    guides(colour=guide_legend(title="Date"))
+```
+
+Figure \@ref(fig:recentHalfHourlyCIProfiles) shows the daily carbon intensity profiles over time for each day of the week. As above, trends are much less clear.
+
+```{r recentHalfHourlyCIProfiles, fig.cap="Half-hourly generation, UK (recent)"}
+p <- ggplot2::ggplot(recentDT, aes(x = rTime, 
+                                   y = CARBON_INTENSITY,
+                                   colour = obsDate)) +
+  geom_point() +
+  #scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  labs(x = "Time",
+       y = "Carbon intensity (Kg CO2 kWh)") +
+  facet_wrap(. ~ wkdayObs)
+
+  p +
+    guides(colour=guide_legend(title="Date"))
+```
+
+Figure \@ref(fig:recentHalfHourlyCI) shows half-hourly carbon intensity since `r localParams$recentCutDate`. As we might expect this is much more variable largely due to the contribution made by wind generation.
+
+```{r recentHalfHourlyCI, fig.cap="Half-hourly carbon intensity, UK (recent)"}
+
+p <- ggplot2::ggplot(recentDT, aes(x = rDateTimeUTC, 
+                                   y = CARBON_INTENSITY,
+                                   colour = wkdayObs)) +
+  geom_point() +
+  scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
+                        "\n", localParams$gamCap),
+       x = "Time",
+       y = "Carbon intensity (CO2e/kWh)") +
+  theme(legend.position = "bottom") + 
+  geom_smooth(aes(colour = NULL)) +
+  scale_color_viridis_d(name = "Day of the week") +
+  guides(colour=guide_legend(nrow=2))
+
+# final plot - adds annotations
+yMin <- min(recentDT$CARBON_INTENSITY)
+yMax <- max(recentDT$CARBON_INTENSITY)
+
+p <- addLockdownDateTime(p, yMin, yMax)
+addWeekendsDateTime(p,yMin, yMax) 
 
 ```
 
-```{r lockdown1SelectData, include=FALSE}
+Figure \@ref(fig:compareDaysGW) shows the most recent mean half-hourly GW compared to the same day in previous years. We have shifted the dates for the comparison years to ensure that weekdays and weekends line up. Note that this plot shows daily means with no indications of variance. Visible differences are therefore purely indicative at this stage. Nevertheless it is clear that 2020 is a different generation shape to the average of the previous years. Lockdown has clearly amplified the sesonal trend.
 
-#Selects Jan and Feb of 2020 as we do not have March data yet
-selectDT <- allGridDT[month >= 1 & 
-                      month <= 3 &
-                      year == 2020]
+> Beware temperature differences
 
-#Building means by Fuel_Code, rDateTime, Time_Period, rMonth
-shortDT <- selectDT[, . (meankWh = mean(kWh),
-                         sumkWh = sum(kWh),
-                        nObs = .N), # number of obs - will show you how rare coal is :-)
-                    keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth)]
-#This won't build means by month - it will build them by rDateTime as rMonth is constant for each rDateTime
+```{r compareDaysGW, fig.cap="Comparative daily mean half-hour generation levels 2020 vs 2017-2019"}
+plotDT <- fixedDT[dateFixed <= lubridate::today() & 
+                  dateFixed >= localParams$comparePlotCut, # otherwise we get the whole year 
+                .(meanGen = mean(GENERATION),
+                  nObs = .N,
+                  meanCI = mean(CARBON_INTENSITY)
+                  ),
+                keyby = .(dateFixed, wkdayFixed, compareYear)]
 
+# reduce the shape numbers
+plotDT[, weekDay := ifelse(wkdayFixed == "Sat" |
+                             wkdayFixed == "Sun", "Weekend", "Weekday")]
 
-#This shows us how many obs there are for each Fuel_Code. There might be an easier way to do it?
-x2 <- by(shortDT$nObs, shortDT$Fuel_Code, sum)
-do.call(rbind,as.list(x2))# Clearly hydro dominates
-```
+# final plot - adds annotations
+yMin <- min(plotDT$meanGen/1000)
+yMax <- max(plotDT$meanGen/1000)
 
-
-```{r nobstable}
-#Put this into a table for visualisation
-kableExtra::kable(head(x2), col.names = "nObs", caption = "Number of observations by fuel") %>%
-                    kable_styling()
-```
-We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:nobstable) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
-
-```{r lockdowncalc}
-
-#Let us try to avoid confusion with kWh and convert it to power MW....
-shortDT <- shortDT[, meanMW := (meankWh*2)/1000]
-shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
-
-
-
-
-kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
-                    kable_styling()
-```
-Table \@ref(tab:lockdowncalc) shows exemplary data of our data extraction. In addition, Figure \@ref(fig:plotgeneration1) pictures total generation (this is the sum for each fuel type for all generatinfg plants and all trading periods). Hydro had the highest power output in January and February. Geothermnal was used for base load and an increase in Gas output is viible for the second half of February. Wind intermittently generated while Coal was occasionally integrated. Wood and Diesel did not contribute much in January and February.
-
-
-```{r plotgeneration1, fig.cap= "Total generation by fuel"}
-
-#Changing order in plot
-
-shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
-                                                    "Gas", "Wind", "Coal", "Wood", "Diesel"))
-
-legend_title <- "Type of Fuel"
-myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = sumMW, colour = Fuel_Code))+
-  scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
-  theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  labs(x='Time', y='Power (MW)') 
-myPlotSum
-
-
-
-
-
-```
-Figure \@ref(fig:totalgen) shows total generation data for January and February. In addition, a linear model and its error distribution is highlighted in blue. In summary, variation in electricity generation was particularly apparent in February.
-
-```{r totalgen, fig.cap= "Total generation data for January and February", warning=FALSE, message=FALSE}
-
-# Here we attempt to compare total generation over time. Monthly/weekly granularity
-# Challenge: Match Monday with Monday and have the same number of days for comparison
-
-#We might need to dcast now...
-
-recastDT <- dcast(shortDT,
-           rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
-           fun = mean, # won't do anything as we should just have 1 value?
-           value.var = "sumMW")
-
-# Adding a weekday column
-recastDT <- recastDT[, weekdays:= wday(rDateTime, label = TRUE)]
-#Adding date column
-recastDT[, date := lubridate::as_date(rDateTime)]
-
-totalgenDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
-# Adding a weekday column
-
-# this is easier?
-plotDT <- shortDT[, .(totalMW = sum(sumMW)),
-                  keyby = .(rDateTime, rMonth)]
-
-legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(plotDT, 
-                             aes(x= rDateTime,
-                                 y = totalMW, 
-                                 colour = rMonth)) +
-  geom_line() +
-  stat_smooth(method = "gam") + # better than loess
-  scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
-  theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") 
-  #facet_grid(rMonth ~ .)
+p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, 
+                                   y = meanGen/1000,
+                                   colour = compareYear,
+                                 shape = weekDay)) +
+  geom_point() +
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
+                        "\n", localParams$gamCap),
+       x = "Date",
+       y = "Mean half hourly generation (GW)") +
+  theme(legend.position = "bottom") + 
+  geom_smooth(aes(shape = NULL)) + # will get a smooth line per year not per day
+  scale_color_viridis_d(name = "Period") +
+  scale_shape_discrete(name = "Weekday") +
+  guides(colour=guide_legend(nrow=2)) +
+  guides(shape=guide_legend(nrow=2))
   
+p <- addLockdownDate(p, yMin, yMax)
 
-yMax <- max(plotDT$totalMW)
-yMin <- min(plotDT$totalMW)
-addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
-
-
-#Another plot version
-#legend_title <- "Month"
-#myPlotTot <- ggplot2::ggplot(totalgenDT, aes(x= rDateTime)) +
-#  geom_area(aes(y= totalMW, color = rMonth, fill = rMonth), 
-#            alpha = 0.5, position = position_dodge(0.8)) +
-#  scale_color_manual(values = c("#00AFBB", "#E7B800")) +
-#  scale_fill_manual(values = c("#00AFBB", "#E7B800"))+
-#  #scale_color_manual(legend_title, values = c('Jan'='blue','Feb'='red'))+
-#  theme(axis.text.x = element_text(colour = "black"),
-#        axis.text.y = element_text(colour ="black"))+
-#  labs(x='Time', y='Power (MW)') +
-#  #facet_grid(rMonth ~ .)
-#  stat_smooth(aes(y=totalMW, method = "gam"))
-#myPlotTot
+addWeekendsDate(p, yMin, yMax)
 
 ```
 
-In the following we attempt to compare data from January and February. To do this we extract exactly three weeks of data from each month. This is the time interval 06.01.2010-26.01.2020 for Januaray and 03.02.2020-23.02.2020 for February. 
 
-```{r threeweektotal}
-#Perhaps it is time to select three weeks and compare them properly?
-#06.01.2010-26.01.2020 and 03.02.2020-23.02.2020
-
-
-totalSelectDT <- totalgenDT[date >="2020-01-06" & 
-                            date <= "2020-01-26" |
-                            date >= "2020-02-03" &
-                            date <= "2020-02-23"]
-
-# I have to somehow overlay the two variables in rMonth
-# yes. It's not easy, about the only thing you can do is use the day of the month
-# and then shift them to get weekdays/weekends to line up :-)
-```
-This methodology allows us to have the same number of time stamps for each month and is presented in Figure \@ref(fig:threeweekplot). This plot does not show much though. An overlay of the two sets of three week data would be better.
-```{r threeweekplot, fig.cap="Three weeks of extracted data for January and February"}
-
-#This shows us the selected weeks for January and February
-legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(totalSelectDT, aes(x= rDateTime)) +
-  geom_line(aes(y = totalMW, colour = rMonth))+
-  scale_color_manual(legend_title, values = c('Jan'='#48C9B0','Feb'='#F4D03F'))+
-  theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  labs(x='Date', y='Power (MW)') 
-  #facet_grid(rMonth ~ .)
-
-yMax <- max(totalSelectDT$totalMW)
-yMin <- min(totalSelectDT$totalMW)
-addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
-```
-This is conducted in Figure \@ref(fig:overlayedtotalplot). This view of overlaying data requires us to use the idividual time stamps on the x-axis instead of dates. We can identify individual days with two peaks in each day. The first day represents a Monday etc. Electricity generation on the weekends was lower than during the week and January showed a alightly higher overall generation. 
-
-```{r overlayedtotalplot, fig.cap= "Overlayed three week data for January and February"}
-# ha ha. Yes this works quite well
-
-#There must be a way to overlay this data...
-data1 <- data.table(Jan=numeric())
-data1 <-data1[, .(Jan = ifelse(totalSelectDT$rMonth == "Jan", totalSelectDT$totalMW, NA ))]
-data1 <-data1[!is.na(data1$Jan)]
-
-
-data2 <-data.table(Feb=numeric())
-data2 <-data2[, .(Feb = ifelse(totalSelectDT$rMonth == "Feb", totalSelectDT$totalMW, NA ))]
-data2 <-data2[!is.na(data2$Feb)]
-
-
-data1 <- data1[, Feb := data2$Feb]
-data1 <- data1[, ID := .I]
-
-#We lost our sense of time here but we can still see each individual day. Weekends have lower generation. The time stamp number increases over time. Every 15 minutes one stamo is added.
-legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(data1, aes(x= ID)) +
-geom_line(aes(y = Jan, colour = "Jan"), size = .4)+
-geom_line(aes(y = Feb, colour = "Feb"), size = .4)+
-scale_color_manual(legend_title, labels = c("Jan",
-                                              "Feb"), values = c("#48C9B0",
-                                                                  "#F4D03F")) +
-theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  #scale_fill_discrete(name = "Month", labels = c("Jan", "Feb"))
-  labs(x='Time stamp', y='Power (MW)') 
-  #facet_grid(rMonth ~ .)
-myPlotTot
-
-
-```
-
-```{r whatisnext}
-
-#Next we want to find out what happened on a time_period average for three weeks. Furthermore we would like to find out how the generation compostion by fuel source might have changed in the two months. Some fun for tomorrow :)
-
-# we need to compare Feb/March 2020 with the mean for Feb/March in previous years, also allowing for different temperatures etc?
-
-```
-
-```{r test, eval=FALSE}
-
-
-
-#Test
-myPlotMean <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = meankWh, colour = Fuel_Code))+
-  scale_color_manual(values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))
-#myPlotMean
-
-
-
-#Changing order in plot
-
-shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
-                                                    "Gas", "Wind", "Coal", "Wood", "Diesel"))
-
-legend_title <- "Type of Fuel"
-myPlotSum <- ggplot2::ggplot(shortDT, aes(x= rDateTime)) +
-  geom_line(aes(y = sumMW, colour = Fuel_Code))+
-  scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
-  theme(axis.text.x = element_text(colour = "black"),
-        axis.text.y = element_text(colour ="black"))+
-  labs(x='Time', y='Power (MW)') 
-myPlotSum
-
-
-
-
-
-
-
-# give it a new name as we've dcast it
-recastDT <- dcast(shortDT,
-           rDateTime + Time_Period + rMonth  ~ Fuel_Code, 
-           fun = mean, # won't do anything as we should just have 1 value?
-           value.var = "meankWh")
-
-
-#Test2
-legend_title <- "Type of Fuel"
-myPlot <- ggplot2::ggplot(recastDT, aes(x= rDateTime)) +
-  geom_line(aes(y = Coal, colour = "Coal"))+
-  geom_line(aes(y = Diesel, colour = "Diesel"))+
-  geom_line(aes(y=Hydro, colour = "Hydro"))+
-  scale_color_manual(legend_title, labels = c("Coal",
-                                              "Diesel",
-                                              "Hydro"), values = c("grey",
-                                                                  "black",
-                                                                  "blue")) 
-  myPlot
-  
-
-  #Still does  not look right. Even when I sum Coal and Hydro kWh, Coal is much more which does not make sense. Perhaps the labeling in allGridDT is wrong???
-
-# BA: No the labels are right, the problem is the mean is only calculated over half-hours which have generation. So all the half-hours where coal = 0 are not included. In other words what you have found is that when coal is used, it produces a lot of MWh. But it is not used very often. So the 'mean in use' is high but you will find the sum of half hourly kWh is low. If you look at the nObs column I have introduced to shortDT you can see this. 
-  
-# Do not sum the mean kWh - the mean will have captured the 'high' coal output. In general one should never sum a mean unless you know how many observations have contributed to each mean...
-
-
-```
-
-```{r usefulCode, eval=FALSE}
-#\@ref(fig:wattageContributionPeak1Plot)
-#fig.cap="Percentage contribution to peak demand (17:00-21:00) in 2015"
-
-#\@ref(tab:averageAtPeak)
-
-
-```
+# Summary (to date)
 
 # Annexes
 
-## Wholesale generation data ('grid')
+## Grid generation data
 
 ```{r skimGrid}
-skimr::skim(allGridDT)
-```
-
-## Embedded generation data ('nongrid')
-
-```{r skimNonGrid}
-skimr::skim(allEmbeddedDT)
+skimr::skim(gridGenDT)
 ```
 
 ## Conversion factors
@@ -574,6 +492,7 @@ Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` min
  * base R [@baseR]
  * bookdown [@bookdown]
  * data.table [@data.table]
+ * drake [@drake]
  * ggplot2 [@ggplot2]
  * kableExtra [@kableExtra]
  * knitr [@knitr]
