@@ -17,22 +17,17 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded
+localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
 localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- as.Date("2020-04-24")
 
 # > data paths ----
 localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
-                                  "externalData/EA_Generation_Data/processed/yearly/")
-localParams$nonGridDataLoc <- paste0(gcParams$GreenGrid, 
-                                     "externalData/EA_Embedded_Generation_Data/processed/yearly/")
+                                  "externalData/ukEso/eso_generation/processed/yearly/")
+
 # > captions ----
-localParams$gridCaption <- paste0("Source: NZ Energy Authority",
-                                 "\nhttps://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/")
-localParams$nonGridCaption <- paste0("Source: NZ Energy Authority",
-                                 "\nhttps://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation")
-localParams$jointCaption <- paste0(localParams$gridCaption, "\n", 
-                                   localParams$nonGridCaption)
+localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
+localParams$gridURL <- paste0("https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix")
 
 # > defn of peak ----
 amPeakStart <- hms::as_hms("07:00:00")
@@ -71,40 +66,28 @@ makeReport <- function(f){
   )
 }
 
-getGXPFileList <- function(dPath){
-  # check for EA GXP files
-  message("Checking for data files")
-  all.files <- list.files(path = dPath, pattern = ".csv")
-  dt <- as.data.table(all.files)
-  dt[, fullPath := paste0(dPath, all.files)]
-  message("Found ", nrow(dt))
-  return(dt)
-} # should be in package functions
 
 loadGenData <- function(path, fromYear){
-  # lists files within a folder (path) & loads
+  # lists files within a folder (path) & loads fromYear
   filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
   filesToDateDT[, file := V1]
   filesToDateDT[, c("year", "name") := tstrsplit(file, split = "_")]
   filesToDateDT[, year := as.numeric(year)]
+  filesToDateDT[, fullPath := paste0(path, file)]
   filesToGet <- filesToDateDT[year >= fromYear, # to reduce files loaded
-                              file]
+                              fullPath]
   message("Loading files >= ", fromYear)
-  dt <- do.call(rbind,
-                lapply(filesToGet, # a list
-                       function(f)
-                         data.table::fread(paste0(path,f))
-                ) # decodes .gz on the fly
-  )
-  return(dt) # large
+  l <- lapply(filesToGet, data.table::fread) # very fast data loading :-)
+  dt <- rbindlist(l, fill = TRUE) # rbind them
+  return(dt) # large, possibly very large depending on fromYear
 }
 
 # drake plan ----
 plan <- drake::drake_plan(
-  gridData = loadGenData(localParams$gridDataLoc, # from where?
+  gridGenData = loadGenData(localParams$gridDataLoc, # from where?
                       localParams$fromYear), # from what date?
-  nonGridData = loadGenData(localParams$nonGridDataLoc, 
-                         localParams$fromYear)
+  # nonGridData = loadGenData(localParams$nonGridDataLoc, 
+  #                        localParams$fromYear)
 )
 # 
 # path <- localParams$gridDataLoc
@@ -116,44 +99,23 @@ plan <- drake::drake_plan(
 plan # test the plan
 make(plan) # run the plan, re-loading data if needed
 
-origGridDT <- drake::readd(gridData)
-origNonGridDT <- drake::readd(nonGridData)
+gridGenDT <- drake::readd(gridGenData)
+
 
 # code ----
 
 # > fix grid data ----
-origGridDT[, rTime := hms::as_hms(rTime)]
-origGridDT[, rDateTimeOrig := rDateTime] # just in case
-origGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-origGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
-origGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
+gridGenDT[, rDateTimeUTC := lubridate::as_datetime(DATETIME)]
+gridGenDT[, rDateTimeUTC := lubridate::force_tz(rDateTimeUTC, 
+                                              tzone = "Europe/London")] # to be sure to be sure
+gridGenDT[, rMonth := lubridate::month(rDateTimeUTC, label = TRUE, abbr = TRUE)]
 
 # check
-h <- head(origGridDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
+h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
 h
 print("Grid gen loaded")
-message("Loaded ", tidyNum(nrow(origGridDT)), " rows of data")
-table(origGridDT[is.na(rDateTime)]$Time_Period)
-allGridDT <- origGridDT[!is.na(rDateTime) | # removes TP 49 & 50
-                          !is.na(kWh)] # removes NA kWh
-nrow(allGridDT)
-summary(allGridDT) # test
+message("Loaded ", tidyNum(nrow(gridGenDT)), " rows of data")
 
-# > non grid data ----
-origNonGridDT[, rDateTimeOrig := rDateTime] # just in case
-origNonGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-origNonGridDT[, rTime := hms::as_hms(rDateTime)]
-origNonGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
-origNonGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
-# check
-h <- head(origNonGridDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
-h
-print("Non grid gen loaded")
-message("Loaded ", tidyNum(nrow(origNonGridDT)), " rows of data")
-table(origNonGridDT[is.na(rDateTime)]$Time_Period)
-allEmbeddedDT <- origNonGridDT[!is.na(rDateTime) | # removes TP 49 & 50
-                                 !is.na(kWh)] # removes NA kWh
-nrow(allEmbeddedDT)
 
 
 # > Make report ----
@@ -161,8 +123,10 @@ nrow(allEmbeddedDT)
 version <- "1.0"
 title <- paste0("UK Electricity Generation")
 subtitle <- paste0("covid 19 lockdown v", version)
-authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
+authors <- "Ben Anderson"
 
+# what dates to expect? 
+summary(gridGenDT$rDateTimeUTC)
 
 # >> run report ----
 rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown_UK.Rmd")
