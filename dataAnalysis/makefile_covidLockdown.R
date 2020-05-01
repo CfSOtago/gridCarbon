@@ -17,7 +17,8 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded
+localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded. Change this value
+# to get drake to refresh the data
 localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- as.Date("2020-04-24")
 
@@ -83,6 +84,7 @@ getGXPFileList <- function(dPath){
 
 loadGenData <- function(path, fromYear){
   # lists files within a folder (path) & loads
+  # how to force this to reload data if we get new months?
   filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
   filesToDateDT[, file := V1]
   filesToDateDT[, c("year", "name") := tstrsplit(file, split = "_")]
@@ -98,6 +100,10 @@ loadGenData <- function(path, fromYear){
   )
   return(dt) # large
 }
+
+# 
+#gridData <- loadGenData(localParams$gridDataLoc, # from where?
+#                        localParams$fromYear) # from what date?
 
 # drake plan ----
 plan <- drake::drake_plan(
@@ -137,7 +143,7 @@ table(origGridDT[is.na(rDateTime)]$Time_Period)
 allGridDT <- origGridDT[!is.na(rDateTime) | # removes TP 49 & 50
                           !is.na(kWh)] # removes NA kWh
 nrow(allGridDT)
-summary(allGridDT) # test
+summary(allGridDT$rDateTime) # test
 
 # > non grid data ----
 origNonGridDT[, rDateTimeOrig := rDateTime] # just in case
@@ -154,7 +160,7 @@ table(origNonGridDT[is.na(rDateTime)]$Time_Period)
 allEmbeddedDT <- origNonGridDT[!is.na(rDateTime) | # removes TP 49 & 50
                                  !is.na(kWh)] # removes NA kWh
 nrow(allEmbeddedDT)
-
+summary(allEmbeddedDT$rDateTime)
 
 # > Make report ----
 # >> yaml ----
