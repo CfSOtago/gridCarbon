@@ -18,12 +18,10 @@ localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
-localParams$lockDownStart <- as.Date("2020-03-24")
-localParams$lockDownEnd <- as.Date("2020-04-24")
 
 # > data paths ----
-localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
-                                  "externalData/ukEso/eso_generation/processed/yearly/")
+localParams$gridDataLoc <- paste0(gcParams$ukData, 
+                                  "/processed/yearly/")
 
 # > captions ----
 localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
@@ -85,7 +83,7 @@ loadGenData <- function(path, fromYear){
 # drake plan ----
 plan <- drake::drake_plan(
   gridGenData = loadGenData(localParams$gridDataLoc, # from where?
-                      localParams$fromYear), # from what date?
+                      localParams$fromYear) # from what date?
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
 )
