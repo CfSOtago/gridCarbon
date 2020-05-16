@@ -29,7 +29,9 @@ localParams <- list() # repo level params are in gcParams
 localParams$url <- "http://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/7b41ea4d-cada-491e-8ad6-7b62f6a63193/download/df_fuel_ckan.csv"
 
 localParams$rawUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/raw/"))
-localParams$processedUkEsoDataPath <- path.expand(paste0(localParams$ukEsoDataLoc, "/processed/"))
+localParams$processedUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/processed/"))
+
+update <- "Yes" # doesn't matter what this is but to force an update, edit it :-)
 
 # Local functions ----
 
@@ -44,10 +46,10 @@ startTime <- proc.time()
 # drake plan - will only get new data if it has changed (it checks)
 # drake plan ----
 plan <- drake::drake_plan(
-  esoData = getUkGridESO(localParams$url), # need to make this only happen if updated
-  cleanData = cleanGridESO(esoData),
-  saveData = saveGridESO(cleanData, localParams$rawUkEsoDataPath),
-  makeYearlyData(cleanData,localParams$processedUkEsoDataPath)
+  esoData = gridCarbon::getUkGridESO(localParams$url, update), # returns data as data.table
+  cleanData = gridCarbon::cleanUkGridESO(esoData), # returns clean data.table
+  saveResult = gridCarbon::saveUkGridESO(cleanData, localParams$rawUkEsoDataPath), # doesn't return anything
+  latestYear = gridCarbon::makeUkGridESOYearlyData(cleanData,localParams$processedUkEsoDataPath) # returns the most recent year if needed
 )
 
 # > run drake plan ----
