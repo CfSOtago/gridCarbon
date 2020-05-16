@@ -52,135 +52,16 @@ rmdLibs <- c("ggplot2", # plots
 gridCarbon::loadLibraries(rmdLibs)
 
 # Local parameters ----
-localParams$lockDownStartDate <- as.Date("2020-03-24")
-localParams$lockDownStartDateTime <- lubridate::as_datetime("2020-03-23 23:59:00")
-localParams$lockDownEndDate <- lubridate::today()
-localParams$lockDownEndDateTime <- lubridate::now()
-
 localParams$recentCutDate <- as.Date("2020-03-01")
 
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
 localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
-localParams$lockdownCap <- "\nColoured rectangle = UK covid lockdown to date"
+localParams$lockdownCap <- "\nColoured rectangles = UK covid lockdown periods to date"
 localParams$weekendCap <- "\nShaded rectangle = weekends"
 
-localParams$myAlpha <- 0.1
-localParams$vLineAlpha <- 0.4
-localParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
-localParams$myTextSize <- 4
-
 # Local functions ----
-addLockdownDate <- function(p, yMin, yMax){
-  # assumes p has x = obsDate
-  # p <- p + annotate("text", x = localParams$lockDownStartDate, 
-  #            y = yMax * 0.4, angle = 10,size = localParams$myTextSize,
-  #            label = "UK covid lockdown to date", hjust = 0.5)
-  p <- p + annotate("rect", xmin = localParams$lockDownStartDate,
-             xmax = localParams$lockDownEndDate, 
-             ymin = yMin-1, ymax = yMax+1, 
-             alpha = localParams$myAlpha, 
-             fill = localParams$vLineCol, 
-             colour = localParams$vLineCol)
-  return(p)
-}
 
-addLockdownDateTime <- function(p, yMin, yMax){
-  # assumes p has x = obsDateTime
-  # p <- p + annotate("text", x = localParams$lockDownStartDateTime, 
-  #            y = yMax * 0.4, angle = 10,size = localParams$myTextSize,
-  #            label = "UK covid lockdown to date", hjust = 0.5)
-  p <- p + annotate("rect", xmin = localParams$lockDownStartDateTime,
-             xmax = localParams$lockDownEndDateTime, 
-             ymin = yMin-1, ymax = yMax+1, 
-             alpha = localParams$myAlpha, 
-             fill = localParams$vLineCol, 
-             colour = localParams$vLineCol) 
-    
-  return(p)
-}
-
-# only makes sense to use these for x axis covering March onwards
-localParams$weAlpha <- 0.3
-localParams$weFill <- "grey50"
-localParams$labelPos <- 0.9
-addWeekendsDate <- function(p, yMin, yMax){
-  p <- p + annotate("rect", xmin = as.Date("2020-03-07"),
-                    xmax = as.Date("2020-03-09"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-03-14"),
-                    xmax = as.Date("2020-03-16"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-03-21"),
-                    xmax = as.Date("2020-03-23"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-03-28"),
-                    xmax = as.Date("2020-03-30"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-04-04"),
-                    xmax = as.Date("2020-04-06"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-04-10"),
-                    xmax = as.Date("2020-04-14"), # Easter
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("text", x = as.Date("2020-04-10"),
-                    y = yMax*localParams$labelPos,
-                    label = "Easter") # Easter
-  p <- p + annotate("rect", xmin = as.Date("2020-04-18"),
-                    xmax = as.Date("2020-04-20"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-04-25"),
-                    xmax = as.Date("2020-04-27"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  return(p)
-}
-
-addWeekendsDateTime <- function(p, yMin, yMax){
-   p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-07 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-08 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-14 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-15 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-21 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-22 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-28 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-29 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-04 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-04-05 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill) 
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-10 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-04-13 23:59:59"), # Easter
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("text", x = lubridate::as_datetime("2020-04-10 00:00:00"),
-                    y = yMax*localParams$labelPos,
-                    label = "Easter") # Easter
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-18 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-04-19 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-    p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-25 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-04-26 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  return(p)
-}
 ```
 
 \newpage
@@ -348,8 +229,11 @@ p <- ggplot2::ggplot(recentDT, aes(x = rDateTimeUTC,
 yMin <- min(recentDT$GENERATION/1000)
 yMax <- max(recentDT$GENERATION/1000)
 
-p <- addLockdownDateTime(p, yMin, yMax)
-addWeekendsDateTime(p,yMin, yMax) 
+p <- addLockdownRect(p, 
+                     from = gcParams$UKlockDownStartDateTime, 
+                     to = gcParams$UKlockDownEndDateTime, 
+                     label = "Phase 1", yMin, yMax)
+addWeekendRectsDateTime(p, yMin, yMax) 
 
 ```
 
@@ -412,8 +296,10 @@ p <- ggplot2::ggplot(recentDT, aes(x = rDateTimeUTC,
 yMin <- min(recentDT$CARBON_INTENSITY)
 yMax <- max(recentDT$CARBON_INTENSITY)
 
-p <- addLockdownDateTime(p, yMin, yMax)
-addWeekendsDateTime(p,yMin, yMax) 
+p <- addLockdownRect(p, gcParams$UKlockDownStartDateTime, 
+                     gcParams$UKlockDownEndDateTime, label = "Phase 1",
+                     yMin, yMax)
+addWeekendRectsDateTime(p,yMin, yMax) 
 
 ```
 
@@ -456,9 +342,10 @@ p <- ggplot2::ggplot(plotDT, aes(x = dateFixed,
   guides(colour=guide_legend(nrow=2)) +
   guides(shape=guide_legend(nrow=2))
   
-p <- addLockdownDate(p, yMin, yMax)
+p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
+                     label = "Phase 1", yMin, yMax)
 
-addWeekendsDate(p, yMin, yMax)
+addWeekendRectsDate(p, yMin, yMax)
 
 ```
 
@@ -498,11 +385,9 @@ p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean
     theme(legend.position="bottom") +
     geom_hline(yintercept = 0, linetype = 3)
   
-  p <- addLockdownDate(p, yMin, yMax)
-  
-  p <- addWeekendsDate(p, yMin, yMax)
-  
-  p 
+  p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
+                     label = "Phase 1", yMin, yMax)
+  addWeekendRectsDate(p, yMin, yMax)
 ```
 
 Figure \@ref(fig:compareDaysCIpc) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
@@ -541,11 +426,9 @@ p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean
     theme(legend.position="bottom") +
     geom_hline(yintercept = 0, linetype = 3)
   
-  p <- addLockdownDate(p, yMin, yMax)
-  
-  p <- addWeekendsDate(p, yMin, yMax)
-  
-  p 
+p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
+                     label = "Phase 1", yMin, yMax)
+  addWeekendRectsDate(p, yMin, yMax) 
 ```
 
 # Summary (to date)
