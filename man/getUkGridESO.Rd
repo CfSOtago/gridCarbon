@@ -4,7 +4,7 @@
 \alias{getUkGridESO}
 \title{\code{getUkGridESO} gets the file from the UK Grid ESO data website. These are not in pretty form}
 \usage{
-getUkGridESO(f)
+getUkGridESO(f, update)
 }
 \arguments{
 \item{f}{the file to get (as a url suitable for data.table::fread())}
