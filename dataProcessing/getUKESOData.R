@@ -12,6 +12,7 @@
 
 # Load libraries ----
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
+gridCarbon::setup() # loads env.R
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
@@ -23,62 +24,20 @@ reqLibs <- c("data.table", # data munching
 gridCarbon::loadLibraries(reqLibs)
 
 # Parameters ----
-source(paste0(here::here(), "/.Rprofile")) # gcParams
+#source(paste0(here::here(), "/env.R")) # gcParams - just in case not already loaded by grifCarbon (should be)
 
 localParams <- list() # repo level params are in gcParams
 localParams$url <- "http://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/7b41ea4d-cada-491e-8ad6-7b62f6a63193/download/df_fuel_ckan.csv"
-localParams$ukEsoDataLoc <- paste0(gcParams$GreenGrid, 
-                                   "externalData/ukeso/eso_generation/")
 
-localParams$rawUkEsoDataPath <- path.expand(paste0(localParams$ukEsoDataLoc, "raw/"))
-localParams$processedUkEsoDataPath <- path.expand(paste0(localParams$ukEsoDataLoc, "processed/"))
+localParams$rawUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/raw/"))
+localParams$processedUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/processed/"))
+
+update <- "Yes" # doesn't matter what this is but to force an update, edit it :-)
 
 # Local functions ----
 
 # test url
 h <- curlGetHeaders(localParams$url)
-# get data
-getGridESO <- function(f){
-  # url has to be explicit for drake to monitor it
-  # breaks
-  #dt <- data.table::fread(file_in("http://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/7b41ea4d-cada-491e-8ad6-7b62f6a63193/download/df_fuel_ckan.csv"))
-  dt <- data.table::fread(f)
-  return(dt)
-}
-
-# data cleaning - used below
-cleanGridESO <- function(dt){
-  # cleans & returns a dt
-  dt[, rDateTime := lubridate::ymd_hms(DATETIME)] # set full dateTime
-  # anything else?
-  return(dt)
-}
-
-makeYearlyData <- function(dt){
-  dt[, year := lubridate::year(rDateTime)]
-  t <- dt[, .(nObs = .N), keyby = .(year)]
-  years <- t[, year]
-  for(y in years){
-    yearDT <- dt[year == y]
-    # write out the year file ----
-    of <- paste0(localParams$processedUkEsoDataPath,"yearly/",y,"_ukEsoGen.csv")
-    data.table::fwrite(yearDT, of)
-    cmd <- paste0("gzip -f ", of)
-    message("Gzip file: ", of)
-    try(system(cmd)) # seems to throw an error on the CS RStudio server but it still works
-    message("Done ", y)
-  }
-  return(yearDT) # return the last year for testing if needed
-}
-
-saveGridESO <- function(dt){
-  of <- paste0(localParams$rawUkEsoDataPath,"latest_ukEsoGen.csv")
-  data.table::fwrite(dt, of)
-  cmd <- paste0("gzip -f ", of)
-  message("Gzip file: ", of)
-  try(system(cmd)) # seems to throw an error on the CS RStudio server but it still works
-  message("Done ")
-}
 
 # Code ----
 # Set start time ----
@@ -88,10 +47,10 @@ startTime <- proc.time()
 # drake plan - will only get new data if it has changed (it checks)
 # drake plan ----
 plan <- drake::drake_plan(
-  esoData = getGridESO(localParams$url), # need to make this only happen if updated
-  cleanData = cleanGridESO(esoData),
-  saveData = saveGridESO(cleanData),
-  makeYearlyData(cleanData)
+  esoData = gridCarbon::getUkGridESO(localParams$url, update), # returns data as data.table
+  cleanData = gridCarbon::cleanUkGridESO(esoData), # returns clean data.table
+  saveResult = gridCarbon::saveUkGridESO(cleanData, localParams$rawUkEsoDataPath), # doesn't return anything
+  latestYear = gridCarbon::makeUkGridESOYearlyData(cleanData,localParams$processedUkEsoDataPath) # returns the most recent year if needed
 )
 
 # > run drake plan ----
