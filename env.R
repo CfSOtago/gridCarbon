@@ -7,10 +7,7 @@ library(here)
 
 # Package parameters ----
 
-gcParams <<- list() # params holder as a list. Sooooo much easier with tab complete
-
-# > Location of the repo ----
-gcParams$repoLoc <- here::here()
+gcParams <- list() # params holder as a list. Sooooo much easier with tab complete
 
 # Data ----
 # attempt to guess the platform & user
@@ -81,10 +78,10 @@ gcParams$weFill <- "grey50"
 gcParams$labelPos <- 0.9
 
 # > Rmd includes ----
-gcParams$licenseCCBY <- paste0(gcParams$repoLoc, "/includes/licenseCCBY.Rmd")
-gcParams$support <- paste0(gcParams$repoLoc, "/includes/supportGeneric.Rmd")
-gcParams$history <- paste0(gcParams$repoLoc, "/includes/historyGeneric.Rmd")
-gcParams$citation <- paste0(gcParams$repoLoc, "/includes/citationGeneric.Rmd")
+gcParams$licenseCCBY <- paste0(here::here(), "/includes/licenseCCBY.Rmd")
+gcParams$support <- paste0(here::here(), "/includes/supportGeneric.Rmd")
+gcParams$history <- paste0(here::here(), "/includes/historyGeneric.Rmd")
+gcParams$citation <- paste0(here::here(), "/includes/citationGeneric.Rmd")
 
 message("We're ", gcParams$user, " using " , gcParams$sysname, " on ", gcParams$nodename)
 message("NZ data path : ", gcParams$GreenGrid)
