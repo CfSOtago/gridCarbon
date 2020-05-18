@@ -12,6 +12,7 @@
 
 # Load libraries ----
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
+gridCarbon::setup() # loads env.R
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
