@@ -9,6 +9,14 @@ setup()
 \description{
 \code{setup} sources env.R in the repo/project top level folder.
 }
+\seealso{
+Other utils: 
+\code{\link{addNZSeason}()},
+\code{\link{getDuration}()},
+\code{\link{gzipFile}()},
+\code{\link{loadLibraries}()},
+\code{\link{tidyNum}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
 }
