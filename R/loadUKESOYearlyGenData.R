@@ -10,7 +10,8 @@
 #' @export
 #' @family data
 #'
-loadUKESOYearlyGenData <- function(path, fromYear){
+loadUKESOYearlyGenData <- function(path, fromYear, update){
+  # update = dummy used to force re-load
   # lists files within a folder (path) & loads fromYear
   filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
   filesToDateDT[, file := V1]
