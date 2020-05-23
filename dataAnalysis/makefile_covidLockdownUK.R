@@ -16,7 +16,7 @@ libs <- c("data.table", # data munching
 
 
 gridCarbon::loadLibraries(libs) # should install any that are missing
-
+drake::expose_imports(gridCarbon) # should track our functions
 
 # check
 
@@ -68,21 +68,71 @@ plan <- drake::drake_plan(
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
   alignedGridGenData = alignDates(gridGenData), # fix the dates so they line up
-  recentDateTimeGW_Plot = createRecentDateTimePlot(gridGenDT, 
+  ## >> GW stuff ----
+  recentDateTimeGW_Plot = createRecentDateTimePlot(gridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                         yVar = "GENERATION", 
                                                         yCap = "Total generation (GW)",
                                                         yDiv = 1000), # GEN is in MW
-  recentHalfHourlyProfileGW_Plot = createRecentHalfHourlyProfilePlot(gridGenDT, 
+  recentHalfHourlyProfileGW_Plot = createRecentHalfHourlyProfilePlot(gridGenData, 
                                                                      dateTime = "rDateTimeUTC",
-                                                      yVar = "GENERATION", 
-                                                      yCap = "Total generation (GW)",
-                                                      yDiv = 1000), # GEN is in MW
+                                                                     yVar = "GENERATION", 
+                                                                     yCap = "Total generation (GW)",
+                                                                     yDiv = 1000 # GEN is in MW
+                                                                     ),
   compareDailyGW_Plot = createDailyMeanComparePlot(alignedGridGenData, 
-                                   yVar = "GENERATION", 
-                                   yCap = "Mean half hourly GW",
-                                   yDiv = 1000 # what to divide the y value by
-                                   )
+                                                   yVar = "GENERATION", 
+                                                   yCap = "Mean daily half hourly GW",
+                                                   yDiv = 1000 # what to divide the y value by
+                                                   ),
+  compareDailyGWpc_Plot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "GENERATION", 
+                                                   yCap = "% difference"
+                                                   ),
+  ## >> CI stuff ----
+  recentDateTimeCI_Plot = createRecentDateTimePlot(gridGenData, 
+                                                   dateTime = "rDateTimeUTC",
+                                                   yVar = "CARBON_INTENSITY", 
+                                                   yCap = "Carbon intensity",
+                                                   yDiv = 1),
+  
+  recentHalfHourlyProfileCI_Plot = createRecentHalfHourlyProfilePlot(gridGenData, 
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "CARBON_INTENSITY", 
+                                                                     yCap = "Carbon intensity",
+                                                                     yDiv = 1), 
+  compareDailyCI_Plot = createDailyMeanComparePlot(alignedGridGenData, 
+                                                   yVar = "CARBON_INTENSITY", 
+                                                   yCap = "Mean daily half hourly carbon intensity",
+                                                   yDiv = 1 # what to divide the y value by
+  ),
+  compareDailyCIpc_Plot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "CARBON_INTENSITY", 
+                                                   yCap = "% difference"),
+  ## >> CO2e kg stuff ----
+  recentDateTimeC02ekg_Plot = createRecentDateTimePlot(gridGenData, 
+                                                   dateTime = "rDateTimeUTC",
+                                                   yVar = "totalC02e_kg", 
+                                                   yCap = "C02e emitted (T)",
+                                                   yDiv = 1000), # totalC02e_kg in kg
+  
+  
+  recentHalfHourlyProfileC02ekg_Plot = createRecentHalfHourlyProfilePlot(gridGenData, 
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "totalC02e_kg", 
+                                                                     yCap = "C02e emitted (T)",
+                                                                     yDiv = 1000), # totalC02e_kg in kg 
+  
+  
+  compareDailyCO2ekg_Plot = createDailyMeanComparePlot(alignedGridGenData, 
+                                                   yVar = "totalC02e_kg", 
+                                                   yCap = "Mean daily half hourly C02e (T)",
+                                                   yDiv = 1000 # what to divide the y value by
+                                                   ),
+
+  compareDailyC02ekgpc_Plot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "totalC02e_kg", 
+                                                   yCap = "% difference")
 )
 
 # > run drake plan ----
@@ -112,6 +162,6 @@ summary(gridGenDT$rDateTimeUTC)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
-#makeReport(rmdFile)
+makeReport(rmdFile)
 
 # done
