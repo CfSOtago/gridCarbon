@@ -187,36 +187,36 @@ Several [articles](https://theconversation.com/we-analysed-electricity-demand-an
 
 ### Half hourly patterns
 
-Figure \@ref(fig:recentDateTimeGW_Plot) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+Figure \@ref(fig:recentDateTimeGWPlot) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
-```{r recentDateTimeGW_Plot, fig.cap="Half-hourly generation, UK (recent)"}
+```{r recentDateTimeGWPlot, fig.cap="Half-hourly generation, UK (recent)"}
 # NB: the drake target, the rmd chunk and thus the crossref target are all the same!
-drake::readd(recentDateTimeGW_Plot)
+drake::readd(recentDateTimeGWPlot)
 ```
 
-Figure \@ref(fig:recentHalfHourlyProfileGW_Plot) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
+Figure \@ref(fig:recentHalfHourlyProfileGWPlot) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
 
-```{r recentHalfHourlyProfileGW_Plot, fig.cap="Half-hourly generation, UK (recent)"}
-drake::readd(recentHalfHourlyProfileGW_Plot)
+```{r recentHalfHourlyProfileGWPlot, fig.cap="Half-hourly generation, UK (recent)"}
+drake::readd(recentHalfHourlyProfileGWPlot)
 ```
 
 ### Daily patterns
 
-Figure \@ref(fig:compareDailyGW_Plot) shows the most recent mean half-hourly GW compared to the same day in previous years. We have shifted the dates for the comparison years to ensure that weekdays and weekends line up but this does **not** mean that Easter is the same weekend across the comparison periods.
+Figure \@ref(fig:compareDailyGWPlot) shows the most recent mean half-hourly GW compared to the same day in previous years. We have shifted the dates for the comparison years to ensure that weekdays and weekends line up but this does **not** mean that Easter is the same weekend across the comparison periods.
 
 Note that this plot shows daily means with no indications of variance. Visible differences are therefore purely indicative at this stage. Nevertheless it is clear that 2020 is a different generation shape to the average of the previous years. Lockdown has clearly amplified the sesonal trend.
 
 > Beware temperature differences
 
-```{r compareDailyGW_Plot, fig.cap="Comparative daily mean half-hour generation levels 2020 vs 2017-2019"}
-drake::readd(compareDailyGW_Plot)
+```{r compareDailyGWPlot, fig.cap="Comparative daily mean half-hour generation levels 2020 vs 2017-2019"}
+drake::readd(compareDailyGWPlot)
 ```
 
-Figure \@ref(fig:compareDailyGWpc_Plot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and a very large dip on VE Day (Friday 8th May) as we would expect.
+Figure \@ref(fig:compareDailyGWpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and a very large dip on VE Day (Friday 8th May) as we would expect.
 
-```{r compareDailyGWpc_Plot, fig.cap="Percentage difference in mean generation levels 2020 vs 2017-2019"}
+```{r compareDailyGWpcPlot, fig.cap="Percentage difference in mean generation levels 2020 vs 2017-2019"}
 
-drake::readd(compareDailyGWpc_Plot)
+drake::readd(compareDailyGWpcPlot)
 ```
 
 ### Weekly patterns
@@ -233,30 +233,30 @@ Clearly the first of these is driven by the mix of fuels and in the UK this refl
 
 ### Half-hourly patterns
 
-Figure \@ref(fig:recentDateTimeCI_Plot) shows half-hourly carbon intensity since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+Figure \@ref(fig:recentDateTimeCIPlot) shows half-hourly carbon intensity since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
-```{r recentDateTimeCI_Plot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
-drake::readd(recentDateTimeCI_Plot)
+```{r recentDateTimeCIPlot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
+drake::readd(recentDateTimeCIPlot)
 ```
 
-Figure \@ref(fig:recentHalfHourlyProfileCI_Plot) shows the daily carbon intensity profiles over time for each day of the week.
+Figure \@ref(fig:recentHalfHourlyProfileCIPlot) shows the daily carbon intensity profiles over time for each day of the week.
 
-```{r recentHalfHourlyProfileCI_Plot, fig.cap="Half-hourly generation, UK (recent)"}
-drake::readd(recentHalfHourlyProfileCI_Plot)
+```{r recentHalfHourlyProfileCIPlot, fig.cap="Half-hourly generation, UK (recent)"}
+drake::readd(recentHalfHourlyProfileCIPlot)
 ```
 
 ### Daily patterns
 
-Figure \@ref(fig:compareDailyCI_Plot) shows the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+Figure \@ref(fig:compareDailyCIPlot) shows the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
-```{r compareDailyCI_Plot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
-drake::readd(compareDailyCI_Plot)
+```{r compareDailyCIPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyCIPlot)
 ```
 
-Figure \@ref(fig:compareDailyCIpc_Plot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+Figure \@ref(fig:compareDailyCIpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
-```{r compareDailyCIpc_Plot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
-drake::readd(compareDailyCIpc_Plot)
+```{r compareDailyCIpcPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyCIpcPlot)
 ```
 
 ### Weekly patterns
@@ -267,30 +267,30 @@ In this section we use our calculation of total CO2e emitted per half hour (see 
 
 ### Half-hourly patterns
 
-Figure \@ref(fig:recentDateTimeC02ekg_Plot) shows total half-hourly CO2e emissions since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+Figure \@ref(fig:recentDateTimeC02ekgPlot) shows total half-hourly CO2e emissions since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
-```{r recentDateTimeC02ekg_Plot, fig.cap="Half-hourly total CO2e emissions, UK (recent)"}
-drake::readd(recentDateTimeC02ekg_Plot)
+```{r recentDateTimeC02ekgPlot, fig.cap="Half-hourly total CO2e emissions, UK (recent)"}
+drake::readd(recentDateTimeC02ekgPlot)
 ```
 
-Figure \@ref(fig:recentHalfHourlyProfileC02ekg_Plot) shows the daily CO2e emissions profiles over time for each day of the week since `r localParams$recentCutDate`.
+Figure \@ref(fig:recentHalfHourlyProfileC02ekgPlot) shows the daily CO2e emissions profiles over time for each day of the week since `r localParams$recentCutDate`.
 
-```{r recentHalfHourlyProfileC02ekg_Plot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
-drake::readd(recentHalfHourlyProfileC02ekg_Plot)
+```{r recentHalfHourlyProfileC02ekgPlot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
+drake::readd(recentHalfHourlyProfileC02ekgPlot)
 ```
 
 ### Daily patterns
 
-Figure \@ref(fig:compareDailyCO2ekg_Plot) shows the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+Figure \@ref(fig:compareDailyCO2ekgPlot) shows the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
-```{r compareDailyCO2ekg_Plot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
-drake::readd(compareDailyCO2ekg_Plot)
+```{r compareDailyCO2ekgPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyCO2ekgPlot)
 ```
 
-Figure \@ref(fig:compareDailyC02ekgpc_Plot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+Figure \@ref(fig:compareDailyC02ekgpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
-```{r compareDailyC02ekgpc_Plot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
-drake::readd(compareDailyC02ekgpc_Plot)
+```{r compareDailyC02ekgpcPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyC02ekgpcPlot)
 ```
 
 ### Weekly patterns
