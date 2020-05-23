@@ -32,7 +32,7 @@ localParams$url <- "http://data.nationalgrideso.com/backend/dataset/88313ae5-94e
 localParams$rawUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/raw/"))
 localParams$processedUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/processed/"))
 
-update <- "Yes" # doesn't matter what this is but to force an update, edit it :-)
+update <- "Please" # doesn't matter what this is but to force an update, edit it :-)
 
 # Local functions ----
 
