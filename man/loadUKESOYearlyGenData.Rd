@@ -4,7 +4,7 @@
 \alias{loadUKESOYearlyGenData}
 \title{Load the pre-downloaded yearly UK ESO generation files in to a data.table}
 \usage{
-loadUKESOYearlyGenData(path, fromYear)
+loadUKESOYearlyGenData(path, fromYear, update)
 }
 \arguments{
 \item{path}{the folder to look in for the data}
