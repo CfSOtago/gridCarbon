@@ -29,15 +29,17 @@ createRecentHalfHourlyProfilePlot <- function(dt, dateTime = "rDateTimeUTC", yVa
   
   p <- ggplot2::ggplot(plotDT, aes(x = rTime, 
                                      y = yVals,
-                                     colour = obsDate)) +
+                                     colour = obsDate,
+                                   alpha = obsDate)) +
     geom_point() +
-    scale_color_date(low = "green", high = "red") +
+    scale_color_date(low = "light grey", high = "black") +
     #scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
     labs(x = "Time of day",
          y = yCap) +
     facet_wrap(. ~ wkdayObs) +
-    guides(colour=guide_legend(title="Date")) +
+    guides(colour=guide_legend(title="Date")) + 
+    guides(alpha=guide_legend(title="Date")) + # same name forces the legends to combine
     theme(legend.position="bottom")
   
   return(p)
