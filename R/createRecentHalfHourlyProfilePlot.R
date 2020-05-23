@@ -31,6 +31,7 @@ createRecentHalfHourlyProfilePlot <- function(dt, dateTime = "rDateTimeUTC", yVa
                                      y = yVals,
                                      colour = obsDate)) +
     geom_point() +
+    scale_color_date(low = "green", high = "red") +
     #scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
     labs(x = "Time of day",

@@ -23,6 +23,7 @@ createRecentDateTimePlot(dt, dateTime = "rDateTimeUTC", yVar, yCap, yDiv = 1)
 \seealso{
 Other plot: 
 \code{\link{createDailyMeanComparePlot}()},
+\code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentHalfHourlyProfilePlot}()}
 }
 \author{

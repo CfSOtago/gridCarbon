@@ -29,6 +29,7 @@ createRecentHalfHourlyProfilePlot(
 \seealso{
 Other plot: 
 \code{\link{createDailyMeanComparePlot}()},
+\code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentDateTimePlot}()}
 }
 \author{
