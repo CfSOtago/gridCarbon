@@ -24,7 +24,7 @@ gridCarbon::loadLibraries(reqLibs)
 # Parameters ----
 localParams <- list() # repo level params are in gcParams
 
-years <- seq(1996, 2020, 1) # change these to restrict or extend the file search
+years <- seq(2020, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 refresh <- 0 # set to 1 to try to download all files even if we already have them
@@ -241,7 +241,7 @@ getGridMeta <- function(dt){
 }
 
 
-makeYearlyData <- function(genType){ # parameter selects path and thus files
+makeYearlyData <- function(genType, years){ # parameter selects path and thus files
   if(genType == "gridGen"){
     path <- localParams$gridDataLoc
   } 
@@ -253,8 +253,8 @@ makeYearlyData <- function(genType){ # parameter selects path and thus files
                                              ) # get list of files already downloaded
   filesToDateDT[, year := tstrsplit(V1, split = "_", keep = 1)] #
   filesToDateDT[, fullPath := paste0(path, "processed/monthly/",V1)]
-  years <- unique(filesToDateDT[year != "metaDT.csv",]$year) # avoid the metadata file
-  for(y in years){
+  #years <- unique(filesToDateDT[year != "metaDT.csv",]$year) # avoid the metadata file
+  for(y in years){ # use the years passed in as they will be the ones we updated
     fList <- filesToDateDT[year == y, fullPath]
     yearDT <- data.table::data.table()
     yearDT <- do.call(rbind,
