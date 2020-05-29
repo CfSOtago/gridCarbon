@@ -135,15 +135,12 @@ origGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckla
 origGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
 
 # check
-h <- head(origGridDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
-h
 print("Grid gen loaded")
 message("Loaded ", tidyNum(nrow(origGridDT)), " rows of data")
 table(origGridDT[is.na(rDateTime)]$Time_Period)
 allGridDT <- origGridDT[!is.na(rDateTime) | # removes TP 49 & 50
                           !is.na(kWh)] # removes NA kWh
 nrow(allGridDT)
-summary(allGridDT$rDateTime) # test
 
 # > non grid data ----
 origNonGridDT[, rDateTimeOrig := rDateTime] # just in case
@@ -152,14 +149,16 @@ origNonGridDT[, rTime := hms::as_hms(rDateTime)]
 origNonGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
 origNonGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
 # check
-h <- head(origNonGridDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
-h
 print("Non grid gen loaded")
 message("Loaded ", tidyNum(nrow(origNonGridDT)), " rows of data")
 table(origNonGridDT[is.na(rDateTime)]$Time_Period)
 allEmbeddedDT <- origNonGridDT[!is.na(rDateTime) | # removes TP 49 & 50
                                  !is.na(kWh)] # removes NA kWh
-nrow(allEmbeddedDT)
+
+# test dates available ----
+# allGrid
+summary(allGridDT$rDateTime) # test dates available
+# embeddedGrid
 summary(allEmbeddedDT$rDateTime)
 
 # > Make report ----
@@ -172,6 +171,6 @@ authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 # >> run report ----
 rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown.Rmd")
-#makeReport(rmdFile)
+makeReport(rmdFile)
 
 
