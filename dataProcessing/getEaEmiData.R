@@ -279,11 +279,14 @@ makeYearlyData <- function(genType, years){ # parameter selects path and thus fi
 startTime <- proc.time()
 
 # can't use drake as it won't go and get new data
+# well, we could but...
+message("Getting: ", years)
+
 gridMetaDataDT <- getGridData(years = years, months = months) # returns metadata
 embMetaDataDT <- getEmbData(years = years, months = months) # returns metadata
 
-gridYearlyResultDT <- makeYearlyData(genType = "gridGen")
-embYearlyResultDT <- makeYearlyData(genType = "embeddedGen")
+gridYearlyResultDT <- makeYearlyData(genType = "gridGen", years = years)
+embYearlyResultDT <- makeYearlyData(genType = "embeddedGen", years = years)
 
 gridYearlyResultDT[, rDateTime := lubridate::as_datetime(rDateTime)]
 summary(gridYearlyResultDT$rDateTime)
