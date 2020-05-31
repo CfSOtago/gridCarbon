@@ -204,6 +204,14 @@ openair::timeVariation(gridGenDT[year >= cutYear & month <= thisMonth],
                        group = "lockdown")
 ```
 
+Figure \@ref
+```{r timeVariationGWnormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+
+openair::timeVariation(gridGenDT[year >= cutYear & month <= thisMonth], 
+                       "GENERATION", ylab = "MW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "lockdown", normalise = TRUE)
+```
+
 ### Daily patterns
 
 Figure \@ref(fig:compareDailyGWPlot) shows the most recent mean half-hourly GW compared to the same day in previous years. We have shifted the dates for the comparison years to ensure that weekdays and weekends line up but this does **not** mean that Easter is the same weekend across the comparison periods.
