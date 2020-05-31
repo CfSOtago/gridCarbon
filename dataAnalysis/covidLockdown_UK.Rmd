@@ -184,47 +184,56 @@ drake::readd(recentHalfHourlyProfileGWPlot)
 ```
 
 ```{r setCutYear}
-cutYear <- 2019
-2020 - cutYear
+cutYear <- 2018 # just compare with 2018 & 2019
 gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
 ```
 
-Figure \@ref(fig:timeVariationGW) shows the difference between hourly and weekday patterns for lockdown 2020 and the same months in previous year(s). It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWPlot).
+Figure \@ref(fig:timeVariationGW) shows the difference between hourly and weekday patterns for lockdown 2020 and the same months in all years from `r cutYear` onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWPlot). The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.
 
-```{r timeVariationGW, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+```{r timeVariationGW, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
 gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
+gridGenDT[, GW := GENERATION/1000]
 
-gridGenDT[, lockdown := ifelse(rDateTimeUTC <= gcParams$UKlockDownStartDateTime, 
-                            "Pre lockdown", "Full lockdown to May 10th")] # gcParams$UKlockDownRelaxDate_1
+gridGenDT[, lockdown := ifelse(rDateTimeUTC < lubridate::as_datetime("2020-01-01 00:00:00"), 
+                            "Previous years", "2020 pre-lockdown")] #
+
+gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownStartDateTime, 
+                            "Lockdown to May 10th", lockdown)] #
 gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownRelaxDate_1, 
                             "Lockdown after May 10th", lockdown)] #
-openair::timeVariation(gridGenDT[year >= cutYear & month <= thisMonth], 
-                       "GENERATION", ylab = "MW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "lockdown")
+
+plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+message("Plot start date: ", min(plotDT$date))
+message("Plot end date: ", max(plotDT$date))
+
+openair::timeVariation(plotDT, 
+                       "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "lockdown", key.columns = 2)
 ```
 
-Figure \@ref
-```{r timeVariationGWnormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+Figure \@ref(fig:timeVariationGWnormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGW)).
 
-openair::timeVariation(gridGenDT[year >= cutYear & month <= thisMonth], 
-                       "GENERATION", ylab = "MW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+```{r timeVariationGWnormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+
+openair::timeVariation(plotDT, 
+                       "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "lockdown", normalise = TRUE)
 ```
 
 ### Daily patterns
 
-Figure \@ref(fig:compareDailyGWPlot) shows the most recent mean half-hourly GW compared to the same day in previous years. We have shifted the dates for the comparison years to ensure that weekdays and weekends line up but this does **not** mean that Easter is the same weekend across the comparison periods.
+For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does **not** mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.
 
-Note that this plot shows daily means with no indications of variance. Visible differences are therefore purely indicative at this stage. Nevertheless it is clear that 2020 is a different generation shape to the average of the previous years. Lockdown has clearly amplified the sesonal trend.
+Figure \@ref(fig:compareDailyGWPlot) shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure \@ref(fig:timeVariationGW), lockdown clearly reduced demand below the seasonal trend as Figure \@ref(fig:TheilSenGWPlot) suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure \@ref(fig:timeVariationGW)).
 
-> Beware temperature differences
+> Beware temperature differences - need to control for heating degree days as 2020 was a _very_ warm spring
 
 ```{r compareDailyGWPlot, fig.cap="Comparative daily mean half-hour generation levels 2020 vs 2017-2019"}
 drake::readd(compareDailyGWPlot)
 ```
 
-Figure \@ref(fig:compareDailyGWpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and a very large dip on VE Day (Friday 8th May) as we would expect.
+Figure \@ref(fig:compareDailyGWpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
 
 ```{r compareDailyGWpcPlot, fig.cap="Percentage difference in mean generation levels 2020 vs 2017-2019"}
 
@@ -284,7 +293,11 @@ Figure \@ref(fig:timeVariationCI) shows the difference between hourly and weekda
 ```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
 gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
 
-openair::timeVariation(gridGenDT[year >= cutYear & month <= thisMonth], 
+plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+message("Plot start date: ", min(plotDT$date))
+message("Plot end date: ", max(plotDT$date))
+
+openair::timeVariation(plotDT, 
                        "CARBON_INTENSITY", ylab = "CO2e/kWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "lockdown")
 ```
@@ -347,7 +360,11 @@ Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and week
 ```{r timeVariationCO2e, fig.cap=paste0("timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
 gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
 
-openair::timeVariation(gridGenDT[year >= cutYear & month <= thisMonth], 
+plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+message("Plot start date: ", min(plotDT$date))
+message("Plot end date: ", max(plotDT$date))
+
+openair::timeVariation(plotDT, 
                        "totalC02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "lockdown")
 ```
