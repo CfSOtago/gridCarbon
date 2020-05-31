@@ -32,7 +32,20 @@ loadUKESOYearlyGenData <- function(path, fromYear, update){
   # check
   #h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
   #h
-
+  
+  # drop any days with incomplete data (this seems to happen on the last day in the data which is cut at 17:00 instead of 23:59. Oh yes. Data doesn't stop flowing at home time chaps)
+  dt[, hms := hms::as_hms(rDateTimeUTC)]
+  dt[, obsDate := lubridate::as_date(rDateTimeUTC)]
+  t <- dt[, .(nHalfHours = uniqueN(hms)), keyby = .(obsDate)]
+  setkey(t, obsDate)
+  setkey(dt, obsDate)
+  uniqueN(dt$obsDate)
+  nrow(t)
+  ok <- t[nHalfHours == 48]
+  nrow(ok)
+  dt <- dt[ok] # drops the dates with less than 48 observations
+  uniqueN(dt$obsDate)
+  
   # Total CO2e - original grid gen data
   dt[, totalC02e_g := ((1000*(GENERATION/2)) * CARBON_INTENSITY)]
   dt[, totalC02e_kg := totalC02e_g/1000]
