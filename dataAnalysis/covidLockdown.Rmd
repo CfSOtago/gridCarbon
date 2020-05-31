@@ -388,6 +388,7 @@ Figure \@ref(fig:fourmonthsplot) shows total generation for the first four month
 ```{r fourmonths}
 
 plotDT <- recastDT[year==2020]
+plotDT <- plotDT[ !(rMonth %in% c(NA))]
 
 ```
 
@@ -403,13 +404,15 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTime )) +
         axis.text.y = element_text(colour ="black"))+
   geom_rect(data = data.frame(rMonth = "Mar"), 
             aes(xmin = as_datetime("2020-03-25 00:15:00"), 
-                xmax = as_datetime("2020-03-31 23:45:00"), 
+                xmax = as_datetime("2020-04-27 23:45:00"), 
                 ymin = -Inf, ymax = Inf), 
             alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
   theme(legend.position="bottom")+
   labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") 
   #facet_grid(rMonth ~ .)
 myPlotTot
+
+#ggsave("Total electricity generation.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
 ```
 
 ```{r annualcomparision}
@@ -426,8 +429,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2020-03-10"&
                    date <= "2020-03-30"|
                      
-                  # date >= "2020-04-01"&
-                  # date <= "2020-04-21"|
+                   date >= "2020-04-01"&
+                   date <= "2020-04-21"|
                      
                           #2019     
                    date >= "2019-01-09"&
@@ -439,8 +442,8 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2019-03-05"&
                    date <= "2019-03-25"|
                      
-                  # date >= "2019-04-03"&
-                  # date <= "2019-04-23"| 
+                   date >= "2019-04-03"&
+                   date <= "2019-04-23"| 
                      
                           #2018
                    date >= "2018-01-10"&
@@ -450,10 +453,10 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date <= "2018-02-27"|
                      
                    date >= "2018-03-06"&
-                   date <= "2018-03-26"]
+                   date <= "2018-03-26"|
                      
-                  # date >= "2018-04-04"&
-                  # date <= "2018-04-24"]
+                   date >= "2018-04-04"&
+                   date <= "2018-04-24"]
 
 # Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
 
@@ -488,8 +491,8 @@ In order to provide information on how generation changed over time it is helpfu
 
 #Do the weekdays really match up?
 
-plotDT <- data1[date >= "2020-03-10"&
-                   date <= "2020-03-30"]
+plotDT <- data1[ date >= "2020-04-01"&
+                   date <= "2020-04-21"]
 
 legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
@@ -503,16 +506,16 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
   theme(legend.position="bottom")+
-  labs(x='Extracted days for March', y='Power (MW)')+
+  labs(x='Extracted days for April', y='Power (MW)')+
   scale_x_datetime(date_breaks = '3 days',
                minor_breaks = 'day',
               # date_labels = '%b %a')+
-               date_labels  ='%n %a')+
-  geom_rect(data = data.frame(rMonth = "Mar"), 
-            aes(xmin = as_datetime("2020-03-25 00:15:00"), 
-                xmax = as_datetime("2020-03-30 23:45:00"), 
-                ymin = -Inf, ymax = Inf), 
-            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+               date_labels  ='%n %a')
+ # geom_rect(data = data.frame(rMonth = "Mar"), 
+  #          aes(xmin = as_datetime("2020-03-25 00:15:00"), 
+   #             xmax = as_datetime("2020-03-30 23:45:00"), 
+    #            ymin = -Inf, ymax = Inf), 
+     #       alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
   #geom_rect(data = data.frame(rMonth = "Apr"), 
    #         aes(xmin = as.datetime("2020-04-01 00:15:00"), 
     #            xmax = as.datetime("2020-04-21 23:45:00"), 
@@ -522,14 +525,16 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
 
 myPlotTot
 
+#ggsave("Twenty days of April total generation.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
+
 ```
 Figure \@ref(fig:closeupplot) shows a close-up for one day in March for the three years. We see that on this particular Saturdays during the lockdown period the morning peak was shifted towards mid-day. Total generation at morning peak dropped by 11% compared to previous years. Interestingly, the evening peak reached almost the same total generation despite the lockdown but was shifted by one hour. 
 
-```{r closeupplot, fig.cap="Total generation over time for the fourth Saturday in March by year "}
+```{r closeupplot, fig.cap="Total generation over time for the third Saturday in April by year "}
 
 # Does tht timing of demand change too?
 
-plotDT <- data1[date == "2020-03-28"]
+plotDT <- data1[date == "2020-04-16"]
 
 legend_title <- "Year"
 myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
@@ -542,7 +547,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
   scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Fourth Saturday of March', y='Power (MW)')+
+  labs(x='Third Saturday of April', y='Power (MW)')+
   theme(legend.position="bottom")+
   scale_x_datetime(date_breaks = '1 hour',
                #minor_breaks = 'day',
@@ -578,8 +583,8 @@ plotDT <- recast_d_meanDT[date >= "2020-01-08"&
                    date >= "2020-03-10"&
                    date <= "2020-03-30"|
                      
-                  # date >= "2020-04-01"&
-                  # date <= "2020-04-21"|
+                   date >= "2020-04-01"&
+                   date <= "2020-04-21"|
                      
                           #2019     
                    date >= "2019-01-09"&
@@ -591,8 +596,8 @@ plotDT <- recast_d_meanDT[date >= "2020-01-08"&
                    date >= "2019-03-05"&
                    date <= "2019-03-25"|
                      
-                  # date >= "2019-04-03"&
-                  # date <= "2019-04-23"| 
+                   date >= "2019-04-03"&
+                   date <= "2019-04-23"| 
                      
                           #2018
                    date >= "2018-01-10"&
@@ -602,10 +607,10 @@ plotDT <- recast_d_meanDT[date >= "2020-01-08"&
                    date <= "2018-02-27"|
                      
                    date >= "2018-03-06"&
-                   date <= "2018-03-26"]
+                   date <= "2018-03-26"|
                      
-                  # date >= "2018-04-04"&
-                  # date <= "2018-04-24"]
+                   date >= "2018-04-04"&
+                   date <= "2018-04-24"]
 
 # Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
 
@@ -688,7 +693,7 @@ myPlotTot
 
 #This shows us the selected weeks for January and February
 legend_title <- "Year"
-myPlotTot <- ggplot2::ggplot(data1, aes(x= dateTime)) +
+myPlotTot <- ggplot2::ggplot(data1, aes(x= date)) +
   geom_smooth(aes(y=`2020`, colour = "2020"))+
   geom_smooth(aes(y=`2019`, colour = "2019"))+
   geom_smooth(aes(y=`2018`, colour = "2018"))+
@@ -773,7 +778,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
   geom_step(aes(y=`PerDiff`))+
   theme(axis.text.x = element_text(colour = "black"),
         axis.text.y = element_text(colour ="black"))+
-  labs(x='Extracted days for January-March', y='Percentage difference')+
+  labs(x='Extracted days for January-April', y='Percentage difference')+
   scale_x_date(date_breaks = '5 days',
                minor_breaks = '1 day',
                date_labels  ='%a')+
@@ -784,16 +789,102 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
             aes(xmin = as.Date("2020-03-25"), 
                 xmax = as.Date("2020-03-30"), 
                 ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  geom_rect(data = data.frame(rMonth = "Apr"), 
+            aes(xmin = as.Date("2020-04-01"), 
+                xmax = as.Date("2020-04-21"), 
+                ymin = -Inf, ymax = Inf), 
             alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
-  #geom_rect(data = data.frame(rMonth = "Apr"), 
-   #         aes(xmin = as.Date("2020-04-01"), 
-    #            xmax = as.Date("2020-04-21"), 
-     #           ymin = -Inf, ymax = Inf), 
-      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
   
 
 myPlotTot
 
+#ggsave("Percentage difference in daily mean between 2018-2019 and 2020.jpeg", dpi = 600, width = 13.333, height = 7.5, #units = "in")
+
+
+
+```
+
+```{r weekdaymean}
+
+#This code calculates the mean for weekdays/non-weekdays for pre-lockdown and lockdown time
+
+                            #2020
+plotDT <- recastDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
+                     
+                   date >= "2020-04-01"&
+                   date <= "2020-04-21"]
+
+plotDT <- plotDT[, time := hms::as.hms(rDateTime)]
+
+#Calcuclating mean
+
+plotDT <- plotDT[, weekday:= ifelse(`weekdays` == "Mon"|
+                                   `weekdays` == "Tue"|
+                                   `weekdays` == "Wed"|
+                                   `weekdays` == "Thu"|
+                                   `weekdays` == "Fri",
+                                   "yes", "no")]
+
+plotDT <- plotDT[, lockdown:= ifelse(`date` >= "2020-03-25"& date <=
+                                   "2020-04-27", "yes", "no")]
+
+
+plotDT <- plotDT[, .(meanMW= mean(totalMW)), keyby =. (time, weekday, lockdown, Time_Period)]
+
+timeDT <-copy(plotDT)
+timeDT[, c("weekday","Time_Period","lockdown","meanMW"):=NULL]
+timeDT<-unique(timeDT)
+
+
+                 
+#plotDT <- unique(plotDT)   
+
+
+
+data1 <- data.table(`lockdown`=numeric())
+data1 <-data1[, .(`lockdown` = ifelse(plotDT$weekday == "no"&plotDT$lockdown=="yes" , plotDT$meanMW, NA ))]
+data1 <-data1[!is.na(data1$`lockdown`)]
+
+data2 <- data.table(`prelockdown`=numeric())
+data2 <-data2[, .(`prelockdown` = ifelse(plotDT$weekday == "no"& plotDT$lockdown=="no", plotDT$meanMW, NA ))]
+data2 <-data2[!is.na(data2$`prelockdown`)]
+
+
+data1 <- data1[, `prelockdown` := data2$`prelockdown`]
+data1 <- data1[, `time` := timeDT$`time`]
+data1 <- data1[, ID := .I]
+                
+
+```
+
+```{r test}
+
+legend_title <- "Period"
+myPlotTot <- ggplot2::ggplot(data1, aes(x= time)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+   geom_line(aes(y=`lockdown`, colour = "lockdown"))+
+   geom_line(aes(y=`prelockdown`, colour = "prelockdown"))+ 
+  scale_color_manual(legend_title, values = c(`lockdown`='red',`prelockdown`='blue'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Time', y='Power (MW)')+
+  theme(legend.position="bottom")
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+myPlotTot
+
+#ggsave("Weekend mean total generation for lockdown and prelockdown.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
 
 ```
 
