@@ -1,6 +1,8 @@
 # loads data & runs a report
 # https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix
 
+update <- "Yes" # edit to force data re-load
+
 # Load some packages
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
 
@@ -64,8 +66,8 @@ makeReport <- function(f){
 
 plan <- drake::drake_plan(
   gridGenData = loadUKESOYearlyGenData(localParams$gridDataLoc, # from where?
-                                       localParams$fromYear,
-                                       update = "No"), # from what date?
+                                       localParams$fromYear, # from what date?
+                                       update), 
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
   alignedGridGenData = alignDates(gridGenData), # fix the dates so they line up
