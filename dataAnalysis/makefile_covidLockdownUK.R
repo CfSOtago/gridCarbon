@@ -1,7 +1,7 @@
 # loads data & runs a report
 # https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix
 
-update <- "Yes" # edit to force data re-load
+
 
 # Load some packages
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
@@ -27,7 +27,8 @@ localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2015 # a way to limit the number of years of data files loaded
-localParams$recentCutDate <- as.Date("2020-03-01")
+update <- "please" # edit to force data re-load
+localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
 # > data paths ----
@@ -150,7 +151,6 @@ alignedDT <- drake::readd(alignedGridGenData)
 
 print("Grid gen loaded")
 message("Loaded ", tidyNum(nrow(gridGenDT)), " rows of data")
-
 
 
 # > Make report ----
