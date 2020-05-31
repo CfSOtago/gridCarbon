@@ -87,15 +87,15 @@ addWeekendRectsDate <- function(p, yMin, yMax){
     annotate("rect", xmin = as.Date("2020-05-23"),
              xmax = as.Date("2020-05-25"),
              ymin = yMin, ymax = yMax,
-             alpha = myParams$weAlpha, fill = myParams$weFill) +
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
     annotate("rect", xmin = as.Date("2020-05-23"),
              xmax = as.Date("2020-05-25"),
              ymin = yMin, ymax = yMax,
-             alpha = myParams$weAlpha, fill = myParams$weFill) +
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
     annotate("rect", xmin = as.Date("2020-05-30"),
              xmax = as.Date("2020-06-01"),
              ymin = yMin, ymax = yMax,
-             alpha = myParams$weAlpha, fill = myParams$weFill)
+             alpha = gcParams$weAlpha, fill = gcParams$weFill)
     return(p)
 }
 
@@ -162,10 +162,10 @@ addWeekendRectsDateTime <- function(p, yMin, yMax){
     annotate("rect", xmin = lubridate::as_datetime("2020-05-23 00:00:00"),
              xmax = lubridate::as_datetime("2020-05-24 23:59:59"),
              ymin = yMin, ymax = yMax,
-             alpha = myParams$weAlpha, fill = myParams$weFill) +
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
     annotate("rect", xmin = lubridate::as_datetime("2020-05-30 00:00:00"),
              xmax = lubridate::as_datetime("2020-05-31 23:59:59"),
              ymin = yMin, ymax = yMax,
-             alpha = myParams$weAlpha, fill = myParams$weFill)
+             alpha = gcParams$weAlpha, fill = gcParams$weFill)
   return(p)
 }
