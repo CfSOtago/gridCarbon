@@ -241,13 +241,13 @@ Not entirely sure what these codes mean yet. Limited [guidance](https://forum.em
 
 > For now embedded generation data is _not_ included in the following analysis.
 
-# Analysis
+# Analysis (think this section needs some structure/sub-headings!)
 
 In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 2020 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 28 This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.
 
 All non-essential busineeses are closed and staff is asked to work from home. This analysis aims to provide insights on developments in electriicty generation. Essential research questions company this research:
 
-* To what extent has electricty generation shown deviation of 'normal' generation patterns during the level four alert?
+* To what extent has electricity generation shown deviation of 'normal' generation patterns during the level four alert?
 
 * Has the composition of fuel sources supplying electriicty demand in New Zealand changed during the level four alert?
 
@@ -269,7 +269,7 @@ All non-essential busineeses are closed and staff is asked to work from home. Th
 
 ```{r lockdown1SelectData, include=FALSE}
 
-#Selects Jan and Feb of 2020, 2019, 2018 as we do not have March data yet
+# Selects relevant months of 2020, 2019, 2018
 selectDT <- allGridDT[month >= 1 & 
                       month <= 4 &
                       year == 2020 |
@@ -297,21 +297,18 @@ do.call(rbind,as.list(x2))# Clearly hydro dominates
 ```
 
 
-```{r nobstable}
+```{r nobsTable}
 #Put this into a table for visualisation
 kableExtra::kable(head(x2), col.names = "nObs", caption = "Number of observations by fuel") %>%
                     kable_styling()
 ```
-We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:nobstable) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
+We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:nobsTable) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
 
 ```{r lockdowncalc}
 
 #Let us try to avoid confusion with kWh and convert it to power MW....
 shortDT <- shortDT[, meanMW := (meankWh*2)/1000]
 shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
-
-
-
 
 kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
                     kable_styling()

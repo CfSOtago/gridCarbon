@@ -133,8 +133,9 @@ origNonGridDT <- drake::readd(nonGridData)
 
 # > fix grid data ----
 origGridDT[, rDateTimeOrig := rDateTime] # just in case
-origGridDT[, rDateTimeNZT := lubridate::as_datetime(rDateTime)]
-origGridDT[, rDateTimeNZT := lubridate::force_tz(rDateTimeNZT, tzone = "Pacific/Auckland")] # just to be sure
+origGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
+origGridDT[, rDateTimeNZT := lubridate::force_tz(rDateTime, 
+                                                 tzone = "Pacific/Auckland")] # just to be sure
 origGridDT[, rTime := hms::as_hms(rDateTimeNZT)]
 origGridDT[, rMonth := lubridate::month(rDateTimeNZT, label = TRUE, abbr = TRUE)]
 
@@ -142,15 +143,17 @@ origGridDT[, rMonth := lubridate::month(rDateTimeNZT, label = TRUE, abbr = TRUE)
 print("Grid gen loaded")
 message("Loaded ", tidyNum(nrow(origGridDT)), " rows of data")
 table(origGridDT[is.na(rDateTimeNZT)]$Time_Period)
+nrow(origGridDT)
+allGridDT <- origGridDT[!is.na(rDateTimeNZT)] # removes TP 49 & 50
+allGridDT <- allGridDT[!is.na(kWh)] # removes NA kWh
 nrow(allGridDT)
-allGridDT <- origGridDT[!is.na(rDateTimeNZT) & # removes TP 49 & 50
-                          !is.na(kWh)] # removes NA kWh
-nrow(allGridDT)
+summary(allGridDT$rDateTimeNZT)
 
 # > non grid data ----
 origNonGridDT[, rDateTimeOrig := rDateTime] # just in case
 origNonGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-origNonGridDT[, rDateTimeNZT := lubridate::force_tz(rDateTimeNZT, tzone = "Pacific/Auckland")]
+origNonGridDT[, rDateTimeNZT := lubridate::force_tz(rDateTime, 
+                                                    tzone = "Pacific/Auckland")]
 origNonGridDT[, rTime := hms::as_hms(rDateTimeNZT)]
 origNonGridDT[, rMonth := lubridate::month(rDateTimeNZT, label = TRUE, abbr = TRUE)]
 
@@ -158,8 +161,11 @@ origNonGridDT[, rMonth := lubridate::month(rDateTimeNZT, label = TRUE, abbr = TR
 print("Non grid gen loaded")
 message("Loaded ", tidyNum(nrow(origNonGridDT)), " rows of data")
 table(origNonGridDT[is.na(rDateTime)]$Time_Period)
-allEmbeddedDT <- origNonGridDT[!is.na(rDateTimeNZT) & # removes TP 49 & 50
-                                 !is.na(kWh)] # removes NA kWh
+nrow(origNonGridDT)
+allEmbeddedDT <- origNonGridDT[!is.na(rDateTimeNZT)] # removes TP 49 & 50
+allEmbeddedDT <- allEmbeddedDT[!is.na(kWh)] # removes NA kWh
+nrow(allEmbeddedDT)
+summary(allEmbeddedDT$rDateTimeNZT)
 
 # test dates available ----
 # allGrid
