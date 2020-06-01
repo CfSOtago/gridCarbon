@@ -24,7 +24,7 @@ gridCarbon::loadLibraries(reqLibs)
 # Parameters ----
 localParams <- list() # repo level params are in gcParams
 
-years <- seq(2020, 2020, 1) # change these to restrict or extend the file search
+years <- seq(1999, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 refresh <- 0 # set to 1 to try to download all files even if we already have them
@@ -43,120 +43,9 @@ localParams$rawGridDataPath <- path.expand(paste0(localParams$gridDataLoc, "raw/
 localParams$processedGridDataPath <- path.expand(paste0(localParams$gridDataLoc, "processed/monthly/"))
 
 # Local functions ----
-# data cleaning - used below
-cleanGridEA <- function(dt){
-  # cleans & returns a dt
-  dtl <- gridCarbon::reshapeGenDT(dt) # make long
-  dtl <- gridCarbon::setGridGenTimePeriod(dtl) # set time periods to something intelligible as rTime
-  dtl[, rDate := as.Date(Trading_date)] # fix the dates so R knows what they are
-  dtl[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
-  # there will be parse errors in the above due to TP49 & TP50
-  table(dtl[is.na(rDateTime)]$Time_Period)
-  return(dtl)
-}
-# these need to vary slightly from the EA wholesale data :-(
-cleanEmbEA <- function(dt){
-  # cleans & returns a long form dt
-  dtl <- gridCarbon::reshapeEmbeddedGenDT(dt) # make long
-  dtl <- gridCarbon::setEmbeddedGenTimePeriod(dtl) # set time periods to something intelligible as rTime
-  dtl[, rDate := lubridate::dmy(Trading_date)] # fix the dates so R knows what they are
-  dtl[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
-  # there will be parse errors in the above due to TP49 & TP50
-  table(dtl[is.na(rDateTime)]$Time_Period)
-  return(dtl)
-}
 
-getEmbData <- function(years,months){
-  message("Embedded Gen: Checking what we have already...")
-  filesToDateDT <- data.table::as.data.table(list.files(localParams$rawEmbDataPath)) # get list of files already downloaded
-  metaDT <- data.table::data.table() # stats collector
-  
-  for(y in years){
-    for(mo in months){
-      # construct the filename
-      if(nchar(mo) == 1){
-        # need to add 0 as prefix
-        m <- paste0("0", mo)
-      } else {
-        m <- mo
-      }
-      if(lubridate::today() < as.Date(paste0(y, "-",m,"-", "01"))){
-        break # clearly there won't be any data
-      }
-      processedfName <- paste0(y,"_", m,"_Embedded_generation.csv") # for ease of future file filtering
-      rawfName <- paste0(y, m,"_Embedded_generation.csv")
-      print(paste0("Checking ", processedfName))
-      test <- filesToDateDT[V1 %like% processedfName] # should catch .csv.gz too
-      if(nrow(test) > 0 & refresh == 0){
-        # Already got it & we don't want to refresh so skip
-        print(paste0("Already have ", processedfName, ", loading from local..."))
-        # Load so we can update meta
-        #df <- readr::read_csv(paste0(localParams$rawEmbDataPath, processedfName))
-        dt <- data.table::fread(paste0(localParams$rawEmbDataPath, paste0(processedfName, ".gz")))
-        dt <- cleanEmbEA(dt) # clean up to a dt, TP49 & TP50 will fail to parse
-        # print(summary(dt))
-        testDT <- getEmbMeta(dt) # get metaData
-        print(head(testDT))
-        testDT <- testDT[, source := processedfName]
-        metaDT <- rbind(metaDT, testDT)
-        testDT <- NULL
-      } else {
-        # Download it
-        rFile <- paste0(localParams$embDataURL,rawfName)
-        print(paste0("We don't have or need to refresh ", processedfName))
-        # use curl function to catch errors
-        # currently this breaks if no net - we need to catch that error too!
-        print(paste0("Trying to download ", rFile))
-        req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
-        if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
-          #df <- readr::read_csv(req$content)
-          dt <- data.table::fread(req$content)
-          print("File downloaded successfully, saving it")
-          data.table::fwrite(dt, paste0(localParams$rawEmbDataPath, processedfName))
-          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$rawEmbDataPath, processedfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
-          message("Running: ", cmd)
-          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
-          print("Compressed original file")
-          dt <- cleanEmbEA(dt) # clean up to a dt
-          testDT <- getEmbMeta(dt) # get metaData
-          testDT <- testDT[, source := rawfName]
-          metaDT <- rbind(metaDT, testDT)
-          print("Converted to long form, saving it")
-          processedfName <- paste0(y,"_",m,"_Embedded_generation_long.csv")
-          lF <- paste0(localParams$processedEmbDataPath, processedfName)
-          data.table::fwrite(dt, lF)
-          cmd <- paste0("gzip -f ", "'", lF, "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
-          message("Running: ", cmd)
-          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
-          print("Compressed long form file")
-        } else {
-          print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
-        }
-      }
-    }
-  }
-  # write out the meta data ----
-  data.table::fwrite(metaDT, paste0(localParams$processedEmbDataPath, "metaDT.csv"))
-  
-  # remove the temp file
-  file.remove("temp.csv")
-  return(metaDT)
-}
 
-getEmbMeta <- function(dt){
-  dt <- dt[, month := lubridate::month(rDate)]
-  dt <- dt[,year := lubridate::year(rDate)]
-  testDT <- dt[, .(nObs = .N,
-                   sumMWh = sum(as.numeric(kWh)/1000, na.rm = TRUE),
-                   meanMWh = mean(as.numeric(kWh)/1000, na.rm = TRUE),
-                   dateFrom = min(rDate),
-                   dateTo = max(rDate),
-                   nDays = uniqueN(rDate)), keyby = .(month,
-                                                      year,
-                                                      Flow_Direction)] # inport/export?
-  return(testDT)
-}
-
+# > grid gen data  ----
 getGridData <- function(years, months){
   message("Checking what we have already...")
   filesToDateDT <- data.table::as.data.table(list.files(localParams$rawGridDataPath)) # get list of files already downloaded
@@ -175,7 +64,7 @@ getGridData <- function(years, months){
         break # clearly there won't be any data for future dates
       }
       eafName <- paste0(y, m,"_Generation_MD.csv") # what we see on the EA EMI
-      rawfName <- paste0(y,"_", m,"_Generation_MD.csv") # for ease of future file filtering
+      rawfName <- paste0(y,"_", m,"_gridGen.csv") # for ease of future file filtering
       print(paste0("Checking ", rawfName))
       test <- filesToDateDT[V1 %like% rawfName] # have we got it already?
       if(nrow(test) > 0 & refresh == 0){
@@ -211,7 +100,7 @@ getGridData <- function(years, months){
           testDT <- testDT[, source := rawfName]
           metaDT <- rbind(metaDT, testDT)
           print("Converted to long form, saving it")
-          processedfName <- paste0(y,"_",m,"_Generation_MD_long.csv")
+          processedfName <- paste0(y,"_",m,"_gridGen.csv")
           data.table::fwrite(dt, paste0(localParams$processedGridDataPath, processedfName))
           cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$processedGridDataPath, processedfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
           message("Running: ", cmd)
@@ -224,6 +113,17 @@ getGridData <- function(years, months){
     }
   }
   return(metaDT)
+}
+
+cleanGridEA <- function(dt){
+  # cleans & returns a dt
+  dtl <- gridCarbon::reshapeGenDT(dt) # make long
+  dtl <- gridCarbon::setGridGenTimePeriod(dtl) # set time periods to something intelligible as rTime
+  dtl[, rDate := as.Date(Trading_date)] # fix the dates so R knows what they are
+  dtl[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
+  # there will be parse errors in the above due to TP49 & TP50
+  table(dtl[is.na(rDateTime)]$Time_Period)
+  return(dtl)
 }
 
 getGridMeta <- function(dt){
@@ -241,6 +141,111 @@ getGridMeta <- function(dt){
 }
 
 
+# > embedded gen data ----
+getEmbData <- function(years,months){
+  message("Embedded Gen: Checking what we have already...")
+  filesToDateDT <- data.table::as.data.table(list.files(localParams$rawEmbDataPath)) # get list of files already downloaded
+  metaDT <- data.table::data.table() # stats collector
+  
+  for(y in years){
+    for(mo in months){
+      # construct the filename
+      if(nchar(mo) == 1){
+        # need to add 0 as prefix
+        m <- paste0("0", mo)
+      } else {
+        m <- mo
+      }
+      if(lubridate::today() < as.Date(paste0(y, "-",m,"-", "01"))){
+        break # clearly there won't be any data
+      }
+      eafName <- paste0(y, m,"_Embedded_generation.csv") # what we see on the EA EMI
+      rawfName <- paste0(y,"_", m,"_embeddedGen.csv") # for ease of future file filtering
+      print(paste0("Checking ", rawfName))
+      test <- filesToDateDT[V1 %like% rawfName] # should catch .csv.gz too
+      if(nrow(test) > 0 & refresh == 0){
+        # Already got it & we don't want to refresh so skip
+        print(paste0("Already have ", rawfName, ", loading from local..."))
+        # Load so we can update meta
+        #df <- readr::read_csv(paste0(localParams$rawEmbDataPath, rawfName))
+        dt <- data.table::fread(paste0(localParams$rawEmbDataPath, paste0(rawfName, ".gz")))
+        dt <- cleanEmbEA(dt) # clean up to a dt, TP49 & TP50 will fail to parse
+        # print(summary(dt))
+        testDT <- getEmbMeta(dt) # get metaData
+        print(head(testDT))
+        testDT <- testDT[, source := rawfName]
+        metaDT <- rbind(metaDT, testDT)
+        testDT <- NULL
+      } else {
+        # Download it
+        rFile <- paste0(localParams$embDataURL,eafName)
+        print(paste0("We don't have or need to refresh ", rawfName))
+        # use curl function to catch errors
+        # currently this breaks if no net - we need to catch that error too!
+        print(paste0("Trying to download ", rFile))
+        req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
+        if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
+          #df <- readr::read_csv(req$content)
+          dt <- data.table::fread(req$content)
+          print("File downloaded successfully, saving it")
+          data.table::fwrite(dt, paste0(localParams$rawEmbDataPath, rawfName))
+          cmd <- paste0("gzip -f ", "'", path.expand(paste0(localParams$rawEmbDataPath, rawfName)), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          message("Running: ", cmd)
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed original file")
+          dt <- cleanEmbEA(dt) # clean up to a dt
+          testDT <- getEmbMeta(dt) # get metaData
+          testDT <- testDT[, source := rawfName]
+          metaDT <- rbind(metaDT, testDT)
+          print("Converted to long form, saving it")
+          lF <- paste0(localParams$processedEmbDataPath, rawfName)
+          data.table::fwrite(dt, lF)
+          cmd <- paste0("gzip -f ", "'", lF, "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
+          message("Running: ", cmd)
+          try(system(cmd)) # in case it fails - if it does there will just be .csv files (not gzipped) - e.g. under windows
+          print("Compressed long form file")
+        } else {
+          print(paste0("File download failed (Error = ", req$status_code, ") - does it exist at that location?"))
+        }
+      }
+    }
+  }
+  # write out the meta data ----
+  data.table::fwrite(metaDT, paste0(localParams$processedEmbDataPath, "metaDT.csv"))
+  
+  # remove the temp file
+  file.remove("temp.csv")
+  return(metaDT)
+}
+
+# these need to vary slightly from the EA wholesale data :-(
+cleanEmbEA <- function(dt){
+  # cleans & returns a long form dt
+  dtl <- gridCarbon::reshapeEmbeddedGenDT(dt) # make long
+  dtl <- gridCarbon::setEmbeddedGenTimePeriod(dtl) # set time periods to something intelligible as rTime
+  dtl[, rDate := lubridate::dmy(Trading_date)] # fix the dates so R knows what they are
+  dtl[, rDateTime := lubridate::ymd_hms(paste0(rDate, rTime))] # set full dateTime
+  # there will be parse errors in the above due to TP49 & TP50
+  table(dtl[is.na(rDateTime)]$Time_Period)
+  return(dtl)
+}
+
+getEmbMeta <- function(dt){
+  dt <- dt[, month := lubridate::month(rDate)]
+  dt <- dt[,year := lubridate::year(rDate)]
+  testDT <- dt[, .(nObs = .N,
+                   sumMWh = sum(as.numeric(kWh)/1000, na.rm = TRUE),
+                   meanMWh = mean(as.numeric(kWh)/1000, na.rm = TRUE),
+                   dateFrom = min(rDate),
+                   dateTo = max(rDate),
+                   nDays = uniqueN(rDate)), keyby = .(month,
+                                                      year,
+                                                      Flow_Direction)] # inport/export?
+  return(testDT)
+}
+
+
+# > processes either to yearly ----
 makeYearlyData <- function(genType, years){ # parameter selects path and thus files
   if(genType == "gridGen"){
     path <- localParams$gridDataLoc
@@ -275,12 +280,13 @@ makeYearlyData <- function(genType, years){ # parameter selects path and thus fi
 }
 
 # Code ----
-# Set start time ----
+# > Set start time ----
 startTime <- proc.time()
 
+# Get data ----
 # can't use drake as it won't go and get new data
 # well, we could but...
-message("Getting: ", years)
+message("Getting ", years[1], " to ", years[length(years)])
 
 gridMetaDataDT <- getGridData(years = years, months = months) # returns metadata
 embMetaDataDT <- getEmbData(years = years, months = months) # returns metadata
