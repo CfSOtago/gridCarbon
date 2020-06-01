@@ -282,12 +282,12 @@ selectDT <- allGridDT[month >= 1 &
                       month <= 4 &
                       year == 2018]
 
-#Building means by Fuel_Code, rDateTime, Time_Period, rMonth
+#Building means by Fuel_Code, rDateTimeNZT, Time_Period, rMonth
 shortDT <- selectDT[, . (meankWh = mean(kWh),
                          sumkWh = sum(kWh),
                         nObs = .N), # number of obs - will show you how rare coal is :-)
-                    keyby= .(Fuel_Code, rDateTime, Time_Period, rMonth, year)]
-#This won't build means by month - it will build them by rDateTime as rMonth is constant for each rDateTime
+                    keyby= .(Fuel_Code, rDateTimeNZT, Time_Period, rMonth, year)]
+#This won't build means by month - it will build them by rDateTimeNZT as rMonth is constant for each rDateTimeNZT
 
 
 #This shows us how many obs there are for each Fuel_Code. There might be an easier way to do it?
@@ -329,7 +329,7 @@ shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
 plotDT <- shortDT[year==2020]
 
 legend_title <- "Type of Fuel"
-myPlotSum <- ggplot2::ggplot(plotDT, aes(x= rDateTime)) +
+myPlotSum <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT)) +
   geom_line(aes(y = sumMW, colour = Fuel_Code))+
   geom_smooth(aes(y= sumMW, colour = Fuel_Code))+
   theme(legend.position="bottom")+
@@ -353,18 +353,18 @@ myPlotSum
 #We might need to dcast now...
 
 recastDT <- dcast(shortDT,
-           rDateTime + Time_Period + rMonth + year  ~ Fuel_Code, 
+           rDateTimeNZT + Time_Period + rMonth + year  ~ Fuel_Code, 
            fun = mean, # won't do anything as we should just have 1 value?
            value.var = "sumMW")
 
 # Adding a weekday column
-recastDT <- recastDT[, weekdays:= wday(rDateTime, label = TRUE)]
+recastDT <- recastDT[, weekdays:= wday(rDateTimeNZT, label = TRUE)]
 #Adding date column
-recastDT[, date := lubridate::as_date(rDateTime)]
+recastDT[, date := lubridate::as_date(rDateTimeNZT)]
 
 
 
-recastDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTime)]
+recastDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTimeNZT)]
 
 
 # Let us create a daily mean too
@@ -397,7 +397,7 @@ plotDT <- plotDT[ !(rMonth %in% c(NA))]
 
 #This shows us the selected weeks for January and February
 legend_title <- "Month"
-myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTime )) +
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT )) +
   geom_line(aes(y = totalMW, colour = rMonth))+
   geom_smooth(aes(y=totalMW, colour=NULL))+
   scale_color_manual(legend_title, values = c('Jan'='#A9DFBF','Feb'='#FAD7A0', 'Mar'='#AED6F1', 'Apr' ='#F5B7B1'))+
@@ -481,7 +481,7 @@ data1 <- data1[, `2019` := data2$`2019`]
 data1 <- data1[, `2018` := data3$`2018`]
 data1 <- data1[, ID := .I]
 data1 <- data1[, date := select$date]
-data1 <- data1[, dateTime := select$rDateTime]
+data1 <- data1[, dateTime := select$rDateTimeNZT]
 data1 <- data1[, rMonth := select$rMonth]
 
 ```
@@ -636,7 +636,7 @@ data1 <- data1[, rMonth := select$rMonth]
 data1 <- data1[, `2018-2019` := (`2019` + `2018`)/2] #Used for a refernce period
 data1 <- data1[, `PerDiff` := (1-(`2018-2019` / `2020`))*100] #Used for a differnece in %
 
-#data1 <- data1[, dateTime := select$rDateTime]
+#data1 <- data1[, dateTime := select$rDateTimeNZT]
 
 ```
 A less distorted view on total generation data is provided in Figure \@ref(fig:dailymeanplot). Instead of 15-minute granularity data daily means represent ttoal generation. We can see how close the analysed years were togetehr before the lockdowm and as the lockdown starts a large rop in generation occurs. 
@@ -819,7 +819,7 @@ plotDT <- recastDT[date >= "2020-01-08"&
                    date >= "2020-04-01"&
                    date <= "2020-04-21"]
 
-plotDT <- plotDT[, time := hms::as.hms(rDateTime)]
+plotDT <- plotDT[, time := hms::as.hms(rDateTimeNZT)]
 
 #Calcuclating mean
 
@@ -1063,7 +1063,7 @@ data1 <- data1[, `diesel18` := diesel18$`D18`]
 
 
 data1 <- data1[, date := selectyearDT$date]
-data1 <- data1[, dateTime := selectyearDT$rDateTime]
+data1 <- data1[, dateTime := selectyearDT$rDateTimeNZT]
 data1 <- data1[, rMonth := selectyearDT$rMonth]
 
 ```
@@ -1159,17 +1159,17 @@ For example, Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` func
 
 > currently fails as openair needs latticeExtra which needs R (≥ 3.6.0) 
 
-```{r TheilSenGWPlot, eval=FALSE, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(allGridDT$rDateTimeUTC))}
+```{r TheilSenGWPlot, eval=FALSE, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(allGridDT$rDateTimeNZTUTC))}
 
 # currently fails as openair needs latticeExtra which needs R (≥ 3.6.0) 
 # https://cran.r-project.org/web/packages/latticeExtra/index.html
 
 library(openair)
-allGridDT[, rDateTimeNZT := lubridate::as_datetime(rDateTimeOrig)]
-allGridDT[, rDateTimeNZT := lubridate::force_tz(tzone = "Pacific/Auckland")] # just in case we're doing this elsewhere
+allGridDT[, rDateTimeNZTNZT := lubridate::as_datetime(rDateTimeNZTOrig)]
+allGridDT[, rDateTimeNZTNZT := lubridate::force_tz(tzone = "Pacific/Auckland")] # just in case we're doing this elsewhere
 
-plotDT <- allGridDT[, .(sumMWh = sum(kWh)/1000), keyby = .(rDateTimeNZT)]
-plotDT[, date := as.Date(rDateTimeOrig)]  # set date to date for this one
+plotDT <- allGridDT[, .(sumMWh = sum(kWh)/1000), keyby = .(rDateTimeNZTNZT)]
+plotDT[, date := as.Date(rDateTimeNZTOrig)]  # set date to date for this one
 openair::TheilSen(plotDT, "sumMWh", 
                   ylab = "MWh", deseason = TRUE, 
                   type = c("weekend"), layout = c(1,2))
