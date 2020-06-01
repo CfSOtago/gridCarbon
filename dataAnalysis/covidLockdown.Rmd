@@ -45,7 +45,8 @@ library(gridCarbon)
 # Packages used in the report ----
 rmdLibs <- c("ggplot2", # plots
           "kableExtra", # fancy tables
-          "lubridate"
+          #"openair" # air qual plots re-purposed, fails as needs latticeExtra which needs R (≥ 3.6.0) https://cran.r-project.org/web/packages/latticeExtra/index.html
+          "lubridate" # dates
           )
 gridCarbon::loadLibraries(rmdLibs)
 
@@ -558,12 +559,8 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
 
 myPlotTot
 
-
-
-
-
-
 ```
+
 ```{r dmeancomparison}
 # How would that look like for daily means for Jan-Apr?
 
@@ -1035,14 +1032,6 @@ summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="diesel20"|variable=="dies
 summaryDT <- setnames(summaryDT, old=c("variable"), new=c("year"))
 
 
-
-
-
-
-
-
-
-
 plotDT <- summaryDT[Fuel_Code=="Coal"]
 
 legend_title <- "Year"
@@ -1071,6 +1060,33 @@ myPlotTot
 
 ```
 
+# Experiments with openair
+
+[openair](https://davidcarslaw.github.io/openair/) is an R package designed for air quality analysis but it has some useful plots that we can make use of.
+
+For example, Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by weekdays and weekend days. These plots show that there has been a steady decline in generation (and thus demand) over the period.
+
+> currently fails as openair needs latticeExtra which needs R (≥ 3.6.0) 
+
+```{r TheilSenGWPlot, eval=FALSE, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(allGridDT$rDateTimeUTC))}
+
+# currently fails as openair needs latticeExtra which needs R (≥ 3.6.0) 
+# https://cran.r-project.org/web/packages/latticeExtra/index.html
+
+library(openair)
+allGridDT[, rDateTimeNZT := lubridate::as_datetime(rDateTimeOrig)]
+allGridDT[, rDateTimeNZT := lubridate::force_tz(tzone = "Pacific/Auckland")] # just in case we're doing this elsewhere
+
+plotDT <- allGridDT[, .(sumMWh = sum(kWh)/1000), keyby = .(rDateTimeNZT)]
+plotDT[, date := as.Date(rDateTimeOrig)]  # set date to date for this one
+openair::TheilSen(plotDT, "sumMWh", 
+                  ylab = "MWh", deseason = TRUE, 
+                  type = c("weekend"), layout = c(1,2))
+t <- plotDT[, .("Mean MWh" = mean(sumMWh),
+                   "N obs" = .N), keyby = .(year)]
+kableExtra::kable(t, caption = "Mean half-hourly MWh by year") %>%
+  kable_styling()
+```
 
 # Annexes
 
