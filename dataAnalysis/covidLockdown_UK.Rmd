@@ -459,7 +459,7 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 makeFuelTrends <- function(fuels){
   for(f in fuels){
    openair::TheilSen(gridGenDT, eval(f), 
-                  ylab = paste0(eval(f), " (GW)") # , deseason = TRUE can make thjings go < 0
+                  ylab = paste0(eval(f), " (MW)") # , deseason = TRUE can make thjings go < 0
                   ) 
   }
 }
