@@ -10,6 +10,7 @@
 
 # Load libraries ----
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
+gridCarbon::setup()
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
@@ -29,21 +30,16 @@ months <- seq(1,12,1) # change these to restrict or extend the file search
 
 refresh <- 0 # set to 1 to try to download all files even if we already have them
 
-localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
-                                  "externalData/EA_Generation_Data/")
-localParams$nonGridDataLoc <- paste0(gcParams$GreenGrid, 
-                                     "externalData/EA_Embedded_Generation_Data/")
-
 localParams$embDataURL <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation/"
 localParams$gridDataURL <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/"
 
-localParams$rawEmbDataPath <- path.expand(paste0(localParams$nonGridDataLoc, "raw/"))
-localParams$processedEmbDataPath <- path.expand(paste0(localParams$nonGridDataLoc, "processed/monthly/"))
-localParams$rawGridDataPath <- path.expand(paste0(localParams$gridDataLoc, "raw/"))
-localParams$processedGridDataPath <- path.expand(paste0(localParams$gridDataLoc, "processed/monthly/"))
+localParams$rawEmbDataPath <- path.expand(paste0(gcParams$nonGridDataLoc, "raw/"))
+localParams$processedEmbDataPath <- path.expand(paste0(gcParams$nonGridDataLoc, "processed/monthly/"))
+localParams$rawGridDataPath <- path.expand(paste0(gcParams$gridDataLoc, "raw/"))
+localParams$processedGridDataPath <- path.expand(paste0(gcParams$gridDataLoc, "processed/monthly/"))
+
 
 # Local functions ----
-
 
 # > grid gen data  ----
 getGridData <- function(years, months){
