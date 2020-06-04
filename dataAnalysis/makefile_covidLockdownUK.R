@@ -27,7 +27,7 @@ localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2015 # a way to limit the number of years of data files loaded
-update <- "please" # edit to force data re-load
+update <- "yep" # edit to force data re-load - forces everything re-build :-)
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
