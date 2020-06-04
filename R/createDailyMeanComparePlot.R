@@ -33,6 +33,7 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1){
                                    shape = weekDay,
                                    colour = compareYear)) +
     geom_point() +
+    geom_line(aes(shape = NULL), linetype = "dashed") + # joint the dots within compareYear
     scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
     labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
