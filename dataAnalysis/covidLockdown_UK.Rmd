@@ -29,42 +29,365 @@ bibliography: '`r paste0(here::here(), "/bibliography.bib")`'
 ---
 
 ```{r knitrSetup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo to avoid mess
 ```
 
 
-```{r codeSetup, include=FALSE}
+```{r rmdSetup, include=FALSE}
 # Set start time ----
 startTime <- proc.time()
-# Local parameters ----
-b2Kb <- 1024 #http://whatsabyte.com/P1/byteconverter.htm
-b2Mb <- 1048576
-plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
 
 library(gridCarbon)
 # Packages used in the report ----
-rmdLibs <- c("ggplot2", # plots
-             "hms",
-          "kableExtra", # fancy tables
-          "lubridate",
-          "viridis"
+rmdLibs <- c("kableExtra", # fancy tables
+             "openair" # very useful plotting functions intended for air quality data analysis
           )
 gridCarbon::loadLibraries(rmdLibs)
 
-# Local parameters ----
-localParams$recentCutDate <- as.Date("2020-03-01")
+# Local parameters for .Rmd ----
+localParams$genUnits <- "MW"
+localParams$ciUnits <- "gCO2e/kWh"
+localParams$plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
 
-localParams$comparePlotCutDate <- as.Date("2020-02-01")
-
-localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
-localParams$lockdownCap <- "\nColoured rectangles = UK covid lockdown periods to date"
-localParams$weekendCap <- "\nShaded rectangle = weekends"
-
-# Local functions ----
+# Local functions for .Rmd ----
 
 ```
 
-\newpage
+
+# Introduction
+
+Building on [@staffell_measuring_2017] and [@khan_analysis_2018], we are interested in GHG emissions from UK electricity generation over time. We are especially interested in how this might change during the UK covid-19 [lockdown period](https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid) (from `r localParams$lockDownStart`).
+
+Several articles by ythe UK ESO and others have already explored this topic:
+
+ * https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid
+ * https://www.nationalgrideso.com/news/planning-easter-during-coronavirus-outbreak
+ * https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606
+ 
+ 
+Fortunately the UK Electricity System Operator publishes [half-hourly generation data](https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix) which includes both power generation (and thus 'demand') by fuels and also includes a per-kWh [carbon intensity](https://carbonintensity.org.uk/) for the electricity produced per half-hour. We use this data to explore the following research questions:
+
+ * To what extent has electricty demand shown deviation from 'normal' demand patterns during the lockdown period?
+
+ * Has the composition of fuel sources supplying electriicty changed during this period?
+
+ * Has the lockdown changed greenhouse-gas emissions associated with electriicty generation?
+
+# Data
+
+## Grid generation data {#genData}
+
+This is 'grid' generation from major power stations of various kinds. Data downloaded from ` https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix` and pre-processed.
+
+```{r testGrid}
+h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
+
+kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
+  kable_styling()
+```
+
+Note that according to the dataset [source](https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix):
+
+ * "Data points are either MW or %". This may be `mean MW` over the half hour or it may mean `MWh per half-hour`. It is unclear. The % refers to the fuel mix. Which one could easily calculate from the MW values. But anyway...
+ * carbon intensity is helpfully described as _"The carbon intensity of electricity is a measure of how much Carbon dioxide emissions are produced per kilowatt hour of electricity consumed."_. However we assume it is gCO2e/kWh - based on https://carbonintensity.org.uk/ 
+ 
+Table \@ref(tab:descData) shows the mean half hourly generation (MW) and mean carbon intensity over the years covered by the data. It also shows the implied mean half-hourly total kg CO2e per half hour which we have calculated as follows:
+{#kgcalc}
+ * convert `GENERATION` (`r localParams$genUnits`) to MWh per half hour by `GENERATION/2` (1 MW for half an hour = 1/2 MWh)
+ * convert the result to kWh (`* 10000`)
+ * multiply by the `CARBON_INTENSITY` which is in `r localParams$ciUnits`
+ * divide by 1000 to get Kg
+ 
+Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have kept all the steps.
+
+> NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the [ESO forecast methodology document](https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf) states that it is.
+ 
+```{r descData}
+t <- gridGenDT[, .(col1 = mean(GENERATION),
+                 col2 = mean(CARBON_INTENSITY),
+                 col3 = mean(totalC02e_kg)/1000,
+                 "N months to date" = uniqueN(lubridate::month(rDateTime)),
+                 nObs = .N), keyby = .(year)]
+
+ci2017 <- t[year == 2017, col2]
+ci2020 <- t[year == 2020, col2]
+ciDecrease_pc <- round(100*((ci2017 - ci2020)/ci2017))
+#ciDecrease_pc
+c2017 <- t[year == 2017, col3]
+c2020 <- t[year == 2020, col3]
+cDecrease_pc <- round(100*((c2017 - c2020)/c2017))
+
+col1 <- paste0("Mean halfhourly generation \n (", localParams$genUnits, ")")
+col2 <- paste0("Mean half-hourly carbon intensity \n (" , localParams$ciUnits, ")")
+col3 <- paste0("Mean total half-hourly CO2e (Tonnes)")
+data.table::setnames(t, c("col1","col2", "col3"), # old
+                     c(col1,col2,col3) # new
+                     ) # easy way to set human-readable col names
+
+kableExtra::kable(t, digits = 2,
+                  caption = "Mean half hourly power, carbon intensity and total CO2e emissions by year - note that 2020 is incomplete") %>%
+  kable_styling()
+
+```
+
+As we can see mean half-hourly generation has declined over the years but much less spectacularly than the mean carbon intensity which decreased by `r ciDecrease_pc` from 2017 to 2020.
+
+
+## Embedded generation data
+
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
+
+> We have not yet found a source of this data (if we even need it).
+
+> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).
+
+# Analysis
+
+In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data. 
+
+## Generation: Analysing deviation from 'normal'
+
+Several [articles](https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606) and [analyses](https://twitter.com/DrIAGWilson/status/1255100828781883394) have suggested that demand (and thus generation) patterns have shifted so that [weekdays have become more like weekends](http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html).
+
+### Overall trends
+
+Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by weekdays and weekend days. These plots show that there has been a steady decline in generation (and thus demand) over the period. The substantial fall in generation during lockdown in early Spring 2020 is clear but so is a notable drop in generation in late 2015 which was [unusually warm and wet](https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/weather/learn-about/uk-past-events/state-of-uk-climate/mo-state-of-uk-climate-2015-v3.pdf).
+
+```{r TheilSenGWPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(gridGenDT$rDateTimeUTC))}
+gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
+
+openair::TheilSen(gridGenDT, "GENERATION", 
+                  ylab = "GW", deseason = TRUE, 
+                  type = c("weekend"), layout = c(1,2))
+
+t <- gridGenDT[, .("Mean CI" = mean(GENERATION),
+                   "N obs" = .N), keyby = .(year)]
+
+kableExtra::kable(t, caption = "Mean half-hourly GW by year") %>%
+  kable_styling()
+```
+
+
+### Half hourly patterns
+
+Figure \@ref(fig:recentDateTimeGWPlot) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+
+```{r recentDateTimeGWPlot, fig.cap="Half-hourly generation, UK (recent)"}
+# NB: the drake target, the rmd chunk and thus the crossref target are all the same!
+drake::readd(recentDateTimeGWPlot)
+```
+
+Figure \@ref(fig:recentHalfHourlyProfileGWPlot) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
+
+```{r recentHalfHourlyProfileGWPlot, fig.cap="Half-hourly generation, UK (recent)"}
+drake::readd(recentHalfHourlyProfileGWPlot)
+```
+
+```{r setCutYear}
+cutYear <- 2018 # just compare with 2018 & 2019
+gridGenDT[, month := lubridate::month(date)]
+thisMonth <- lubridate::month(today())
+```
+
+Figure \@ref(fig:timeVariationGW) shows the difference between hourly and weekday patterns for lockdown 2020 and the same months in all years from `r cutYear` onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWPlot). The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.
+
+```{r timeVariationGW, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
+gridGenDT[, GW := GENERATION/1000]
+
+gridGenDT[, lockdown := ifelse(rDateTimeUTC < lubridate::as_datetime("2020-01-01 00:00:00"), 
+                            "Previous years", "2020 pre-lockdown")] #
+
+gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownStartDateTime, 
+                            "Lockdown to May 10th", lockdown)] #
+gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownRelaxDate_1, 
+                            "Lockdown after May 10th", lockdown)] #
+
+plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+message("Plot start date: ", min(plotDT$date))
+message("Plot end date: ", max(plotDT$date))
+
+openair::timeVariation(plotDT, 
+                       "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "lockdown", key.columns = 2)
+```
+
+Figure \@ref(fig:timeVariationGWnormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGW)).
+
+```{r timeVariationGWnormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+
+openair::timeVariation(plotDT, 
+                       "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "lockdown", normalise = TRUE)
+```
+
+### Daily patterns
+
+For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does **not** mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.
+
+Figure \@ref(fig:compareDailyGWPlot) shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure \@ref(fig:timeVariationGW), lockdown clearly reduced demand below the seasonal trend as Figure \@ref(fig:TheilSenGWPlot) suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure \@ref(fig:timeVariationGW)).
+
+> Beware temperature differences - need to control for heating degree days as 2020 was a _very_ warm spring
+
+```{r compareDailyGWPlot, fig.cap="Comparative daily mean half-hour generation levels 2020 vs 2017-2019"}
+drake::readd(compareDailyGWPlot)
+```
+
+Figure \@ref(fig:compareDailyGWpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
+
+```{r compareDailyGWpcPlot, fig.cap="Percentage difference in mean generation levels 2020 vs 2017-2019"}
+
+drake::readd(compareDailyGWpcPlot)
+```
+
+### Weekly patterns
+
+tbc
+
+## Carbon Intensity: Analysing deviation from 'normal'
+
+There are two aspects to this. The first is `carbon intensity` which is driven by the mix of fuels being used to generate electricity at any given time. The second is the total greenhouse gasses emitted which is, obviously, the intensity * the volume. Given the slight uncertainty over units (see Section \@ref(data)) we assume this is `GENERATION` * `CARBON_INTENSITY`.
+
+Clearly the first of these is driven by the mix of fuels and in the UK this reflects a complex dynamic system of availability of renewables, price, interconnect and demand. To some extent we would expect that lower overall demand should (but not [always](https://www.nationalgrideso.com/news/our-electricity-greener-lockdown)) increase the share of renewables. However other factors are also at play:
+
+ * some electricity-usage practices may have shifted to (or indeed away from) periods which are likely to have high renewable availability;
+ * some electricity-usage practices may have shifted away from the 'usual' morning and evening peak periods which are traditionally thought to require carbon intense peaking generation if sufficient pumped hydro is not available;
+ * low periods of demand might [require system services](https://www.nationalgrideso.com/news/our-electricity-greener-lockdown) from higher carbon generation
+
+### Overall trends
+
+Figure \@ref(fig:TheilSenCIPlot) agin uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by month, weekday and weekend. Again Table \@ref(tab:TheilSenCIPlot) indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period.
+
+```{r TheilSenCIPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly carbon intensity per month since ", min(gridGenDT$rDateTimeUTC))}
+gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
+
+openair::TheilSen(gridGenDT, "CARBON_INTENSITY", 
+                  ylab = "Carbon Intensity", deseason = TRUE,
+                  type = c("weekend"), layout = c(1,2))
+
+t <- gridGenDT[, .("Mean CI" = mean(CARBON_INTENSITY),
+                   "N obs" = .N), keyby = .(year)]
+
+kableExtra::kable(t, caption = "Mean half-hourly carbon intensity by year") %>%
+  kable_styling()
+```
+
+
+### Half-hourly patterns
+
+Figure \@ref(fig:recentDateTimeCIPlot) shows half-hourly carbon intensity since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+
+```{r recentDateTimeCIPlot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
+drake::readd(recentDateTimeCIPlot)
+```
+
+Figure \@ref(fig:recentHalfHourlyProfileCIPlot) shows the daily carbon intensity profiles over time for each day of the week.
+
+```{r recentHalfHourlyProfileCIPlot, fig.cap="Half-hourly generation, UK (recent)"}
+drake::readd(recentHalfHourlyProfileCIPlot)
+```
+
+
+Figure \@ref(fig:timeVariationCI) shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January `r cutYear`. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.
+
+```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
+
+plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+message("Plot start date: ", min(plotDT$date))
+message("Plot end date: ", max(plotDT$date))
+
+openair::timeVariation(plotDT, 
+                       "CARBON_INTENSITY", ylab = "CO2e/kWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "lockdown")
+```
+### Daily patterns
+
+Figure \@ref(fig:compareDailyCIPlot) shows the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As we would expect given Figure \@ref(fig:TheilSenCIPlot), 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+
+```{r compareDailyCIPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyCIPlot)
+```
+
+Figure \@ref(fig:compareDailyCIpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+
+```{r compareDailyCIpcPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyCIpcPlot)
+```
+
+### Weekly patterns
+
+tbc
+
+## Carbon emissions (total): Analysing deviation from 'normal'
+
+In this section we use our calculation of total CO2e emitted per half hour (see Section \@ref(genData)) to analyse the changes in total CO2e emitted which is, after all, what we are mostly interested in from a climate change point of view. Remember that this value is driven _both_ by total generation (demand) _and_ carbon intensity. As we saw above, these are not always tightly correlated.
+
+### Overall trends
+
+Figure \@ref(fig:TheilSenCIPlot) agin uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by month, weekday and weekend. Again Table \@ref(tab:TheilSenCIPlot) indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period.
+
+```{r TheilSenC02ekgPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly kg CO2e emissions per month since ", min(gridGenDT$rDateTimeUTC))}
+gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
+gridGenDT[, totalC02e_T := totalC02e_kg/1000 ]
+openair::TheilSen(gridGenDT, "totalC02e_T", 
+                  ylab = "Mean half-hourly C02e (T)", deseason = TRUE,
+                  type = c("weekend"), layout = c(1,2))
+
+t <- gridGenDT[, .("C02e" = mean(totalC02e_T),
+                   "N obs" = .N), keyby = .(year)]
+
+kableExtra::kable(t, caption = "Mean half-hourly C02e (T) by year", digits = 2) %>%
+  kable_styling()
+```
+
+### Half-hourly patterns
+
+Figure \@ref(fig:recentDateTimeC02ekgPlot) shows total half-hourly CO2e emissions since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+
+```{r recentDateTimeC02ekgPlot, fig.cap="Half-hourly total CO2e emissions, UK (recent)"}
+drake::readd(recentDateTimeC02ekgPlot)
+```
+
+Figure \@ref(fig:recentHalfHourlyProfileC02ekgPlot) shows the daily CO2e emissions profiles over time for each day of the week since `r localParams$recentCutDate`.
+
+```{r recentHalfHourlyProfileC02ekgPlot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
+drake::readd(recentHalfHourlyProfileC02ekgPlot)
+```
+
+Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January `r cutYear`. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.
+
+```{r timeVariationCO2e, fig.cap=paste0("timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
+
+plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+message("Plot start date: ", min(plotDT$date))
+message("Plot end date: ", max(plotDT$date))
+
+openair::timeVariation(plotDT, 
+                       "totalC02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "lockdown")
+```
+
+### Daily patterns
+
+Figure \@ref(fig:compareDailyCO2ekgPlot) shows the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+
+```{r compareDailyCO2ekgPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyCO2ekgPlot)
+```
+
+Figure \@ref(fig:compareDailyC02ekgpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
+
+```{r compareDailyC02ekgpcPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
+drake::readd(compareDailyC02ekgpcPlot)
+```
+
+### Weekly patterns
+
+tbc
+
+# Summary (to date)
 
 # About
 
@@ -102,312 +425,6 @@ All code used to create this report is available from:
  
 \newpage
 
-# Introduction
-
-Building on [@staffell_measuring_2017] and [@khan_analysis_2018], we are interested in GHG emissions from UK electricity generation over time. We are especially interested in how this might change during the UK covid-19 lockdown period (from `r localParams$lockDownStart`).
-
-Fortunately the UK Electricity System Operator publishes [half-hourly generation data](https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix) which includes both power generation (and thus 'demand') by fuels and also includes a per-kWh [carbon intensity](https://carbonintensity.org.uk/) for the electricity produced per half-hour. We use this data to explore the following research questions:
-
- * To what extent has electricty demand shown deviation from 'normal' demand patterns during the lockdown period?
-
- * Has the composition of fuel sources supplying electriicty changed during this period?
-
- * Has the lockdown changed greenhouse-gas emissions associated with electriicty generation?
- 
-# Data
-
-## Grid generation data
-
-Essentially 'grid' generation from major power stations of various kinds. Data downloaded from ` https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix` and pre-processed.
-
-```{r testGrid}
-h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
-
-kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
-  kable_styling()
-```
-
-```{r prepData}
-fixedDT <- drake::readd(fixedGenData)
-t <- fixedDT[, .(meanHalfHourlyMW = mean(GENERATION),
-                 meanCI = mean(CARBON_INTENSITY),
-                 nObs = .N), keyby = .(year)]
-
-kableExtra::kable(t, caption = "Mean half hourly power (MW) and carbon intensity (CO2e) by year - note that 2020 is incomplete") %>%
-  kable_styling()
-
-```
-
-### Units {#units}
-
-Note that according to the dataset [source](https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix):
-
- * "Data points are either MW or %". This may mean mean MW over the half hour or it may mean MWh per half-hour. It is unclear. The % refers to the fuel mix. Which one could easily calculate from the MW values. But anyway...
- * carbon intensity is helpfully described as _"The carbon intensity of electricity is a measure of how much Carbon dioxide emissions are produced per kilowatt hour of electricity consumed."_. However we assume it is gCO2e/kWh - based on https://carbonintensity.org.uk/ 
- 
-## Embedded generation data
-
-Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
-
-> We have not yet found a source of this data (if we even need it).
-
-> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).
-
-# Analysis
-
-In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data. 
-
-## Generation: Analysing deviation from 'normal'
-
-Several [articles](https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606?utm_source=twitter&utm_medium=bylinetwitterbutton) and [analyses](https://twitter.com/DrIAGWilson/status/1255100828781883394) have suggested that demand (and thus generation) patterns have shifted so that [weekdays have become more like weekends](http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html).
-
-### Half hourly patterns
-Figure \@ref(fig:recentHalfHourlyGW) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
-
-```{r recentHalfHourlyGW, fig.cap="Half-hourly generation, UK (recent)"}
-recentDT <- fixedDT[obsDate > localParams$recentCutDate]
-
-p <- ggplot2::ggplot(recentDT, aes(x = rDateTimeUTC, 
-                                   y = GENERATION/1000,
-                                   colour = wkdayObs)) +
-  geom_point() +
-  scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) +
-  labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                        "\n", localParams$gamCap),
-       x = "Time",
-       y = "Total generation (GW)") +
-  theme(legend.position = "bottom") + 
-  geom_smooth(aes(colour = NULL)) +
-  scale_color_viridis_d(name = "Day of the week") +
-  guides(colour=guide_legend(nrow=2))
-
-# final plot - adds annotations
-yMin <- min(recentDT$GENERATION/1000)
-yMax <- max(recentDT$GENERATION/1000)
-
-p <- addLockdownRect(p, 
-                     from = gcParams$UKlockDownStartDateTime, 
-                     to = gcParams$UKlockDownEndDateTime, 
-                     label = "Phase 1", yMin, yMax)
-addWeekendRectsDateTime(p, yMin, yMax) 
-
-```
-
-Figure \@ref(fig:recentHalfHourlyGWProfiles) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
-
-```{r recentHalfHourlyGWProfiles, fig.cap="Half-hourly generation, UK (recent)"}
-recentDT[, rTime:=hms::as_hms(rDateTimeUTC)]
-
-p <- ggplot2::ggplot(recentDT, aes(x = rTime, 
-                                   y = GENERATION/1000,
-                                   colour = obsDate)) +
-  geom_point() +
-  #scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) +
-  labs(x = "Time",
-       y = "Total generation (GW)") +
-  facet_wrap(. ~ wkdayObs)
-
-  p +
-    guides(colour=guide_legend(title="Date"))
-```
-
-### Daily patterns
-
-Figure \@ref(fig:compareDaysGW) shows the most recent mean half-hourly GW compared to the same day in previous years. We have shifted the dates for the comparison years to ensure that weekdays and weekends line up. Note that this plot shows daily means with no indications of variance. Visible differences are therefore purely indicative at this stage. Nevertheless it is clear that 2020 is a different generation shape to the average of the previous years. Lockdown has clearly amplified the sesonal trend.
-
-> Beware temperature differences
-
-```{r compareDaysGW, fig.cap="Comparative daily mean half-hour generation levels 2020 vs 2017-2019"}
-plotDT <- fixedDT[dateFixed <= lubridate::today() & 
-                  dateFixed >= localParams$comparePlotCut, # otherwise we get the whole year 
-                .(meanGen = mean(GENERATION),
-                  nObs = .N,
-                  meanCI = mean(CARBON_INTENSITY)
-                  ),
-                keyby = .(dateFixed, wkdayFixed, compareYear)]
-
-# reduce the shape numbers
-plotDT[, weekDay := ifelse(wkdayFixed == "Sat" |
-                             wkdayFixed == "Sun", "Weekend", "Weekday")]
-
-# final plot - adds annotations
-yMin <- min(plotDT$meanGen/1000)
-yMax <- max(plotDT$meanGen/1000)
-
-p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, 
-                                   y = meanGen/1000,
-                                   colour = compareYear,
-                                 shape = weekDay)) +
-  geom_point() +
-  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) +
-  labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                        "\n", localParams$gamCap),
-       x = "Date",
-       y = "Mean half hourly generation (GW)") +
-  theme(legend.position = "bottom") + 
-  geom_smooth(aes(shape = NULL)) + # will get a smooth line per year not per day
-  scale_color_viridis_d(name = "Period") +
-  scale_shape_discrete(name = "Weekday") +
-  guides(colour=guide_legend(nrow=2)) +
-  guides(shape=guide_legend(nrow=2))
-  
-p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
-                     label = "Phase 1", yMin, yMax)
-
-addWeekendRectsDate(p, yMin, yMax)
-
-```
-
-Figure \@ref(fig:compareDaysGWpc) shows the percentage difference between the mean half-hourly generation per day in 2020 and the 2017-2019 average for the same day. As we can see 2020 was already slightly lower than previous years but there appears to be a substantial lockdown effect especially on weekdays as we would expect.
-
-```{r compareDaysGWpc, fig.cap="Percentage difference in mean generation levels 2020 vs 2017-2019"}
-
-testDate <- localParams$comparePlotCut
-#testDate <- as.Date("2020-03-21")
-baseDT <- fixedDT[compareYear == "2017-2019", .(baseMean = mean(GENERATION)), 
-               keyby = .(dateFixed, wkdayFixed, compareYear)]
-testDT <- fixedDT[compareYear == "2020", .(testMean = mean(GENERATION)), 
-               keyby = .(dateFixed, wkdayFixed, compareYear)]
-  
-setkey(baseDT, dateFixed, wkdayFixed)
-setkey(baseDT, dateFixed, wkdayFixed)
-  
-plotDT <- baseDT[testDT] # auto drops non matches to 2020
-plotDT[, pcDiffMean := 100*(testMean - baseMean)/baseMean] # -ve value indicates lower
-plotDT[, pos := ifelse(pcDiffMean > 0 , "Pos", "Neg")] # want to colour the line sections - how?
-  # final plot - adds annotations
-  # use means for consistency with comparison plots where we use WHO thresholds (means)
-yMin <- min(plotDT$pcDiffMean)
-print(paste0("Max drop %:", round(yMin)))
-yMax <- max(plotDT$pcDiffMean)
-print(paste0("Max increase %:", round(yMax)))
-p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean 
-                                   #color = pos, group=NA)
-                                   )
-                       ) +
-    geom_step() +
-    scale_x_date(date_breaks = "7 days", date_labels =  "%a %d %b")  +
-    theme(axis.text.x=element_text(angle=90, hjust=1, size = 5)) +
-    labs(x = "Date",
-         y = "% difference 2020 vs 2017-2019",
-         caption = paste0(localParams$lockdownCap, localParams$weekendCap)) +  
-    theme(legend.position="bottom") +
-    geom_hline(yintercept = 0, linetype = 3)
-  
-  p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
-                     label = "Phase 1", yMin, yMax)
-  addWeekendRectsDate(p, yMin, yMax)
-```
-
-Figure \@ref(fig:compareDaysCIpc) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the 2017-2019 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
-
-```{r compareDaysCIpc, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs 2017-2019"}
-
-testDate <- localParams$comparePlotCut
-#testDate <- as.Date("2020-03-21")
-baseDT <- fixedDT[compareYear == "2017-2019", .(baseMean = mean(CARBON_INTENSITY)), 
-               keyby = .(dateFixed, wkdayFixed, compareYear)]
-testDT <- fixedDT[compareYear == "2020", .(testMean = mean(CARBON_INTENSITY)), 
-               keyby = .(dateFixed, wkdayFixed, compareYear)]
-  
-setkey(baseDT, dateFixed, wkdayFixed)
-setkey(baseDT, dateFixed, wkdayFixed)
-  
-plotDT <- baseDT[testDT] # auto drops non matches to 2020
-plotDT[, pcDiffMean := 100*(testMean - baseMean)/baseMean] # -ve value indicates lower
-plotDT[, pos := ifelse(pcDiffMean > 0 , "Pos", "Neg")] # want to colour the line sections - how?
-  # final plot - adds annotations
-  # use means for consistency with comparison plots where we use WHO thresholds (means)
-yMin <- min(plotDT$pcDiffMean)
-print(paste0("Max drop %:", round(yMin)))
-yMax <- max(plotDT$pcDiffMean)
-print(paste0("Max increase %:", round(yMax)))
-p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean 
-                                   #color = pos, group=NA)
-                                   )
-                       ) +
-    geom_step() +
-    scale_x_date(date_breaks = "7 days", date_labels =  "%a %d %b")  +
-    theme(axis.text.x=element_text(angle=90, hjust=1, size = 5)) +
-    labs(x = "Date",
-         y = "% difference 2020 vs 2017-2019",
-         caption = paste0(localParams$lockdownCap, localParams$weekendCap)) +  
-    theme(legend.position="bottom") +
-    geom_hline(yintercept = 0, linetype = 3)
-  
-p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
-                     label = "Phase 1", yMin, yMax)
-  addWeekendRectsDate(p, yMin, yMax) 
-```
-## Carbon: Analysing deviation from 'normal'
-
-There are two aspects to this. The first is `carbon intensity` which is driven by the mix of fuels being used to generate electricity at any given time. The second is the total greenhouse gasses emitted which is, obviously, the intensity * the volume. Given the slight uncertainty over units (see Section \@ref(units)) we assume this is `GENERATION` * `CARBON_INTENSITY`.
-
-Clearly the first of these is driven by the mix of fuels and in the UK this reflects a complex mix of availability of renewables, price and interconnect as well as demand. To some extent there is no in priciple reason why carbon intensity should change during lockdown except that:
-
- * some electricity-usage practices may have shifted to (or indeed away from) periods which are likely to have high renewable availability;
- * soem electricity-usage pracrices may have shoiftewd away from the 'usual' morning and evening peak periods which are traditionally thought to require carbon intense peaking generation if sufficient pumped hydro is not available.
-
-### Half-hourly patterns
-
-Figure \@ref(fig:recentHalfHourlyCIProfiles) shows the daily carbon intensity profiles over time for each day of the week.
-
-```{r recentHalfHourlyCIProfiles, fig.cap="Half-hourly generation, UK (recent)"}
-p <- ggplot2::ggplot(recentDT, aes(x = rTime, 
-                                   y = CARBON_INTENSITY,
-                                   colour = obsDate)) +
-  geom_point() +
-  #scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) +
-  labs(x = "Time",
-       y = "Carbon intensity (Kg CO2 kWh)") +
-  facet_wrap(. ~ wkdayObs)
-
-  p +
-    guides(colour=guide_legend(title="Date"))
-```
-
-Figure \@ref(fig:recentHalfHourlyCI) shows half-hourly carbon intensity since `r localParams$recentCutDate`. As we might expect this is much more variable largely due to the contribution made by wind generation.
-
-```{r recentHalfHourlyCI, fig.cap="Half-hourly carbon intensity, UK (recent)"}
-
-p <- ggplot2::ggplot(recentDT, aes(x = rDateTimeUTC, 
-                                   y = CARBON_INTENSITY,
-                                   colour = wkdayObs)) +
-  geom_point() +
-  scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
-  theme(axis.text.x=element_text(angle=90, hjust=1)) +
-  labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                        "\n", localParams$gamCap),
-       x = "Time",
-       y = "Carbon intensity (CO2e/kWh)") +
-  theme(legend.position = "bottom") + 
-  geom_smooth(aes(colour = NULL)) +
-  scale_color_viridis_d(name = "Day of the week") +
-  guides(colour=guide_legend(nrow=2))
-
-# final plot - adds annotations
-yMin <- min(recentDT$CARBON_INTENSITY)
-yMax <- max(recentDT$CARBON_INTENSITY)
-
-p <- addLockdownRect(p, gcParams$UKlockDownStartDateTime, 
-                     gcParams$UKlockDownEndDateTime, label = "Phase 1",
-                     yMin, yMax)
-addWeekendRectsDateTime(p,yMin, yMax) 
-
-```
-
-### Daily patterns
-
-
-### Weekly patterns
-
-
-# Summary (to date)
-
 # Annexes
 
 ## Grid generation data
@@ -416,8 +433,42 @@ addWeekendRectsDateTime(p,yMin, yMax)
 skimr::skim(gridGenDT)
 ```
 
-## Conversion factors
+## Fuel trends
 
+```{r fuelGWByYear}
+t <- gridGenDT[, .("coal" = mean(COAL),
+                   "gas" = mean(GAS),
+                   "nuclear" = mean(NUCLEAR),
+                   "wind" = mean(WIND),
+                   "hydro" = mean(HYDRO),
+                   "solar" = mean(SOLAR),
+                   "biomass" = mean(BIOMASS),
+                   "imports" = mean(IMPORTS),
+                   "other" = mean(OTHER),
+                   "N obs" = .N), keyby = .(year)]
+
+kableExtra::kable(t, caption = "Mean half-hourly GW by fuel by year", digits = 2) %>%
+  kable_styling()
+```
+
+Figure \@ref(fig:TheilSenFuelPlots) shows Theil-Sen plots for each fuel. Note that these are _not_ de-seasoned so that the seasonal patterns can be seen. Theil-Sen trend lines are linear and so may go negative when a steep trends asymptotes to 0 (see e.g. coal). They also tend not to perform well when seasonal patterns are present.
+
+```{r TheilSenFuelPlots, fig.cap=paste0("Theil-Sen plots of mean half-hourly fuel use per month since ", min(gridGenDT$rDateTimeUTC))}
+gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
+
+makeFuelTrends <- function(fuels){
+  for(f in fuels){
+   openair::TheilSen(gridGenDT, eval(f), 
+                  ylab = paste0(eval(f), " (MW)") # , deseason = TRUE can make thjings go < 0
+                  ) 
+  }
+}
+
+fuels <-c("COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")
+makeFuelTrends(fuels)
+```
+
+## Conversion factors
 
 # Runtime
 
@@ -441,6 +492,7 @@ Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` min
  * knitr [@knitr]
  * lubridate [@lubridate]
  * rmarkdown [@rmarkdown]
+ * zoo [@zoo]
 
 ## Session info
 

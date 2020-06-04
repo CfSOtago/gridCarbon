@@ -11,7 +11,7 @@ Quick links:
    * [initial New Zealand covid 19 lockdown](NZ Electricity Generation_covid 19 lockdown v1.0.html) analysis
    * [initial New Zealand GHG emissions over time analysis](NZ Electricity Generation_GHG intensity trends v1.0.html) analysis
  * UK
-   * [initial UK covid 19 lockdown](UK Electricity Generation_covid 19 lockdown v1.0.html) analysis
+   * [initial UK covid 19 lockdown](covidLockdown_UK.html) analysis
 
 ## Get the code
 

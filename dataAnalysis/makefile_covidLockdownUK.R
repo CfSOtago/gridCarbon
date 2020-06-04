@@ -1,16 +1,24 @@
 # loads data & runs a report
 # https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix
 
+
+
 # Load some packages
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
 
 libs <- c("data.table", # data munching
           "drake", # data gets done once (ideally)
+          "ggplot2", # plots
           "here", # here. not there
-          "skimr") # skimming data for fast descriptives
+          "hms", # hms obvs
+          "lubridate", # dates made easy
+          "skimr", # skimming data for fast descriptives
+          "zoo" # rolling mean etc
+          ) 
+
 
 gridCarbon::loadLibraries(libs) # should install any that are missing
-
+drake::expose_imports(gridCarbon) # should track our functions
 
 # check
 
@@ -18,7 +26,10 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
+localParams$fromYear <- 2015 # a way to limit the number of years of data files loaded
+update <- "please" # edit to force data re-load
+localParams$recentCutDate <- as.Date("2020-02-01")
+localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
 # > data paths ----
 localParams$gridDataLoc <- paste0(gcParams$ukData, 
@@ -27,31 +38,19 @@ localParams$gridDataLoc <- paste0(gcParams$ukData,
 # > captions ----
 localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
 localParams$gridURL <- paste0("https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix")
+localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
+localParams$lockdownCap <- "\nColoured rectangles = UK covid lockdown periods to date"
+localParams$weekendCap <- "\nShaded rectangle = weekends"
 
 # > defn of peak ----
-amPeakStart <- hms::as_hms("07:00:00")
-amPeakEnd <- hms::as_hms("09:00:00")
-pmPeakStart <- hms::as_hms("17:00:00") # source?
-pmPeakEnd <- hms::as_hms("21:00:00") # source?
+localParams$amPeakStart <- hms::as_hms("07:00:00")
+localParams$amPeakEnd <- hms::as_hms("09:00:00")
+localParams$pmPeakStart <- hms::as_hms("17:00:00") # source?
+localParams$pmPeakEnd <- hms::as_hms("21:00:00") # source?
 
 # Functions ----
 
-setPeakPeriod <- function(dt){
-  # assumes hms exists
-  dt[, peakPeriod := NA]
-  dt[, peakPeriod := ifelse(hms < amPeakStart, "Early morning", peakPeriod)]
-  dt[, peakPeriod := ifelse(hms >= amPeakStart & hms < amPeakEnd, "Morning peak", peakPeriod)]
-  dt[, peakPeriod := ifelse(hms >= amPeakEnd & hms < pmPeakStart, "Day time", peakPeriod)]
-  dt[, peakPeriod := ifelse(hms >= pmPeakStart & hms < pmPeakEnd, "Evening peak", peakPeriod)]
-  dt[, peakPeriod := ifelse(hms >= pmPeakEnd, "Late evening", peakPeriod)]
-  dt[, peakPeriod := forcats::fct_relevel(peakPeriod, 
-                                          "Early morning",
-                                          "Morning peak",
-                                          "Day time",
-                                          "Evening peak",
-                                          "Late evening")]
-  return(dt)
-}
+# should mostly be in R/
 
 
 makeReport <- function(f){
@@ -64,113 +63,94 @@ makeReport <- function(f){
   )
 }
 
-loadGenData <- function(path, fromYear){
-  # lists files within a folder (path) & loads fromYear
-  filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
-  filesToDateDT[, file := V1]
-  filesToDateDT[, c("year", "name") := tstrsplit(file, split = "_")]
-  filesToDateDT[, year := as.numeric(year)]
-  filesToDateDT[, fullPath := paste0(path, file)]
-  filesToGet <- filesToDateDT[year >= fromYear, # to reduce files loaded
-                              fullPath]
-  message("Loading files >= ", fromYear)
-  l <- lapply(filesToGet, data.table::fread) # very fast data loading :-)
-  dt <- rbindlist(l, fill = TRUE) # rbind them
-  
-  # > fix grid data ----
-  dt[, rDateTimeUTC := lubridate::as_datetime(DATETIME)]
-  dt[, rDateTimeUTC := lubridate::force_tz(rDateTimeUTC, 
-                                                  tzone = "Europe/London")] # to be sure to be sure
-  dt[, rMonth := lubridate::month(rDateTimeUTC, label = TRUE, abbr = TRUE)]
-  
-  # check
-  #h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
-  #h
-  
-  return(dt) # large, possibly very large depending on fromYear
-}
-
-fixDates <- function(dt){
-  # expects gridGenData from loadGenData as the dt
-  # re-use the method from the airQual analysis to align the years
-  # so kludgy it should not be allowed
-
-  dt[, obsDate := lubridate::date(rDateTimeUTC)]
-  dt[, decimalDate := lubridate::decimal_date(obsDate)] # gives year.% of year
-  
-  # set to 2020 'dates'
-  dt[, date2020 := lubridate::as_date(lubridate::date_decimal(2020 + (decimalDate - year)))] # sets 'year' portion to 2020 so the lockdown annotation works
-  dt[, day2020 := lubridate::wday(date2020, label = TRUE)] # 
-  
-  # 2020 Jan 1st = Weds
-  dt2020 <- dt[year == 2020] 
-  dt2020[, dateFixed := obsDate] # no need to change
-  dt2020[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
-  # table(dt2020$origDoW, dt2020$fixedDoW)
-  # head(dt2020[origDoW != fixedDoW])
-  
-  # shift to the closest aligning day
-  # 2019 Jan 1st = Tues
-  dt2019 <- dt[year == 2019] 
-  dt2019[, dateFixed := date2020 -1]
-  dt2019[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
-  # table(dt2019$origDoW, dt2019$fixedDoW)
-  # head(dt2019[origDoW != fixedDoW])
-  
-  # 2018 Jan 1st = Mon
-  dt2018 <- dt[year == 2018] 
-  dt2018[, dateFixed := date2020 - 2]
-  dt2018[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
-  # table(dt2018$origDoW, dt2018$fixedDoW)
-  # head(dt2018[origDoW != fixedDoW])
-  
-  # 2017 Jan 1st = Sat
-  dt2017 <- dt[year == 2017] 
-  dt2017[, dateFixed := date2020 - 3]
-  dt2017[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
-  # table(dt2017$origDoW, dt2017$fixedDoW)
-  # head(dt2017[origDoW != fixedDoW])
-  
-  fixedDT <- rbind(dt2017, dt2018, dt2019, dt2020) # leave out 2016 for now
-  
-  fixedDT[, dateFixed := lubridate::as_date(dateFixed)]
-  fixedDT[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
-  
-  
-  fixedDT[, compareYear := ifelse(year == 2020, "2020",
-                                  "2017-2019")
-          ]
-  fixedDT[, wkdayObs := lubridate::wday(obsDate, label = TRUE)]
-  
-  return(fixedDT)
-}
-
 # drake plan ----
+
 plan <- drake::drake_plan(
-  gridGenData = loadGenData(localParams$gridDataLoc, # from where?
-                      localParams$fromYear), # from what date?
+  gridGenData = loadUKESOYearlyGenData(localParams$gridDataLoc, # from where?
+                                       localParams$fromYear, # from what date?
+                                       update), 
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
-  fixedGenData = fixDates(gridGenData)
+  alignedGridGenData = alignDates(gridGenData), # fix the dates so they line up
+  ## >> GW stuff ----
+  recentDateTimeGWPlot = createRecentDateTimePlot(gridGenData, 
+                                                   dateTime = "rDateTimeUTC",
+                                                        yVar = "GENERATION", 
+                                                        yCap = "Total generation (GW)",
+                                                        yDiv = 1000), # GEN is in MW
+  recentHalfHourlyProfileGWPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "GENERATION", 
+                                                                     yCap = "Total generation (GW)",
+                                                                     yDiv = 1000 # GEN is in MW
+                                                                     ),
+  compareDailyGWPlot = createDailyMeanComparePlot(alignedGridGenData, 
+                                                   yVar = "GENERATION", 
+                                                   yCap = "Mean daily half hourly GW",
+                                                   yDiv = 1000 # what to divide the y value by
+                                                   ),
+  compareDailyGWpcPlot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "GENERATION", 
+                                                   yCap = "% difference"
+                                                   ),
+  ## >> CI stuff ----
+  recentDateTimeCIPlot = createRecentDateTimePlot(gridGenData, 
+                                                   dateTime = "rDateTimeUTC",
+                                                   yVar = "CARBON_INTENSITY", 
+                                                   yCap = "Carbon intensity",
+                                                   yDiv = 1),
+  
+  recentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "CARBON_INTENSITY", 
+                                                                     yCap = "Carbon intensity",
+                                                                     yDiv = 1), 
+  compareDailyCIPlot = createDailyMeanComparePlot(alignedGridGenData, 
+                                                   yVar = "CARBON_INTENSITY", 
+                                                   yCap = "Mean daily half hourly carbon intensity",
+                                                   yDiv = 1 # what to divide the y value by
+  ),
+  compareDailyCIpcPlot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "CARBON_INTENSITY", 
+                                                   yCap = "% difference"),
+  ## >> CO2e kg stuff ----
+  recentDateTimeC02ekgPlot = createRecentDateTimePlot(gridGenData, 
+                                                   dateTime = "rDateTimeUTC",
+                                                   yVar = "totalC02e_kg", 
+                                                   yCap = "C02e emitted (T)",
+                                                   yDiv = 1000), # totalC02e_kg in kg
+  
+  
+  recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "totalC02e_kg", 
+                                                                     yCap = "C02e emitted (T)",
+                                                                     yDiv = 1000), # totalC02e_kg in kg 
+  
+  
+  compareDailyCO2ekgPlot = createDailyMeanComparePlot(alignedGridGenData, 
+                                                   yVar = "totalC02e_kg", 
+                                                   yCap = "Mean daily half hourly C02e (T)",
+                                                   yDiv = 1000 # what to divide the y value by
+                                                   ),
+
+  compareDailyC02ekgpcPlot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "totalC02e_kg", 
+                                                   yCap = "% difference")
 )
-# 
-# path <- localParams$gridDataLoc
-# fromYear <- localParams$fromYear
-# dt <- loadGenData(path, # from where?
-#                   fromYear)
 
 # > run drake plan ----
 plan # test the plan
 make(plan) # run the plan, re-loading data if needed
 
 gridGenDT <- drake::readd(gridGenData)
+alignedDT <- drake::readd(alignedGridGenData)
 
 
 # code ----
 
 print("Grid gen loaded")
 message("Loaded ", tidyNum(nrow(gridGenDT)), " rows of data")
-
 
 
 # > Make report ----

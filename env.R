@@ -24,6 +24,11 @@ if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) &
   gcParams$GreenGridData <- path.expand("~/greenGridData/cleanData/safe/")
   gcParams$censusData <- path.expand("~/greenGridData/externalData/nzCensus/") # fix for your platform
   gcParams$gxpData <- path.expand("~/greenGridData/externalData/EA_GXP_Data/") # fix for your platform
+  gcParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
+                                 "externalData/EA_Generation_Data/")
+  gcParams$nonGridDataLoc <- paste0(gcParams$GreenGrid, 
+                                    "externalData/EA_Embedded_Generation_Data/")
+  gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
   # Ben's laptop
@@ -31,15 +36,21 @@ if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
   gcParams$GreenGridData <- path.expand("~/Data/NZ_GREENGrid/safe/")
   gcParams$censusData <- path.expand("~/Data/NZ_Census/") # fix for your platform
   gcParams$gxpData <- path.expand("~/Data/NZ_EA_EMI/gxp/") # fix for your platform
+  gcParams$gridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Generation_Data/")
+  gcParams$nonGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
+  gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "carsten.dortans" & gcParams$sysname == "Darwin"){
   # Carsten's laptop
   gcParams$GreenGridData <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/cleanData/safe/")
+  gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "ba1e12" & gcParams$sysname == "Linux" & gcParams$nodename == "srv02405"){
   # UoS RStudio server
-  gcParams$GreenGridData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
   gcParams$ukData <- path.expand("/mnt/SERG_data/UK_National_Grid")
+  gcParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
+  gcParams$gridDataLoc <- path.expand("/mnt/SERG_data/NZ_EA_EMI/EA_Generation_Data/")
+  gcParams$nonGridDataLoc <- path.expand("/mnt/SERG_data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
 }
 
 # > Misc data ----
@@ -84,5 +95,5 @@ gcParams$history <- paste0(here::here(), "/includes/historyGeneric.Rmd")
 gcParams$citation <- paste0(here::here(), "/includes/citationGeneric.Rmd")
 
 message("We're ", gcParams$user, " using " , gcParams$sysname, " on ", gcParams$nodename)
-message("NZ data path : ", gcParams$GreenGrid)
+message("NZ data path : ", gcParams$nzData)
 message("UK data path : ", gcParams$ukData)
