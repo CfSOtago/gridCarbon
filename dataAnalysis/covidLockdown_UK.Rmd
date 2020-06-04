@@ -185,6 +185,7 @@ drake::readd(recentHalfHourlyProfileGWPlot)
 
 ```{r setCutYear}
 cutYear <- 2018 # just compare with 2018 & 2019
+compareYearsLabel <- "2018 & 2019"
 gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
 ```
@@ -196,7 +197,7 @@ gridGenDT[, date := rDateTimeUTC]  # set date to dateTime for this one
 gridGenDT[, GW := GENERATION/1000]
 
 gridGenDT[, lockdown := ifelse(rDateTimeUTC < lubridate::as_datetime("2020-01-01 00:00:00"), 
-                            "Previous years", "2020 pre-lockdown")] #
+                            compareYearsLabel, "2020 pre-lockdown")] #
 
 gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownStartDateTime, 
                             "Lockdown to May 10th", lockdown)] #
@@ -218,7 +219,7 @@ Figure \@ref(fig:timeVariationGWnormalised) is a similar plot but in this case t
 
 openair::timeVariation(plotDT, 
                        "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "lockdown", normalise = TRUE)
+                       group = "lockdown", key.columns = 2, normalise = TRUE)
 ```
 
 ### Daily patterns
@@ -299,7 +300,7 @@ message("Plot end date: ", max(plotDT$date))
 
 openair::timeVariation(plotDT, 
                        "CARBON_INTENSITY", ylab = "CO2e/kWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "lockdown")
+                       group = "lockdown", key.columns = 2)
 ```
 ### Daily patterns
 
@@ -366,7 +367,7 @@ message("Plot end date: ", max(plotDT$date))
 
 openair::timeVariation(plotDT, 
                        "totalC02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "lockdown")
+                       group = "lockdown", key.columns = 2)
 ```
 
 ### Daily patterns
