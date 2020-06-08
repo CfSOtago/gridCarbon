@@ -26,8 +26,8 @@ drake::expose_imports(gridCarbon) # should track our functions
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2015 # a way to limit the number of years of data files loaded
-update <- "yep" # edit to force data re-load - forces everything re-build :-)
+localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded
+update <- "please" # edit to force data re-load - forces everything re-build :-)
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
@@ -86,7 +86,7 @@ plan <- drake::drake_plan(
                                                                      ),
   compareDailyGWPlot = createDailyMeanComparePlot(alignedGridGenData, 
                                                    yVar = "GENERATION", 
-                                                   yCap = "Mean daily half hourly GW",
+                                                   yCap = "Mean half hourly GW per day",
                                                    yDiv = 1000 # what to divide the y value by
                                                    ),
   compareDailyGWpcPlot = createDailyPcComparePlot(alignedGridGenData, 
@@ -165,6 +165,6 @@ summary(gridGenDT$rDateTimeUTC)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
-makeReport(rmdFile)
+#makeReport(rmdFile)
 
 # done
