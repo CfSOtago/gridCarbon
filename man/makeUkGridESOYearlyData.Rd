@@ -14,6 +14,19 @@ makeUkGridESOYearlyData(dt, path)
 \description{
 \code{makeUkGridESOYearlyData} saves the UK Grid ESO data as yearly files to the location you tell it
 }
+\seealso{
+Other data: 
+\code{\link{alignDates}()},
+\code{\link{cleanUkGridESO}()},
+\code{\link{getUkGridESO}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{saveUkGridESO}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{data}

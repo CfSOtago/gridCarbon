@@ -26,9 +26,12 @@ Especially useful when running on virtual machines where package installation
 }
 \seealso{
 Other utils: 
+\code{\link{addLockdownRect}()},
 \code{\link{addNZSeason}()},
+\code{\link{alignDates}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
+\code{\link{setPeakPeriod}()},
 \code{\link{setup}()},
 \code{\link{tidyNum}()}
 }

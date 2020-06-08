@@ -14,6 +14,19 @@ getUkGridESO(f, update)
 \code{getUkGridESO} gets the file from the UK Grid ESO data website. These are not in pretty form.
 We need to clean them after this.
 }
+\seealso{
+Other data: 
+\code{\link{alignDates}()},
+\code{\link{cleanUkGridESO}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{saveUkGridESO}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{data}

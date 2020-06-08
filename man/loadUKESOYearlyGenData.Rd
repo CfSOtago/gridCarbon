@@ -16,7 +16,15 @@ loadUKESOYearlyGenData(path, fromYear, update)
 }
 \seealso{
 Other data: 
-\code{\link{alignDates}()}
+\code{\link{alignDates}()},
+\code{\link{cleanUkGridESO}()},
+\code{\link{getUkGridESO}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{saveUkGridESO}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}

@@ -19,6 +19,7 @@ createDailyPcComparePlot(dt, yVar, yCap)
 }
 \seealso{
 Other plot: 
+\code{\link{addLockdownRect}()},
 \code{\link{createDailyMeanComparePlot}()},
 \code{\link{createRecentDateTimePlot}()},
 \code{\link{createRecentHalfHourlyProfilePlot}()}
