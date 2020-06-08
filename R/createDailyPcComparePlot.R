@@ -19,7 +19,7 @@ createDailyPcComparePlot <- function(dt, yVar, yCap){
   dt <- dt[dateFixed <= lubridate::today() & 
                  dateFixed >= localParams$comparePlotCutDate] # make this lopnger to get a sense of trend
   dt[, compareVar := get(yVar)]
-  baseDT <- dt[compareYear == "2017-2019", .(baseMean = mean(compareVar)), 
+  baseDT <- dt[compareYear != "2020", .(baseMean = mean(compareVar)), # careful - uses compareYear label!!
                     keyby = .(dateFixed, wkdayFixed, compareYear)]
   testDT <- dt[compareYear == "2020", .(testMean = mean(compareVar)), 
                     keyby = .(dateFixed, wkdayFixed, compareYear)]
