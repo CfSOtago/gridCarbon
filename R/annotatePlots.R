@@ -12,11 +12,13 @@
 #' @param yMax the largest y value
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
+#' @family plot
+#' @family utils
 #'
 addLockdownRect <- function(p, from, to, label, yMin, yMax){
   p <- p + annotate("rect", xmin = from,
                     xmax = to, 
-                    ymin = yMin-1, ymax = yMax+1, # jout outside min/ax data values
+                    ymin = yMin*0.99, ymax = yMax*1.01, # jout outside min/ax data values
                     alpha = gcParams$myAlpha, 
                     fill = gcParams$vLineCol, 
                     colour = gcParams$vLineCol
