@@ -55,7 +55,6 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1){
   
   p <- addWeekendRectsDate(p, 
                            yMin, 
-                           yMax
-  )
+                           yMax)
   return(p)
 }
