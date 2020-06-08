@@ -155,10 +155,10 @@ Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` function [@openai
 
 ```{r TheilSenGWPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
-
+gridGenDT <- setPeakPeriod(gridGenDT, dateTime = "rDateTimeUTC") # use defaults
 openair::TheilSen(gridGenDT, "GENERATION", 
-                  ylab = "GW", deseason = TRUE, 
-                  type = c("weekend"), layout = c(1,2))
+                  ylab = "GW", deseason = TRUE,
+                  type = c("peakPeriod"), layout = c(1,5))
 
 t <- gridGenDT[, .("Mean CI" = mean(GENERATION),
                    "N obs" = .N), keyby = .(year)]
@@ -264,7 +264,7 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
 openair::TheilSen(gridGenDT, "CARBON_INTENSITY", 
                   ylab = "Carbon Intensity", deseason = TRUE,
-                  type = c("weekend"), layout = c(1,2))
+                  type = c("peakPeriod"), layout = c(1,5))
 
 t <- gridGenDT[, .("Mean CI" = mean(CARBON_INTENSITY),
                    "N obs" = .N), keyby = .(year)]
@@ -333,7 +333,7 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 gridGenDT[, totalC02e_T := totalC02e_kg/1000 ]
 openair::TheilSen(gridGenDT, "totalC02e_T", 
                   ylab = "Mean half-hourly C02e (T)", deseason = TRUE,
-                  type = c("weekend"), layout = c(1,2))
+                  type = c("peakPeriod"), layout = c(1,5))
 
 t <- gridGenDT[, .("C02e" = mean(totalC02e_T),
                    "N obs" = .N), keyby = .(year)]
@@ -456,20 +456,63 @@ Figure \@ref(fig:TheilSenFuelPlots) shows Theil-Sen plots for each fuel. Note th
 
 ```{r TheilSenFuelPlots, fig.cap=paste0("Theil-Sen plots of mean half-hourly fuel use per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
-
+library(lattice)
+library(latticeExtra)
 makeFuelTrends <- function(fuels){
   for(f in fuels){
    openair::TheilSen(gridGenDT, eval(f), 
-                  ylab = paste0(eval(f), " (MW)") # , deseason = TRUE can make thjings go < 0
-                  ) 
+                  ylab = paste0(eval(f), " (MW)"), # deseason = TRUE can make thjings go < 0
+                  plot = FALSE) 
+   p <- lattice::trellis.last.object() +
+     latticeExtra::layer(panel.abline(h = 0))
+   p
   }
 }
 
 fuels <-c("COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")
+
+# create the fuel trend plots
 makeFuelTrends(fuels)
+
 ```
 
-## Conversion factors
+## Experimental plots
+
+Figure \@ref(fig:binedDemand) shows the relationship between half-hourly carbon intensity and half-hourly generation over the last five years. 2020 is excluded as it is not yet complete.
+
+```{r binedDemand, fig.cap="Box & whiskers plots of carbon intensity over time by generation decile"}
+library(gtools)
+
+gridGenDT[, genBin := gtools::quantcut(GENERATION/1000, q=10)]
+
+ggplot2::ggplot(gridGenDT[year < 2020], aes(x = genBin, colour = genBin,
+                                            y = CARBON_INTENSITY)) +
+  geom_boxplot() +
+  theme(legend.position="bottom") +
+  labs(x = "Generation decile (GW)",
+       y = "CI KgCO2e/kWh") + 
+  theme(axis.text.x=element_blank()) +
+  scale_colour_viridis_d(name="GW") +
+  facet_grid(. ~ year)
+```
+
+The openair package [@openair] contains a number of novel plotting methods.
+
+```{r carbonRose}
+# polluation rose but with pollutant = GW and wind direction = CI (as a % of 360)
+
+oaDT <- gridGenDT[, .(rDateTimeUTC, ws = GENERATION/1000, CI = CARBON_INTENSITY)]
+oaDT <- oaDT[, wd := 360 * (CI / max(CI))]
+
+openair::windRose(oaDT)
+```
+
+
+```{r carbonScatter}
+openair::scatterPlot(gridGenDT[year < 2020], x = "GENERATION", y = "CARBON_INTENSITY", 
+                     method = "hexbin", col = "jet", type = c("year","season"))
+```
+
 
 # Runtime
 
