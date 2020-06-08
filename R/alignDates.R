@@ -11,6 +11,7 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
 #' @family data
+#' @family utils
 #'
 alignDates <- function(dt){
   # expects gridGenData from loadGenData as the dt

@@ -14,7 +14,7 @@
 #' @import forcats
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
-#' @family stats
+#' @family utils
 #'
 setPeakPeriod <- function(dt, dateTime = rDateTimeUTC, t1 = "07:00", t2 = "08:30", t3 = "16:00", t4 = "20:00"){
   # does not assume hms exists
