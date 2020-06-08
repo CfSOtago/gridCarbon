@@ -14,6 +14,19 @@ saveUkGridESO(dt, path)
 \description{
 \code{saveUkGridESO} saves the UK Grid ESO data to the location you tell it
 }
+\seealso{
+Other data: 
+\code{\link{alignDates}()},
+\code{\link{cleanUkGridESO}()},
+\code{\link{getUkGridESO}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{data}

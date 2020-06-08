@@ -30,10 +30,17 @@ setPeakPeriod(
 `setPeakPeriod` adds a factor column `peakPeriod` to the input data.table
 }
 \seealso{
-Other stats: 
-\code{\link{create7DayMovingAverage}()}
+Other utils: 
+\code{\link{addLockdownRect}()},
+\code{\link{addNZSeason}()},
+\code{\link{alignDates}()},
+\code{\link{getDuration}()},
+\code{\link{gzipFile}()},
+\code{\link{loadLibraries}()},
+\code{\link{setup}()},
+\code{\link{tidyNum}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
 }
-\concept{stats}
+\concept{utils}

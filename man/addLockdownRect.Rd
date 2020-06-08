@@ -26,6 +26,25 @@ addLockdownRect(p, from, to, label, yMin, yMax)
 where the x-axis is a date or datetime. Be sure to specify from & to as dates if the plot x-axis is
 a date and as dateTimes if it is a dateTime. Otherwise ggplot will throw a date_trans error.
 }
+\seealso{
+Other plot: 
+\code{\link{createDailyMeanComparePlot}()},
+\code{\link{createDailyPcComparePlot}()},
+\code{\link{createRecentDateTimePlot}()},
+\code{\link{createRecentHalfHourlyProfilePlot}()}
+
+Other utils: 
+\code{\link{addNZSeason}()},
+\code{\link{alignDates}()},
+\code{\link{getDuration}()},
+\code{\link{gzipFile}()},
+\code{\link{loadLibraries}()},
+\code{\link{setPeakPeriod}()},
+\code{\link{setup}()},
+\code{\link{tidyNum}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{plot}
+\concept{utils}

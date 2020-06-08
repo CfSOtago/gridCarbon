@@ -18,9 +18,28 @@ The data.table to align *must* have `rDateTimeUTC` correctly set.
 }
 \seealso{
 Other data: 
-\code{\link{loadUKESOYearlyGenData}()}
+\code{\link{cleanUkGridESO}()},
+\code{\link{getUkGridESO}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{saveUkGridESO}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+
+Other utils: 
+\code{\link{addLockdownRect}()},
+\code{\link{addNZSeason}()},
+\code{\link{getDuration}()},
+\code{\link{gzipFile}()},
+\code{\link{loadLibraries}()},
+\code{\link{setPeakPeriod}()},
+\code{\link{setup}()},
+\code{\link{tidyNum}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
 }
 \concept{data}
+\concept{utils}

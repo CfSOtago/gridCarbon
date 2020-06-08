@@ -12,6 +12,19 @@ cleanUkGridESO(dt)
 \description{
 - adds proper dateTime
 }
+\seealso{
+Other data: 
+\code{\link{alignDates}()},
+\code{\link{getUkGridESO}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{saveUkGridESO}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{data}

@@ -16,9 +16,12 @@ addNZSeason(dt, date)
 }
 \seealso{
 Other utils: 
+\code{\link{addLockdownRect}()},
+\code{\link{alignDates}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},
+\code{\link{setPeakPeriod}()},
 \code{\link{setup}()},
 \code{\link{tidyNum}()}
 }

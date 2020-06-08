@@ -21,6 +21,7 @@ compare the values for the same date over previous years. This assumes use pass 
 }
 \seealso{
 Other plot: 
+\code{\link{addLockdownRect}()},
 \code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentDateTimePlot}()},
 \code{\link{createRecentHalfHourlyProfilePlot}()}

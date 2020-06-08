@@ -33,7 +33,7 @@ createRecentDateTimePlot <- function(dt, dateTime = "rDateTimeUTC", yVar, yCap, 
                                      colour = wkdayObs)
                        ) +
     geom_point() +
-    scale_x_datetime(date_breaks = "2 day", date_labels =  "%a %d %b")  +
+    scale_x_datetime(date_breaks = "7 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
     labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
                           "\n", localParams$gamCap),

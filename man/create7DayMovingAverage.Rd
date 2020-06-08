@@ -17,10 +17,6 @@ create7DayMovingAverage(dt, avgVar, byVars)
 `createDailyMeanPlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 
 compare the values for the same date over previous years. This assumes the
 }
-\seealso{
-Other stats: 
-\code{\link{setPeakPeriod}()}
-}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
 }

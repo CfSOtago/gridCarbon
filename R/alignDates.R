@@ -11,6 +11,7 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
 #' @family data
+#' @family utils
 #'
 alignDates <- function(dt){
   # expects gridGenData from loadGenData as the dt
@@ -59,8 +60,9 @@ alignDates <- function(dt){
   fixedDT[, wkdayFixed := lubridate::wday(dateFixed,label = TRUE)]
   
   
-  fixedDT[, compareYear := ifelse(year == 2020, "2020",
-                                  "2017-2019")
+  fixedDT[, compareYear := ifelse(year < 2020, "pre 2020", # could be any number of years
+                                  "2020"
+                                  ) 
           ]
   fixedDT[, wkdayObs := lubridate::wday(obsDate, label = TRUE)]
   fixedDT[, weekDay := ifelse(wkdayFixed == "Sat" | wkdayFixed == "Sun", 

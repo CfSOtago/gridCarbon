@@ -12,11 +12,13 @@
 #' @param yMax the largest y value
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
+#' @family plot
+#' @family utils
 #'
 addLockdownRect <- function(p, from, to, label, yMin, yMax){
   p <- p + annotate("rect", xmin = from,
                     xmax = to, 
-                    ymin = yMin-1, ymax = yMax+1, # jout outside min/ax data values
+                    ymin = yMin-(yMin*0.01), ymax = yMax+(yMax*.01), # jout outside min/ax data values
                     alpha = gcParams$myAlpha, 
                     fill = gcParams$vLineCol, 
                     colour = gcParams$vLineCol
@@ -95,6 +97,10 @@ addWeekendRectsDate <- function(p, yMin, yMax){
     annotate("rect", xmin = as.Date("2020-05-30"),
              xmax = as.Date("2020-06-01"),
              ymin = yMin, ymax = yMax,
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
+    annotate("rect", xmin = as.Date("2020-06-06"),
+             xmax = as.Date("2020-06-07"),
+             ymin = yMin, ymax = yMax,
              alpha = gcParams$weAlpha, fill = gcParams$weFill)
     return(p)
 }
@@ -165,6 +171,10 @@ addWeekendRectsDateTime <- function(p, yMin, yMax){
              alpha = gcParams$weAlpha, fill = gcParams$weFill) +
     annotate("rect", xmin = lubridate::as_datetime("2020-05-30 00:00:00"),
              xmax = lubridate::as_datetime("2020-05-31 23:59:59"),
+             ymin = yMin, ymax = yMax,
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
+    annotate("rect", xmin = lubridate::as_datetime("2020-06-30 00:00:00"),
+             xmax = lubridate::as_datetime("2020-07-31 23:59:59"),
              ymin = yMin, ymax = yMax,
              alpha = gcParams$weAlpha, fill = gcParams$weFill)
   return(p)
