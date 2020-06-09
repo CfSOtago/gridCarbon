@@ -9,6 +9,8 @@ library(here)
 
 gcParams <- list() # params holder as a list. Sooooo much easier with tab complete
 
+gcParams$repoLoc <- here::here() # try not to use this, use here() instead
+
 # Data ----
 # attempt to guess the platform & user
 gcParams$info <- Sys.info()
