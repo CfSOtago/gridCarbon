@@ -8,6 +8,7 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
 #' @family utils
+#' @family NZ
 #'
 addNZSeason <- function(dt,date){
   dt <- dt[, tmpM := lubridate::month(get(date))] # sets 1 (Jan) - 12 (Dec). May already exist but we can't rely on it
