@@ -10,10 +10,10 @@ cleanNZGridEA(dt)
 \item{dt}{the data.table to clean up}
 }
 \description{
-These are not in pretty form so we clean them up to a long form file and fix the dateTimes forcing to NZT just in case.
+These are not in pretty form so we clean them up to a long form file and fix the dateTimes.
 }
 \details{
-Note that rDateTimeNZT will be NA for the DST breaks which equate to TP49/50. We really dislike DST breaks.
+Note that rDateTime will be NA for the DST breaks which equate to TP49/50. We really dislike DST breaks.
 }
 \seealso{
 Other data: 

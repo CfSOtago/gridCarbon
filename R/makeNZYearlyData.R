@@ -36,5 +36,4 @@ makeNZYearlyData <- function(genType, years, path){
     try(system(cmd)) # seems to throw an error on the CS RStudio server but it still works
     message("Done ", y)
   }
-  return(yearDT) # return the last year for testing if needed
 }
