@@ -17,10 +17,10 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded. Change this value
+localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded. Change this value
 # to get drake to refresh the data
 localParams$lockDownStart <- as.Date("2020-03-24")
-localParams$lockDownEnd <- as.Date("2020-04-24")
+localParams$lockDownEnd <- lubridate::today()
 
 # > data paths ----
 localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
@@ -84,7 +84,7 @@ getGXPFileList <- function(dPath){
 
 loadGenData <- function(path, fromYear){
   # lists files within a folder (path) & loads
-  # how to force this to reload data if we get new months?
+  # edit fromYear to force a new data load
   filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
   filesToDateDT[, file := V1]
   filesToDateDT[, c("year", "name") := tstrsplit(file, split = "_")]
@@ -92,12 +92,16 @@ loadGenData <- function(path, fromYear){
   filesToGet <- filesToDateDT[year >= fromYear, # to reduce files loaded
                               file]
   message("Loading files >= ", fromYear)
-  dt <- do.call(rbind,
-                lapply(filesToGet, # a list
-                       function(f)
-                         data.table::fread(paste0(path,f))
-                ) # decodes .gz on the fly
-  )
+  l <- lapply(paste0(path, filesToGet), # construct path for each file
+              data.table::fread) # mega fast read
+  dt <- rbindlist(l, fill = TRUE) # rbind them
+  l <- NULL
+  # dt <- do.call(rbind,
+  #               lapply(filesToGet, # a list
+  #                      function(f)
+  #                        data.table::fread(paste0(path,f))
+  #               ) # decodes .gz on the fly
+  # )
   return(dt) # large
 }
 
@@ -128,39 +132,46 @@ origNonGridDT <- drake::readd(nonGridData)
 # code ----
 
 # > fix grid data ----
-origGridDT[, rTime := hms::as_hms(rTime)]
 origGridDT[, rDateTimeOrig := rDateTime] # just in case
 origGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-origGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
-origGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
+origGridDT[, rDateTimeNZT := lubridate::force_tz(rDateTime, 
+                                                 tzone = "Pacific/Auckland")] # just to be sure
+origGridDT[, rTime := hms::as_hms(rDateTimeNZT)]
+origGridDT[, rMonth := lubridate::month(rDateTimeNZT, label = TRUE, abbr = TRUE)]
 
 # check
-h <- head(origGridDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
-h
 print("Grid gen loaded")
 message("Loaded ", tidyNum(nrow(origGridDT)), " rows of data")
-table(origGridDT[is.na(rDateTime)]$Time_Period)
-allGridDT <- origGridDT[!is.na(rDateTime) | # removes TP 49 & 50
-                          !is.na(kWh)] # removes NA kWh
+table(origGridDT[is.na(rDateTimeNZT)]$Time_Period)
+nrow(origGridDT)
+allGridDT <- origGridDT[!is.na(rDateTimeNZT)] # removes TP 49 & 50
+allGridDT <- allGridDT[!is.na(kWh)] # removes NA kWh
 nrow(allGridDT)
-summary(allGridDT$rDateTime) # test
+summary(allGridDT$rDateTimeNZT)
 
 # > non grid data ----
 origNonGridDT[, rDateTimeOrig := rDateTime] # just in case
 origNonGridDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-origNonGridDT[, rTime := hms::as_hms(rDateTime)]
-origNonGridDT[, rDateTime := lubridate::force_tz(rDateTime, tzone = "Pacific/Auckland")]
-origNonGridDT[, rMonth := lubridate::month(rDateTime, label = TRUE, abbr = TRUE)]
+origNonGridDT[, rDateTimeNZT := lubridate::force_tz(rDateTime, 
+                                                    tzone = "Pacific/Auckland")]
+origNonGridDT[, rTime := hms::as_hms(rDateTimeNZT)]
+origNonGridDT[, rMonth := lubridate::month(rDateTimeNZT, label = TRUE, abbr = TRUE)]
+
 # check
-h <- head(origNonGridDT[, .(rDateTimeOrig, Time_Period, rDateTime)])
-h
 print("Non grid gen loaded")
 message("Loaded ", tidyNum(nrow(origNonGridDT)), " rows of data")
 table(origNonGridDT[is.na(rDateTime)]$Time_Period)
-allEmbeddedDT <- origNonGridDT[!is.na(rDateTime) | # removes TP 49 & 50
-                                 !is.na(kWh)] # removes NA kWh
+nrow(origNonGridDT)
+allEmbeddedDT <- origNonGridDT[!is.na(rDateTimeNZT)] # removes TP 49 & 50
+allEmbeddedDT <- allEmbeddedDT[!is.na(kWh)] # removes NA kWh
 nrow(allEmbeddedDT)
-summary(allEmbeddedDT$rDateTime)
+summary(allEmbeddedDT$rDateTimeNZT)
+
+# test dates available ----
+# allGrid
+summary(allGridDT$rDateTimeNZT) # test dates available
+# embeddedGrid
+summary(allEmbeddedDT$rDateTimeNZT)
 
 # > Make report ----
 # >> yaml ----
