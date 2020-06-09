@@ -9,6 +9,7 @@ author: '`r params$authors`'
 date: 'Last run at: `r Sys.time()`'
 output:
   bookdown::html_document2:
+    self_contained: false
     fig_caption: yes
     code_folding: hide
     number_sections: yes
