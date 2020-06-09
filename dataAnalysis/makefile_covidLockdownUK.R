@@ -146,6 +146,8 @@ make(plan) # run the plan, re-loading data if needed
 gridGenDT <- drake::readd(gridGenData)
 alignedDT <- drake::readd(alignedGridGenData)
 
+# test a plot ----
+drake::readd(recentDateTimeGWPlot)
 
 # code ----
 
