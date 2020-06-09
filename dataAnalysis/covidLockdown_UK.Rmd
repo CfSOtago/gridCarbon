@@ -196,28 +196,49 @@ gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
 ```
 
-Figure \@ref(fig:timeVariationGW) shows the difference between hourly and weekday patterns for lockdown 2020 and the same months in all years from `r cutYear` onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWPlot). The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.
+Figure \@ref(fig:timeVariationGWDetailed) shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from `r cutYear` onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWPlot). The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.
+
+```{r timeVariationGWDetailed, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+                            "A: Pre-lockdown Jan - Mar", NA)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownStartDate &
+                                   dateFixed < dstBreak, 
+                            "B: Lockdown to DST 31/3", plotPeriodDetailed)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed > dstBreak &
+                                 obsDate < gcParams$UKlockDownRelaxDate_1, 
+                            "C: Lockdown 31/3 - 11/5", plotPeriodDetailed)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownRelaxDate_1, 
+                            "D: Lockdown since 11/5", plotPeriodDetailed)] #
+t <- alignedDT[, .(min = min(rDateTimeUTC),
+              max = max(rDateTimeUTC)), keyby = .(plotPeriodDetailed, compareYear)]
+
+
+alignedDT[, date := lubridate::as_datetime(paste0(dateFixed, hms))]
+openair::timeVariation(alignedDT[dateFixed > as.Date("2020-01-01") & 
+                                               dateFixed < today()], 
+                       "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "compareYear", type = "plotPeriodDetailed", key.columns = 2)
+```
+
+Repeat but less detail.
 
 ```{r timeVariationGW, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
 
-gridGenDT[, lockdown := ifelse(rDateTimeUTC < lubridate::as_datetime("2020-01-01 00:00:00"), 
-                            compareYearsLabel, "2020 pre-lockdown")] #
+alignedDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+                            "A: Pre-lockdown Jan - Mar", NA)] #
+alignedDT[, plotPeriod := ifelse(dateFixed >= gcParams$UKlockDownStartDate , 
+                            "B: Lockdown", plotPeriod)] 
+t <- alignedDT[, .(min = min(rDateTimeUTC),
+              max = max(rDateTimeUTC)), keyby = .(plotPeriod, compareYear)]
 
-gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownStartDateTime, 
-                            "Lockdown to May 10th", lockdown)] #
-gridGenDT[, lockdown := ifelse(rDateTimeUTC >= gcParams$UKlockDownRelaxDate_1, 
-                            "Lockdown after May 10th", lockdown)] #
 
-plotDT <- gridGenDT[year >= cutYear & month <= thisMonth]
+alignedDT[, date := lubridate::as_datetime(paste0(dateFixed, hms))]
 
-plotDT[, lockdown := ifelse(obsDate < as.Date("2020-01-01"), "2018 & 2019 comparable months", lockdown)] # for plot labels
-plotDT[, date := rDateTimeUTC]  # set date to dateTime for this one
-message("Plot start date: ", min(plotDT$date))
-message("Plot end date: ", max(plotDT$date))
-
-openair::timeVariation(plotDT, 
+openair::timeVariation(alignedDT[dateFixed > as.Date("2020-01-01") & 
+                                               dateFixed < today()], 
                        "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "lockdown", key.columns = 2)
+                       group = "compareYear", type = "plotPeriod", key.columns = 2)
 ```
 
 
@@ -517,6 +538,26 @@ makeFuelTrends <- function(fuels){
   for(f in fuels){
    openair::TheilSen(gridGenDT, eval(f), 
                   ylab = paste0(eval(f), " (MW)"), # deseason = TRUE can make thjings go < 0
+                  ) 
+  }
+}
+
+fuels <-c("COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")
+
+# create the fuel trend plots
+makeFuelTrends(fuels)
+
+```
+
+Clearly some of thse trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to \@ref(fig:compareDailyGWPlot).
+
+```{r smoothTrendPlots, fig.cap=paste0("Trend plots of mean half-hourly fuel use per month since ", min(gridGenDT$rDateTimeUTC))}
+gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
+
+makeFuelTrends <- function(fuels){
+  for(f in fuels){
+   openair::smoothTrend(gridGenDT, eval(f), 
+                  ylab = paste0(eval(f), " (MW)") # deseason = TRUE can make thjings go < 0
                   ) 
   }
 }
