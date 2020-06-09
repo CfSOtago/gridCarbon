@@ -23,11 +23,13 @@ drake::expose_imports(gridCarbon) # should track our functions
 # check
 
 # Parameters ----
+update <- "yep" # edit to force data re-load - forces everything re-build :-)
+
 localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2015 # a way to limit the number of years of data files loaded
-update <- "please" # edit to force data re-load - forces everything re-build :-)
+
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
@@ -146,6 +148,8 @@ make(plan) # run the plan, re-loading data if needed
 gridGenDT <- drake::readd(gridGenData)
 alignedDT <- drake::readd(alignedGridGenData)
 
+# test a plot ----
+drake::readd(recentDateTimeGWPlot)
 
 # code ----
 

@@ -24,10 +24,10 @@ localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- lubridate::today()
 
 # > data paths ----
-localParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
-                                  "externalData/EA_Generation_Data/processed/yearly/")
-localParams$nonGridDataLoc <- paste0(gcParams$GreenGrid, 
-                                     "externalData/EA_Embedded_Generation_Data/processed/yearly/")
+gridDataPath <- paste0(gcParams$gridDataLoc, 
+                                  "processed/yearly/")
+nonGridDataPath <- paste0(gcParams$nonGridDataLoc, 
+                                     "processed/yearly/")
 # > captions ----
 localParams$gridCaption <- paste0("Source: NZ Energy Authority",
                                  "\nhttps://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/")
@@ -112,9 +112,9 @@ loadGenData <- function(path, fromYear){
 
 # drake plan ----
 plan <- drake::drake_plan(
-  gridData = loadGenData(localParams$gridDataLoc, # from where?
+  gridData = loadGenData(gridDataPath, # from where?
                       localParams$fromYear), # from what date?
-  nonGridData = loadGenData(localParams$nonGridDataLoc, 
+  nonGridData = loadGenData(nonGridDataPath, 
                          localParams$fromYear)
 )
 # 
@@ -184,6 +184,7 @@ authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 # >> run report ----
 rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown_NZ.Rmd")
+
 makeReport(rmdFile)
 
 
