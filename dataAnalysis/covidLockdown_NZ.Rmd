@@ -268,7 +268,6 @@ All non-essential busineeses are closed and staff is asked to work from home. Th
 ```
 
 ```{r lockdown1SelectData, include=FALSE}
-# Change
 # Selects relevant months of 2020, 2019, 2018
 selectDT <- allGridDT[month >= 1 & 
                       month <= 4 &

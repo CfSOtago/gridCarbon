@@ -2,7 +2,7 @@
 
 # Load some packages
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
-gridCarbon::setup() # set the paths from env.R
+gridCarbon::setup()
 
 libs <- c("data.table", # data munching
           "drake", # data gets done once (ideally)
@@ -183,7 +183,8 @@ authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 
 # >> run report ----
-rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdownNZ.Rmd")
+rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown_NZ.Rmd")
+
 makeReport(rmdFile)
 
 
