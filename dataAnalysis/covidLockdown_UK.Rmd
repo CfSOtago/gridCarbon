@@ -219,7 +219,7 @@ plotDT[, date := rDateTimeUTC] # need to use original datetime as timeVariation 
 
 openair::timeVariation(plotDT, pollutant = "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriodDetailed", 
-                       key.columns = 2 # difference = TRUE,  fails: https://github.com/davidcarslaw/openair/issues/166
+                       key.columns = 2 # difference = TRUE,  fails: https://github.com/davidcarslaw/openAir/issues/166
                        )
 ```
 
@@ -248,20 +248,20 @@ out <- openair::timeVariation(plotDT,
 ```{r extractPlotsGW}
 # Extract the plots we want...
 p <- out$plot$day
-png(filename=here::here("docs/plots/openAirDailyGW.png"))
+png(filename=here::here("docs/plots/openAir_UK_DailyGW.png"))
 plot(p)
 dev.off()
-#ggplot2::ggsave(here::here("docs/plots/openAirDailyGW.png"), p)
+#ggplot2::ggsave(here::here("docs/plots/openAir_UK_DailyGW.png"), p)
 p <- out$plot$hour
-png(filename=here::here("docs/plots/openAirHourlyGW.png"))
+png(filename=here::here("docs/plots/openAir_UK_HourlyGW.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAirWeekdaysGW.png"), width = 800, height = 600)
+png(filename=here::here("docs/plots/openAir_UK_WeekdaysGW.png"), width = 800, height = 600)
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-svg(filename=here::here("docs/plots/openAirWeekdaysGW.svg"), width = 800, height = 600)
+svg(filename=here::here("docs/plots/openAir_UK_WeekdaysGW.svg"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
@@ -409,20 +409,20 @@ openair::timeVariation(plotDT,
 ```{r extractPlotsCI}
 # Extract the plots we want...
 p <- out$plot$day
-png(filename=here::here("docs/plots/openAirDailyCI.png"))
+png(filename=here::here("docs/plots/openAir_UK_DailyCI.png"))
 plot(p)
 dev.off()
-#ggplot2::ggsave(here::here("docs/plots/openAirDailyGW.png"), p)
+#ggplot2::ggsave(here::here("docs/plots/openAir_UK_DailyGW.png"), p)
 p <- out$plot$hour
-png(filename=here::here("docs/plots/openAirHourlyCI.png"))
+png(filename=here::here("docs/plots/openAir_UK_HourlyCI.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAirWeekdaysCI.png"), width = 800, height = 600)
+png(filename=here::here("docs/plots/openAir_UK_WeekdaysCI.png"), width = 800, height = 600)
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-svg(filename=here::here("docs/plots/openAirWeekdaysCI.svg"), width = 800, height = 600)
+svg(filename=here::here("docs/plots/openAir_UK_WeekdaysCI.svg"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
@@ -504,20 +504,20 @@ openair::timeVariation(plotDT,
 ```{r extractPlotsCO2e_T}
 # Extract the plots we want...
 p <- out$plot$day
-png(filename=here::here("docs/plots/openAirDailyCO2e_T.png"))
+png(filename=here::here("docs/plots/openAir_UK_DailyCO2e_T.png"))
 plot(p)
 dev.off()
-#ggplot2::ggsave(here::here("docs/plots/openAirDailyGW.png"), p)
+#ggplot2::ggsave(here::here("docs/plots/openAir_UK_DailyGW.png"), p)
 p <- out$plot$hour
-png(filename=here::here("docs/plots/openAirHourlyCO2e_T.png"))
+png(filename=here::here("docs/plots/openAir_UK_HourlyCO2e_T.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAirWeekdaysCO2e_T.png"), width = 800, height = 600)
+png(filename=here::here("docs/plots/openAir_UK_WeekdaysCO2e_T.png"), width = 800, height = 600)
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-svg(filename=here::here("docs/plots/openAirWeekdaysCO2e_T.svg"), width = 800, height = 600)
+svg(filename=here::here("docs/plots/openAir_UK_WeekdaysCO2e_T.svg"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
