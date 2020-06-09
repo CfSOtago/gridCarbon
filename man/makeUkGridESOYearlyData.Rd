@@ -17,9 +17,16 @@ makeUkGridESOYearlyData(dt, path)
 \seealso{
 Other data: 
 \code{\link{alignDates}()},
+\code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGridEA}()},
 \code{\link{cleanUkGridESO}()},
+\code{\link{getNZEmbData}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getNZGridEA}()},
+\code{\link{getNZGridMeta}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeNZYearlyData}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
 \code{\link{saveUkGridESO}()},

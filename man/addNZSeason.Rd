@@ -24,8 +24,18 @@ Other utils:
 \code{\link{setPeakPeriod}()},
 \code{\link{setup}()},
 \code{\link{tidyNum}()}
+
+Other NZ: 
+\code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGridEA}()},
+\code{\link{getNZEmbData}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getNZGridEA}()},
+\code{\link{getNZGridMeta}()},
+\code{\link{makeNZYearlyData}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
 }
+\concept{NZ}
 \concept{utils}
