@@ -409,7 +409,9 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT )) +
   #facet_grid(rMonth ~ .)
 myPlotTot
 
-#ggsave("Total electricity generation.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
+of <- paste0(here::here("docs", "plots", "NZ_TotalElectricityGeneration.jpeg"))
+ggplot2::ggsave(of, myPlotTot, 
+                dpi = 600, width = 13.333, height = 7.5, units = "in")
 ```
 
 ```{r annualcomparision}
