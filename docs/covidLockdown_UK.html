@@ -269,7 +269,7 @@ div.tocify {
 <h1 class="title toc-ignore">UK Electricity Generation and Carbon Itensity</h1>
 <h3 class="subtitle">covid 19 lockdown v1.0</h3>
 <h4 class="author">Ben Anderson</h4>
-<h4 class="date">Last run at: 2020-06-09 13:44:42</h4>
+<h4 class="date">Last run at: 2020-06-09 14:11:23</h4>
 
 </div>
 
@@ -760,6 +760,15 @@ Figure 3.4: timeVariation plots for half-hourly GW generation comparing pre/lock
 Figure 3.5: timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
 </p>
 </div>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p><img src="covidLockdown_UK_files/figure-html/extractPlotsGW-1.png" width="672" /></p>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
 <p>Figure <a href="#fig:timeVariationGWnormalised">3.6</a> is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal <em>shape</em> of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure <a href="#fig:timeVariationGW">3.5</a>).</p>
 <pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
 ## converting to UTC/GMT</code></pre>
@@ -943,6 +952,15 @@ Figure 3.12: Half-hourly generation, UK (recent)
 Figure 3.13: timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in 2018
 </p>
 </div>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p><img src="covidLockdown_UK_files/figure-html/extractPlotsCI-1.png" width="672" /></p>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
 </div>
 <div id="daily-patterns-1" class="section level3">
 <h3><span class="header-section-number">3.2.3</span> Daily patterns</h3>
@@ -1100,6 +1118,15 @@ Figure 3.18: Half-hourly CO2e emissions, UK (recent)
 Figure 3.19: timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018
 </p>
 </div>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p><img src="covidLockdown_UK_files/figure-html/extractPlotsCO2e_T-1.png" width="672" /></p>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
 </div>
 <div id="daily-patterns-2" class="section level3">
 <h3><span class="header-section-number">3.3.3</span> Daily patterns</h3>
@@ -3392,11 +3419,6 @@ Figure 6.20: Trend plots of mean half-hourly fuel use per month since 2015-01-01
 <div id="experimental-plots" class="section level2">
 <h2><span class="header-section-number">6.3</span> Experimental plots</h2>
 <p>Figure <a href="#fig:binedDemand">6.21</a> shows the relationship between half-hourly carbon intensity and half-hourly generation over the last five years. 2020 is excluded as it is not yet complete.</p>
-<pre><code>## 
-## Attaching package: &#39;gtools&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:drake&#39;:
-## 
-##     running</code></pre>
 <div class="figure"><span id="fig:binedDemand"></span>
 <img src="covidLockdown_UK_files/figure-html/binedDemand-1.png" alt="Box &amp; whiskers plots of carbon intensity over time by generation decile" width="672" />
 <p class="caption">
@@ -3404,22 +3426,13 @@ Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generatio
 </p>
 </div>
 <p>The openair package <span class="citation">(Carslaw and Ropkins 2012)</span> contains a number of novel plotting methods.</p>
-<pre><code>## Warning: `as_data_frame()` is deprecated as of tibble 2.0.0.
-## Please use `as_tibble()` instead.
-## The signature and semantics have changed, see `?as_tibble`.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
-<pre><code>## Warning: `data_frame()` is deprecated as of tibble 1.1.0.
-## Please use `tibble()` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <p><img src="covidLockdown_UK_files/figure-html/carbonRose-1.png" width="672" /></p>
 <p><img src="covidLockdown_UK_files/figure-html/carbonScatter-1.png" width="672" /></p>
 </div>
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">7</span> Runtime</h1>
-<p>Analysis completed in 147.23 seconds ( 2.45 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
+<p>Analysis completed in 167.81 seconds ( 2.8 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">8</span> R environment</h1>

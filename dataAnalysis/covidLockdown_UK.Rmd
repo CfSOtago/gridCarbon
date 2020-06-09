@@ -238,12 +238,33 @@ t <- alignedDT[, .(min = min(rDateTimeUTC),
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & dateFixed < today()]
 plotDT[, date := rDateTimeUTC]
 
-openair::timeVariation(plotDT, 
+out <- openair::timeVariation(plotDT, 
                        "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       difference = TRUE)
 ```
 
+
+```{r extractPlotsGW}
+# Extract the plots we want...
+p <- out$plot$day
+png(filename=here::here("docs/plots/openAirDailyGW.png"))
+plot(p)
+dev.off()
+#ggplot2::ggsave(here::here("docs/plots/openAirDailyGW.png"), p)
+p <- out$plot$hour
+png(filename=here::here("docs/plots/openAirHourlyGW.png"))
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+png(filename=here::here("docs/plots/openAirWeekdaysGW.png"), width = 800, height = 600)
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+svg(filename=here::here("docs/plots/openAirWeekdaysGW.svg"), width = 800, height = 600)
+plot(p)
+dev.off()
+```
 
 Figure \@ref(fig:timeVariationGWnormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGW)).
 
@@ -384,6 +405,28 @@ openair::timeVariation(plotDT,
                        group = "compareYear", type = "plotPeriod", 
                        key.columns = 2, difference = TRUE)
 ```
+
+```{r extractPlotsCI}
+# Extract the plots we want...
+p <- out$plot$day
+png(filename=here::here("docs/plots/openAirDailyCI.png"))
+plot(p)
+dev.off()
+#ggplot2::ggsave(here::here("docs/plots/openAirDailyGW.png"), p)
+p <- out$plot$hour
+png(filename=here::here("docs/plots/openAirHourlyCI.png"))
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+png(filename=here::here("docs/plots/openAirWeekdaysCI.png"), width = 800, height = 600)
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+svg(filename=here::here("docs/plots/openAirWeekdaysCI.svg"), width = 800, height = 600)
+plot(p)
+dev.off()
+```
+
 ### Daily patterns
 
 Figure \@ref(fig:compareDailyCIPlot) shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure \@ref(fig:TheilSenCIPlot), 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
@@ -456,6 +499,27 @@ openair::timeVariation(plotDT,
                        "totalC02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
                        key.columns = 2, difference = TRUE)
+```
+
+```{r extractPlotsCO2e_T}
+# Extract the plots we want...
+p <- out$plot$day
+png(filename=here::here("docs/plots/openAirDailyCO2e_T.png"))
+plot(p)
+dev.off()
+#ggplot2::ggsave(here::here("docs/plots/openAirDailyGW.png"), p)
+p <- out$plot$hour
+png(filename=here::here("docs/plots/openAirHourlyCO2e_T.png"))
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+png(filename=here::here("docs/plots/openAirWeekdaysCO2e_T.png"), width = 800, height = 600)
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+svg(filename=here::here("docs/plots/openAirWeekdaysCO2e_T.svg"), width = 800, height = 600)
+plot(p)
+dev.off()
 ```
 
 ### Daily patterns
