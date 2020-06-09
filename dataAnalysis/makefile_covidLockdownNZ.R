@@ -2,7 +2,7 @@
 
 # Load some packages
 library(gridCarbon) # load this first - you will need to download & build it locally from this repo
-gridCarbon::setup() # set the paths from env.R
+gridCarbon::setup()
 
 libs <- c("data.table", # data munching
           "drake", # data gets done once (ideally)
@@ -24,9 +24,9 @@ localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- lubridate::today()
 
 # > data paths ----
-gridDataPath <- paste0(gcParams$gridDataLoc, 
+gridDataPath <- paste0(gcParams$nzGridDataLoc, 
                                   "processed/yearly/")
-nonGridDataPath <- paste0(gcParams$nonGridDataLoc, 
+nonGridDataPath <- paste0(gcParams$nzNonGridDataLoc, 
                                      "processed/yearly/")
 # > captions ----
 localParams$gridCaption <- paste0("Source: NZ Energy Authority",
@@ -183,7 +183,8 @@ authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 
 # >> run report ----
-rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdownNZ.Rmd")
+rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown_NZ.Rmd")
+
 makeReport(rmdFile)
 
 

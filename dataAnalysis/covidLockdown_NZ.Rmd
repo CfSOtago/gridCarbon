@@ -9,6 +9,7 @@ author: '`r params$authors`'
 date: 'Last run at: `r Sys.time()`'
 output:
   bookdown::html_document2:
+    self_contained: false
     fig_caption: yes
     code_folding: hide
     number_sections: yes
@@ -268,7 +269,6 @@ All non-essential busineeses are closed and staff is asked to work from home. Th
 ```
 
 ```{r lockdown1SelectData, include=FALSE}
-# Change
 # Selects relevant months of 2020, 2019, 2018
 selectDT <- allGridDT[month >= 1 & 
                       month <= 4 &
@@ -410,7 +410,9 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT )) +
   #facet_grid(rMonth ~ .)
 myPlotTot
 
-#ggsave("Total electricity generation.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
+of <- paste0(here::here("docs", "plots", "NZ_TotalElectricityGeneration.jpeg"))
+ggplot2::ggsave(of, myPlotTot, 
+                dpi = 600, width = 13.333, height = 7.5, units = "in")
 ```
 
 ```{r annualcomparision}

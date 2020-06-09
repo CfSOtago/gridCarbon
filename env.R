@@ -9,6 +9,8 @@ library(here)
 
 gcParams <- list() # params holder as a list. Sooooo much easier with tab complete
 
+gcParams$repoLoc <- here::here() # try not to use this, use here() instead
+
 # Data ----
 # attempt to guess the platform & user
 gcParams$info <- Sys.info()
@@ -20,15 +22,17 @@ gcParams$user <- gcParams$info[[7]]
 # > Set data path ----
 if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & 
    gcParams$sysname == "Linux"){ # Otago CS RStudio server
+  
   gcParams$GreenGrid <- path.expand("~/greenGridData/")
   gcParams$GreenGridData <- path.expand("~/greenGridData/cleanData/safe/")
   gcParams$censusData <- path.expand("~/greenGridData/externalData/nzCensus/") # fix for your platform
   gcParams$gxpData <- path.expand("~/greenGridData/externalData/EA_GXP_Data/") # fix for your platform
-  gcParams$gridDataLoc <- paste0(gcParams$GreenGrid, 
+  gcParams$nzGridDataLoc <- paste0(gcParams$GreenGrid, 
                                  "externalData/EA_Generation_Data/")
-  gcParams$nonGridDataLoc <- paste0(gcParams$GreenGrid, 
+  gcParams$nzNonGridDataLoc <- paste0(gcParams$GreenGrid, 
                                     "externalData/EA_Embedded_Generation_Data/")
   gcParams$nzData <- gcParams$GreenGridData
+  gcParams$ukData <- path.expand("not set")
 }
 if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
   # Ben's laptop
@@ -36,21 +40,27 @@ if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
   gcParams$GreenGridData <- path.expand("~/Data/NZ_GREENGrid/safe/")
   gcParams$censusData <- path.expand("~/Data/NZ_Census/") # fix for your platform
   gcParams$gxpData <- path.expand("~/Data/NZ_EA_EMI/gxp/") # fix for your platform
-  gcParams$gridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Generation_Data/")
-  gcParams$nonGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
+  gcParams$nzGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Generation_Data/")
+  gcParams$nzNonGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
   gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "carsten.dortans" & gcParams$sysname == "Darwin"){
   # Carsten's laptop
   gcParams$GreenGridData <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/cleanData/safe/")
+  gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$GreenGridData, 
+                                               "/EA_Generation_Data/"))
+  gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$GreenGridData, 
+                                                  "/EA_Embedded_Generation_Data/"))
   gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "ba1e12" & gcParams$sysname == "Linux" & gcParams$nodename == "srv02405"){
   # UoS RStudio server
   gcParams$ukData <- path.expand("/mnt/SERG_data/UK_National_Grid")
+  gcParams$ukGridDataLoc <- path.expand(paste0(gcParams$ukData, "/EA_Generation_Data/"))
+  gcParams$ukNonGridDataLoc <- path.expand(paste0(gcParams$ukData, "EA_Embedded_Generation_Data/"))
   gcParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
-  gcParams$gridDataLoc <- path.expand("/mnt/SERG_data/NZ_EA_EMI/EA_Generation_Data/")
-  gcParams$nonGridDataLoc <- path.expand("/mnt/SERG_data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
+  gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Generation_Data/"))
+  gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Embedded_Generation_Data/"))
 }
 
 # > Misc data ----
