@@ -60,7 +60,7 @@ gcParams$bytesToMb <- 0.000001
 # set values for annotations
 gcParams$UKlockDownStartDate <- as.Date("2020-03-24")
 gcParams$UKlockDownStartDateTime <- lubridate::as_datetime("2020-03-23 23:59:00")
-gcParams$UKlockDownRelaxDate_1 <- as.Date("2020-05-10")
+gcParams$UKlockDownRelaxDate_1 <- as.Date("2020-05-11") # BJ speech 10th May
 gcParams$UKlockDownRelaxDateTime_1 <- lubridate::as_datetime("2020-05-10 23:59:00")
 gcParams$UKlockDownEndDate <- lubridate::today() # for plots
 gcParams$UKlockDownEndDateTime <- lubridate::now()

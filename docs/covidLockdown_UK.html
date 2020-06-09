@@ -269,7 +269,7 @@ div.tocify {
 <h1 class="title toc-ignore">UK Electricity Generation and Carbon Itensity</h1>
 <h3 class="subtitle">covid 19 lockdown v1.0</h3>
 <h4 class="author">Ben Anderson</h4>
-<h4 class="date">Last run at: 2020-06-08 16:57:25</h4>
+<h4 class="date">Last run at: 2020-06-09 14:22:01</h4>
 
 </div>
 
@@ -283,9 +283,9 @@ div.tocify {
 <li><a href="https://www.nationalgrideso.com/news/planning-easter-during-coronavirus-outbreak" class="uri">https://www.nationalgrideso.com/news/planning-easter-during-coronavirus-outbreak</a></li>
 <li><a href="https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606" class="uri">https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606</a></li>
 </ul>
-<p>Fortunately the UK Electricity System Operator publishes <a href="https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix">half-hourly generation data</a> which includes both power generation (and thus ‘demand’) by fuels and also includes a per-kWh <a href="https://carbonintensity.org.uk/">carbon intensity</a> for the electricity produced per half-hour. We use this data to explore the following research questions:</p>
+<p>Fortunately the UK Electricity System Operator publishes <a href="https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix">half-hourly generation data</a> which includes both power generation (and thus 'demand') by fuels and also includes a per-kWh <a href="https://carbonintensity.org.uk/">carbon intensity</a> for the electricity produced per half-hour. We use this data to explore the following research questions:</p>
 <ul>
-<li><p>To what extent has electricty demand shown deviation from ‘normal’ demand patterns during the lockdown period?</p></li>
+<li><p>To what extent has electricty demand shown deviation from 'normal' demand patterns during the lockdown period?</p></li>
 <li><p>Has the composition of fuel sources supplying electriicty changed during this period?</p></li>
 <li><p>Has the lockdown changed greenhouse-gas emissions associated with electriicty generation?</p></li>
 </ul>
@@ -294,7 +294,7 @@ div.tocify {
 <h1><span class="header-section-number">2</span> Data</h1>
 <div id="genData" class="section level2">
 <h2><span class="header-section-number">2.1</span> Grid generation data</h2>
-<p>This is ‘grid’ generation from major power stations of various kinds. Data downloaded from <code>https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix</code> and pre-processed.</p>
+<p>This is 'grid' generation from major power stations of various kinds. Data downloaded from <code>https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix</code> and pre-processed.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:testGrid">Table 2.1: </span>Grid gen data (first 6 rows)
@@ -425,8 +425,8 @@ CARBON_INTENSITY
 </table>
 <p>Note that according to the dataset <a href="https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix">source</a>:</p>
 <ul>
-<li>“Data points are either MW or %”. This may be <code>mean MW</code> over the half hour or it may mean <code>MWh per half-hour</code>. It is unclear. The % refers to the fuel mix. Which one could easily calculate from the MW values. But anyway…</li>
-<li>carbon intensity is helpfully described as <em>“The carbon intensity of electricity is a measure of how much Carbon dioxide emissions are produced per kilowatt hour of electricity consumed.”</em>. However we assume it is gCO2e/kWh - based on <a href="https://carbonintensity.org.uk/" class="uri">https://carbonintensity.org.uk/</a></li>
+<li>&quot;Data points are either MW or %&quot;. This may be <code>mean MW</code> over the half hour or it may mean <code>MWh per half-hour</code>. It is unclear. The % refers to the fuel mix. Which one could easily calculate from the MW values. But anyway...</li>
+<li>carbon intensity is helpfully described as <em>&quot;The carbon intensity of electricity is a measure of how much Carbon dioxide emissions are produced per kilowatt hour of electricity consumed.&quot;</em>. However we assume it is gCO2e/kWh - based on <a href="https://carbonintensity.org.uk/" class="uri">https://carbonintensity.org.uk/</a></li>
 </ul>
 <p>Table <a href="#tab:descData">2.2</a> shows the mean half hourly generation (MW) and mean carbon intensity over the years covered by the data. It also shows the implied mean half-hourly total kg CO2e per half hour which we have calculated as follows: {#kgcalc} * convert <code>GENERATION</code> (MW) to MWh per half hour by <code>GENERATION/2</code> (1 MW for half an hour = 1/2 MWh) * convert the result to kWh (<code>* 10000</code>) * multiply by the <code>CARBON_INTENSITY</code> which is in gCO2e/kWh * divide by 1000 to get Kg</p>
 <p>Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have kept all the steps.</p>
@@ -607,7 +607,7 @@ nObs
 </div>
 <div id="embedded-generation-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Embedded generation data</h2>
-<p>Essentially ‘non-grid’ generation from solar photovoltaic and small scale wind which is ‘embedded’ - i.e. non-grid connected as it is connected ‘downstream’ of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.</p>
+<p>Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.</p>
 <blockquote>
 <p>We have not yet found a source of this data (if we even need it).</p>
 </blockquote>
@@ -620,11 +620,11 @@ nObs
 <h1><span class="header-section-number">3</span> Analysis</h1>
 <p>In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data.</p>
 <div id="generation-analysing-deviation-from-normal" class="section level2">
-<h2><span class="header-section-number">3.1</span> Generation: Analysing deviation from ‘normal’</h2>
+<h2><span class="header-section-number">3.1</span> Generation: Analysing deviation from 'normal'</h2>
 <p>Several <a href="https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606">articles</a> and <a href="https://twitter.com/DrIAGWilson/status/1255100828781883394">analyses</a> have suggested that demand (and thus generation) patterns have shifted so that <a href="http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html">weekdays have become more like weekends</a>.</p>
 <div id="overall-trends" class="section level3">
 <h3><span class="header-section-number">3.1.1</span> Overall trends</h3>
-<p>Figure <a href="#fig:TheilSenGWPlot">3.1</a> uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) .</p>
+<p>Figure <a href="#fig:TheilSenGWPlot">3.1</a> uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) .</p>
 <p>These plots show that there has been a steady decline of ~ 0.4 - 0.5 GW mean half hourly generation (and thus demand) per year since 2015 in each time period. The substantial below-trend fall in generation during lockdown in early Spring 2020 is clear, especailly for the morning peak, day-time and, to a lesser extent, evening peak periods. There appears to have been a smaller below-trend reduction at other times as we would expect. We can also see a notable drop in generation in late 2015 which was <a href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/weather/learn-about/uk-past-events/state-of-uk-climate/mo-state-of-uk-climate-2015-v3.pdf">unusually warm and wet</a>.</p>
 <pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
@@ -741,31 +741,48 @@ Figure 3.2: Half-hourly generation, UK (recent)
 Figure 3.3: Half-hourly generation, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationGW">3.4</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the same months in all years from 2018 onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some ‘natural’ reduction due to the overall downward generation trend shown in Figure <a href="#fig:TheilSenGWPlot">3.1</a>. The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on ‘normal’ seasonal demand levels.</p>
-<pre><code>## Plot start date: 2018-01-01</code></pre>
-<pre><code>## Plot end date: 2020-06-06 23:30:00</code></pre>
-<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time, converting to UTC/
-## GMT</code></pre>
-<div class="figure"><span id="fig:timeVariationGW"></span>
-<img src="covidLockdown_UK_files/figure-html/timeVariationGW-1.png" alt="timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
+<p>Figure <a href="#fig:timeVariationGWDetailed">3.4</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from 2018 onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure <a href="#fig:TheilSenGWPlot">3.1</a>. The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.</p>
+<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
+## converting to UTC/GMT</code></pre>
+<pre><code>## Warning: removing 96 missing rows due to plotPeriodDetailed</code></pre>
+<div class="figure"><span id="fig:timeVariationGWDetailed"></span>
+<img src="covidLockdown_UK_files/figure-html/timeVariationGWDetailed-1.png" alt="timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
 <p class="caption">
 Figure 3.4: timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationGWnormalised">3.5</a> is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal <em>shape</em> of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it’s level is distinctly lower (Figure <a href="#fig:timeVariationGW">3.4</a>).</p>
-<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time, converting to UTC/
-## GMT</code></pre>
+<p>Repeat but less detail.</p>
+<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
+## converting to UTC/GMT</code></pre>
+<div class="figure"><span id="fig:timeVariationGW"></span>
+<img src="covidLockdown_UK_files/figure-html/timeVariationGW-1.png" alt="timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
+<p class="caption">
+Figure 3.5: timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
+</p>
+</div>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p><img src="covidLockdown_UK_files/figure-html/extractPlotsGW-1.png" width="672" /></p>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p>Figure <a href="#fig:timeVariationGWnormalised">3.6</a> is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal <em>shape</em> of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure <a href="#fig:timeVariationGW">3.5</a>).</p>
+<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
+## converting to UTC/GMT</code></pre>
 <div class="figure"><span id="fig:timeVariationGWnormalised"></span>
 <img src="covidLockdown_UK_files/figure-html/timeVariationGWnormalised-1.png" alt="timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
 <p class="caption">
-Figure 3.5: timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
+Figure 3.6: timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
 </p>
 </div>
 </div>
 <div id="daily-patterns" class="section level3">
 <h3><span class="header-section-number">3.1.3</span> Daily patterns</h3>
-<p>For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does <strong>not</strong> mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.</p>
-<p>Figure <a href="#fig:compareDailyGWPlot">3.6</a> shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure <a href="#fig:timeVariationGW">3.4</a>, lockdown clearly reduced demand below the seasonal trend as Figure <a href="#fig:TheilSenGWPlot">3.1</a> suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure <a href="#fig:timeVariationGW">3.4</a>).</p>
+<p>For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does <strong>not</strong> mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.</p>
+<p>Figure <a href="#fig:compareDailyGWPlot">3.7</a> shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure <a href="#fig:timeVariationGW">3.5</a>, lockdown clearly reduced demand below the seasonal trend as Figure <a href="#fig:TheilSenGWPlot">3.1</a> suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure <a href="#fig:timeVariationGW">3.5</a>).</p>
 <blockquote>
 <p>Beware temperature differences - need to control for heating degree days as 2020 was a <em>very</em> warm spring</p>
 </blockquote>
@@ -773,22 +790,22 @@ Figure 3.5: timeVariation plots for normalised half-hourly GW generation compari
 <div class="figure"><span id="fig:compareDailyGWPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/compareDailyGWPlot-1.png" alt="Comparative daily mean half-hour generation levels 2020 vs pre-2020" width="672" />
 <p class="caption">
-Figure 3.6: Comparative daily mean half-hour generation levels 2020 vs pre-2020
+Figure 3.7: Comparative daily mean half-hour generation levels 2020 vs pre-2020
 </p>
 </div>
-<p>Figure <a href="#fig:compareDailyGWpcPlot">3.7</a> shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.</p>
+<p>Figure <a href="#fig:compareDailyGWpcPlot">3.8</a> shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.</p>
 <div class="figure"><span id="fig:compareDailyGWpcPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/compareDailyGWpcPlot-1.png" alt="Percentage difference in mean generation levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.7: Percentage difference in mean generation levels 2020 vs pre 2020
+Figure 3.8: Percentage difference in mean generation levels 2020 vs pre 2020
 </p>
 </div>
-<p>Figure <a href="#fig:peakyTest">3.8</a> shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less ‘peaky’ than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.</p>
+<p>Figure <a href="#fig:peakyTest">3.9</a> shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less 'peaky' than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.</p>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:peakyTest"></span>
 <img src="covidLockdown_UK_files/figure-html/peakyTest-1.png" alt="Ratio of maximum to minimum generation per day" width="672" />
 <p class="caption">
-Figure 3.8: Ratio of maximum to minimum generation per day
+Figure 3.9: Ratio of maximum to minimum generation per day
 </p>
 </div>
 </div>
@@ -798,17 +815,17 @@ Figure 3.8: Ratio of maximum to minimum generation per day
 </div>
 </div>
 <div id="carbon-intensity-analysing-deviation-from-normal" class="section level2">
-<h2><span class="header-section-number">3.2</span> Carbon Intensity: Analysing deviation from ‘normal’</h2>
+<h2><span class="header-section-number">3.2</span> Carbon Intensity: Analysing deviation from 'normal'</h2>
 <p>There are two aspects to this. The first is <code>carbon intensity</code> which is driven by the mix of fuels being used to generate electricity at any given time. The second is the total greenhouse gasses emitted which is, obviously, the intensity * the volume. Given the slight uncertainty over units (see Section <a href="#data">2</a>) we assume this is <code>GENERATION</code> * <code>CARBON_INTENSITY</code>.</p>
 <p>Clearly the first of these is driven by the mix of fuels and in the UK this reflects a complex dynamic system of availability of renewables, price, interconnect and demand. To some extent we would expect that lower overall demand should (but not <a href="https://www.nationalgrideso.com/news/our-electricity-greener-lockdown">always</a>) increase the share of renewables. However other factors are also at play:</p>
 <ul>
 <li>some electricity-usage practices may have shifted to (or indeed away from) periods which are likely to have high renewable availability;</li>
-<li>some electricity-usage practices may have shifted away from the ‘usual’ morning and evening peak periods which are traditionally thought to require carbon intense peaking generation if sufficient pumped hydro is not available;</li>
+<li>some electricity-usage practices may have shifted away from the 'usual' morning and evening peak periods which are traditionally thought to require carbon intense peaking generation if sufficient pumped hydro is not available;</li>
 <li>low periods of demand might <a href="https://www.nationalgrideso.com/news/our-electricity-greener-lockdown">require system services</a> from higher carbon generation</li>
 </ul>
 <div id="overall-trends-1" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Overall trends</h3>
-<p>Figure <a href="#fig:TheilSenCIPlot">3.9</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demand period. Again Table <a href="#tab:TheilSenCIPlot">3.2</a> indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period in all time periods. However it is also noticeable that mean carbon intensity has marginally increased above trend in the months of lockdown.</p>
+<p>Figure <a href="#fig:TheilSenCIPlot">3.10</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demand period. Again Table <a href="#tab:TheilSenCIPlot">3.2</a> indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period in all time periods. However it is also noticeable that mean carbon intensity has marginally increased above trend in the months of lockdown.</p>
 <pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
@@ -817,7 +834,7 @@ Figure 3.8: Ratio of maximum to minimum generation per day
 <div class="figure"><span id="fig:TheilSenCIPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/TheilSenCIPlot-1.png" alt="Theil-Sen plot of mean half-hourly carbon intensity per month since 2015-01-01" width="672" />
 <p class="caption">
-Figure 3.9: Theil-Sen plot of mean half-hourly carbon intensity per month since 2015-01-01
+Figure 3.10: Theil-Sen plot of mean half-hourly carbon intensity per month since 2015-01-01
 </p>
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -909,48 +926,57 @@ N obs
 </div>
 <div id="half-hourly-patterns-1" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Half-hourly patterns</h3>
-<p>Figure <a href="#fig:recentDateTimeCIPlot">3.10</a> shows half-hourly carbon intensity since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<p>Figure <a href="#fig:recentDateTimeCIPlot">3.11</a> shows half-hourly carbon intensity since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
 <pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
 <div class="figure"><span id="fig:recentDateTimeCIPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/recentDateTimeCIPlot-1.png" alt="Half-hourly CO2e emissions, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.10: Half-hourly CO2e emissions, UK (recent)
+Figure 3.11: Half-hourly CO2e emissions, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:recentHalfHourlyProfileCIPlot">3.11</a> shows the daily carbon intensity profiles over time for each day of the week.</p>
+<p>Figure <a href="#fig:recentHalfHourlyProfileCIPlot">3.12</a> shows the daily carbon intensity profiles over time for each day of the week.</p>
 <div class="figure"><span id="fig:recentHalfHourlyProfileCIPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/recentHalfHourlyProfileCIPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.11: Half-hourly generation, UK (recent)
+Figure 3.12: Half-hourly generation, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationCI">3.12</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.</p>
-<pre><code>## Plot start date: 2018-01-01</code></pre>
+<p>Figure <a href="#fig:timeVariationCI">3.13</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.</p>
+<pre><code>## Plot start date: 2017-01-05</code></pre>
 <pre><code>## Plot end date: 2020-06-06 23:30:00</code></pre>
-<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time, converting to UTC/
-## GMT</code></pre>
+<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
+## converting to UTC/GMT</code></pre>
 <div class="figure"><span id="fig:timeVariationCI"></span>
 <img src="covidLockdown_UK_files/figure-html/timeVariationCI-1.png" alt="timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in 2018" width="672" />
 <p class="caption">
-Figure 3.12: timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in 2018
+Figure 3.13: timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in 2018
 </p>
 </div>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p><img src="covidLockdown_UK_files/figure-html/extractPlotsCI-1.png" width="672" /></p>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
 </div>
 <div id="daily-patterns-1" class="section level3">
 <h3><span class="header-section-number">3.2.3</span> Daily patterns</h3>
-<p>Figure <a href="#fig:compareDailyCIPlot">3.13</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure <a href="#fig:TheilSenCIPlot">3.9</a>, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<p>Figure <a href="#fig:compareDailyCIPlot">3.14</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure <a href="#fig:TheilSenCIPlot">3.10</a>, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:compareDailyCIPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/compareDailyCIPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.13: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+Figure 3.14: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
 </p>
 </div>
-<p>Figure <a href="#fig:compareDailyCIpcPlot">3.14</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<p>Figure <a href="#fig:compareDailyCIpcPlot">3.15</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <div class="figure"><span id="fig:compareDailyCIpcPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/compareDailyCIpcPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.14: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+Figure 3.15: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
 </p>
 </div>
 </div>
@@ -960,11 +986,11 @@ Figure 3.14: Percentage difference in mean carbon intensity levels 2020 vs pre 2
 </div>
 </div>
 <div id="carbon-emissions-total-analysing-deviation-from-normal" class="section level2">
-<h2><span class="header-section-number">3.3</span> Carbon emissions (total): Analysing deviation from ‘normal’</h2>
+<h2><span class="header-section-number">3.3</span> Carbon emissions (total): Analysing deviation from 'normal'</h2>
 <p>In this section we use our calculation of total CO2e emitted per half hour (see Section <a href="#genData">2.1</a>) to analyse the changes in total CO2e emitted which is, after all, what we are mostly interested in from a climate change point of view. Remember that this value is driven <em>both</em> by total generation (demand) <em>and</em> carbon intensity. As we saw above, these are not always tightly correlated.</p>
 <div id="overall-trends-2" class="section level3">
 <h3><span class="header-section-number">3.3.1</span> Overall trends</h3>
-<p>Figure <a href="#fig:TheilSenC02eTPlot">3.15</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table <a href="#tab:TheilSenC02eTPlot">3.3</a> indicates the years over which the trend is calculated.</p>
+<p>Figure <a href="#fig:TheilSenC02eTPlot">3.16</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table <a href="#tab:TheilSenC02eTPlot">3.3</a> indicates the years over which the trend is calculated.</p>
 <p>This plot shows that total CO2e emissions intensity has fallen by a half-hourly mean of ~600-800 tonnes of CO2e over the time period. However there is some variation around this trend with apparently slightly above trend emissions in the evening peak period during April and May 2020 noticeable despite the almost complete absence of coal generation during this period (see Annex, Figure <a href="#fig:fuelGWByYear"><strong>??</strong></a>).</p>
 <pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
@@ -974,7 +1000,7 @@ Figure 3.14: Percentage difference in mean carbon intensity levels 2020 vs pre 2
 <div class="figure"><span id="fig:TheilSenC02eTPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/TheilSenC02eTPlot-1.png" alt="Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2015-01-01" width="672" />
 <p class="caption">
-Figure 3.15: Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2015-01-01
+Figure 3.16: Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2015-01-01
 </p>
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -1066,48 +1092,57 @@ N obs
 </div>
 <div id="half-hourly-patterns-2" class="section level3">
 <h3><span class="header-section-number">3.3.2</span> Half-hourly patterns</h3>
-<p>Figure <a href="#fig:recentDateTimeC02ekgPlot">3.16</a> shows total half-hourly CO2e emissions since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<p>Figure <a href="#fig:recentDateTimeC02ekgPlot">3.17</a> shows total half-hourly CO2e emissions since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
 <pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
 <div class="figure"><span id="fig:recentDateTimeC02ekgPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/recentDateTimeC02ekgPlot-1.png" alt="Half-hourly total CO2e emissions, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.16: Half-hourly total CO2e emissions, UK (recent)
+Figure 3.17: Half-hourly total CO2e emissions, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:recentHalfHourlyProfileC02ekgPlot">3.17</a> shows the daily CO2e emissions profiles over time for each day of the week since 2020-02-01.</p>
+<p>Figure <a href="#fig:recentHalfHourlyProfileC02ekgPlot">3.18</a> shows the daily CO2e emissions profiles over time for each day of the week since 2020-02-01.</p>
 <div class="figure"><span id="fig:recentHalfHourlyProfileC02ekgPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/recentHalfHourlyProfileC02ekgPlot-1.png" alt="Half-hourly CO2e emissions, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.17: Half-hourly CO2e emissions, UK (recent)
+Figure 3.18: Half-hourly CO2e emissions, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationCO2e">3.18</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.</p>
-<pre><code>## Plot start date: 2018-01-01</code></pre>
+<p>Figure <a href="#fig:timeVariationCO2e">3.19</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.</p>
+<pre><code>## Plot start date: 2017-01-05</code></pre>
 <pre><code>## Plot end date: 2020-06-06 23:30:00</code></pre>
-<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time, converting to UTC/
-## GMT</code></pre>
+<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
+## converting to UTC/GMT</code></pre>
 <div class="figure"><span id="fig:timeVariationCO2e"></span>
 <img src="covidLockdown_UK_files/figure-html/timeVariationCO2e-1.png" alt="timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018" width="672" />
 <p class="caption">
-Figure 3.18: timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018
+Figure 3.19: timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018
 </p>
 </div>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<p><img src="covidLockdown_UK_files/figure-html/extractPlotsCO2e_T-1.png" width="672" /></p>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
+<pre><code>## RStudioGD 
+##         2</code></pre>
 </div>
 <div id="daily-patterns-2" class="section level3">
 <h3><span class="header-section-number">3.3.3</span> Daily patterns</h3>
-<p>Figure <a href="#fig:compareDailyCO2ekgPlot">3.19</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<p>Figure <a href="#fig:compareDailyCO2ekgPlot">3.20</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:compareDailyCO2ekgPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/compareDailyCO2ekgPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.19: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+Figure 3.20: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
 </p>
 </div>
-<p>Figure <a href="#fig:compareDailyC02ekgpcPlot">3.20</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<p>Figure <a href="#fig:compareDailyC02ekgpcPlot">3.21</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <div class="figure"><span id="fig:compareDailyC02ekgpcPlot"></span>
 <img src="covidLockdown_UK_files/figure-html/compareDailyC02ekgpcPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.20: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+Figure 3.21: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
 </p>
 </div>
 </div>
@@ -1172,14 +1207,14 @@ Figure 3.20: Percentage difference in mean carbon intensity levels 2020 vs pre 2
 <li>our <a href="https://github.com/CfSOtago/gridCarbon/issues">issues list</a> for any unfixed problems;</li>
 <li>our <a href="https://cfsotago.github.io/gridCarbon/">project publictions</a>;</li>
 </ul>
-<p>We do not ‘support’ the code but if you notice a problem please check the <a href="https://github.com/CfSOtago/gridCarbon/issues">issues</a> on our <a href="https://github.com/CfSOtago/gridCarbon">repo</a> and if it doesn’t already exist, please open a new one. * this <a href="https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/">report’s edit history</a></p>
+<p>We do not 'support' the code but if you notice a problem please check the <a href="https://github.com/CfSOtago/gridCarbon/issues">issues</a> on our <a href="https://github.com/CfSOtago/gridCarbon">repo</a> and if it doesn't already exist, please open a new one. * this <a href="https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/">report's edit history</a></p>
 </div>
 <div id="support" class="section level2">
 <h2><span class="header-section-number">5.6</span> Support</h2>
 <p>This work was supported by:</p>
 <ul>
 <li>The <a href="https://www.otago.ac.nz/">University of Otago</a>;</li>
-<li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s Sustainable Energy Research Group (2019-2020).</li>
+<li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton's Sustainable Energy Research Group (2019-2020).</li>
 <li>The European Union via <a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a>, a Marie Skłodowska-Curie <a href="https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en">Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Sustainable Energy Research Group</a> (2019-2020) (Anderson)</li>
 </ul>
 
@@ -1223,7 +1258,7 @@ Number of rows
 Number of columns
 </td>
 <td style="text-align:left;">
-46
+45
 </td>
 </tr>
 <tr>
@@ -1245,7 +1280,7 @@ Column type frequency:
 character
 </td>
 <td style="text-align:left;">
-3
+2
 </td>
 </tr>
 <tr>
@@ -1253,7 +1288,7 @@ character
 Date
 </td>
 <td style="text-align:left;">
-1
+2
 </td>
 </tr>
 <tr>
@@ -1285,7 +1320,7 @@ numeric
 POSIXct
 </td>
 <td style="text-align:left;">
-2
+1
 </td>
 </tr>
 <tr>
@@ -1388,32 +1423,6 @@ rDateTime
 0
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-lockdown
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:right;">
-11
-</td>
-<td style="text-align:right;">
-23
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-4
-</td>
-<td style="text-align:right;">
-0
-</td>
-</tr>
 </tbody>
 </table>
 <p><strong>Variable type: Date</strong></p>
@@ -1465,6 +1474,29 @@ obsDate
 </td>
 <td style="text-align:right;">
 1978
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+date
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2015-01-01
+</td>
+<td style="text-align:left;">
+2020-06-06
+</td>
+<td style="text-align:left;">
+2017-09-18
+</td>
+<td style="text-align:right;">
+1984
 </td>
 </tr>
 </tbody>
@@ -2992,29 +3024,6 @@ rDateTimeUTC
 94944
 </td>
 </tr>
-<tr>
-<td style="text-align:left;">
-date
-</td>
-<td style="text-align:right;">
-0
-</td>
-<td style="text-align:right;">
-1
-</td>
-<td style="text-align:left;">
-2015-01-01
-</td>
-<td style="text-align:left;">
-2020-06-06 23:30:00
-</td>
-<td style="text-align:left;">
-2017-09-18 23:45:00
-</td>
-<td style="text-align:right;">
-94944
-</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -3274,7 +3283,7 @@ N obs
 </tr>
 </tbody>
 </table>
-<p>Figure <a href="#fig:TheilSenFuelPlots"><strong>??</strong></a> shows Theil-Sen plots for each fuel. Note that these are <em>not</em> de-seasoned so that the seasonal patterns can be seen. Theil-Sen trend lines are linear and so may go negative when a steep trends asymptotes to 0 (see e.g. coal). They also tend not to perform well when seasonal patterns are present.</p>
+<p>Figure <a href="#fig:TheilSenFuelPlots"><strong>??</strong></a> shows Theil-Sen plots for each fuel. Note that these are <em>not</em> de-seasoned so that the seasonal patterns can be seen. Theil-Sen trend lines are linear and so may go negative when a steep trends asymptotes to 0 (see e.g. coal). They also tend not to perform well when seasonal patterns are present.</p>
 <pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
 <div class="figure"><span id="fig:TheilSenFuelPlots1"></span>
 <img src="covidLockdown_UK_files/figure-html/TheilSenFuelPlots-1.png" alt="Theil-Sen plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
@@ -3345,38 +3354,85 @@ Figure 6.9: Theil-Sen plots of mean half-hourly fuel use per month since 2015-01
 Figure 6.10: Theil-Sen plots of mean half-hourly fuel use per month since 2015-01-01
 </p>
 </div>
+<p>Clearly some of thse trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to <a href="#fig:compareDailyGWPlot">3.7</a>.</p>
+<div class="figure"><span id="fig:smoothTrendPlots1"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-1.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.11: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots2"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-2.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.12: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots3"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-3.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.13: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots4"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-4.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.14: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots5"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-5.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.15: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots6"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-6.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.16: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots7"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-7.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.17: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots8"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-8.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.18: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots9"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-9.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.19: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots10"></span>
+<img src="covidLockdown_UK_files/figure-html/smoothTrendPlots-10.png" alt="Trend plots of mean half-hourly fuel use per month since 2015-01-01" width="672" />
+<p class="caption">
+Figure 6.20: Trend plots of mean half-hourly fuel use per month since 2015-01-01
+</p>
+</div>
 </div>
 <div id="experimental-plots" class="section level2">
 <h2><span class="header-section-number">6.3</span> Experimental plots</h2>
-<p>Figure <a href="#fig:binedDemand">6.11</a> shows the relationship between half-hourly carbon intensity and half-hourly generation over the last five years. 2020 is excluded as it is not yet complete.</p>
-<pre><code>## 
-## Attaching package: &#39;gtools&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:drake&#39;:
-## 
-##     running</code></pre>
+<p>Figure <a href="#fig:binedDemand">6.21</a> shows the relationship between half-hourly carbon intensity and half-hourly generation over the last five years. 2020 is excluded as it is not yet complete.</p>
 <div class="figure"><span id="fig:binedDemand"></span>
 <img src="covidLockdown_UK_files/figure-html/binedDemand-1.png" alt="Box &amp; whiskers plots of carbon intensity over time by generation decile" width="672" />
 <p class="caption">
-Figure 6.11: Box &amp; whiskers plots of carbon intensity over time by generation decile
+Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generation decile
 </p>
 </div>
 <p>The openair package <span class="citation">(Carslaw and Ropkins 2012)</span> contains a number of novel plotting methods.</p>
-<pre><code>## Warning: `as_data_frame()` is deprecated as of tibble 2.0.0.
-## Please use `as_tibble()` instead.
-## The signature and semantics have changed, see `?as_tibble`.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
-<pre><code>## Warning: `data_frame()` is deprecated as of tibble 1.1.0.
-## Please use `tibble()` instead.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <p><img src="covidLockdown_UK_files/figure-html/carbonRose-1.png" width="672" /></p>
 <p><img src="covidLockdown_UK_files/figure-html/carbonScatter-1.png" width="672" /></p>
 </div>
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">7</span> Runtime</h1>
-<p>Analysis completed in 125.63 seconds ( 2.09 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
+<p>Analysis completed in 163.26 seconds ( 2.72 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">8</span> R environment</h1>
@@ -3405,31 +3461,35 @@ Figure 6.11: Box &amp; whiskers plots of carbon intensity over time by generatio
 ## BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so
 ## 
 ## locale:
-##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C               LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
-##  [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8    LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
-##  [9] LC_ADDRESS=C               LC_TELEPHONE=C             LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C               LC_TIME=en_GB.UTF-8       
+##  [4] LC_COLLATE=en_GB.UTF-8     LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] gtools_3.8.1      openair_2.7-2     kableExtra_1.1.0  zoo_1.8-4         skimr_2.1.1       lubridate_1.7.8  
-##  [7] hms_0.5.3         ggplot2_3.3.0     drake_7.12.1      data.table_1.12.0 gridCarbon_0.1.0  here_0.1         
+##  [1] gtools_3.8.1      openair_2.7-2     kableExtra_1.1.0  zoo_1.8-4         skimr_2.1.1      
+##  [6] lubridate_1.7.9   hms_0.5.3         ggplot2_3.3.1     drake_7.12.2      data.table_1.12.0
+## [11] gridCarbon_0.1.0  here_0.1         
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.1          txtq_0.2.0          lattice_0.20-38     tidyr_1.0.3         prettyunits_1.0.2   assertthat_0.2.0   
-##  [7] rprojroot_1.3-2     digest_0.6.25       utf8_1.1.4          R6_2.3.0            repr_1.1.0          backports_1.1.3    
-## [13] evaluate_0.14       highr_0.7           httr_1.4.1          pillar_1.4.4        rlang_0.4.6         progress_1.2.2     
-## [19] rstudioapi_0.11     hexbin_1.27.2       Matrix_1.2-17       rmarkdown_2.1       labeling_0.3        splines_3.6.0      
-## [25] webshot_0.5.2       readr_1.3.1         stringr_1.4.0       igraph_1.2.2        munsell_0.5.0       compiler_3.6.0     
-## [31] xfun_0.13           pkgconfig_2.0.2     base64enc_0.1-3     mgcv_1.8-28         htmltools_0.3.6     tidyselect_0.2.5   
-## [37] tibble_3.0.1        bookdown_0.19       fansi_0.4.0         viridisLite_0.3.0   crayon_1.3.4        dplyr_0.8.5        
-## [43] withr_2.1.2         MASS_7.3-51.4       grid_3.6.0          nlme_3.1-139        jsonlite_1.6        gtable_0.2.0       
-## [49] lifecycle_0.2.0     magrittr_1.5        storr_1.2.1         scales_1.0.0        cli_2.0.2           stringi_1.2.4      
-## [55] mapproj_1.2.7       latticeExtra_0.6-28 xml2_1.3.2          ellipsis_0.3.1      filelock_1.0.2      generics_0.0.2     
-## [61] vctrs_0.3.0         RColorBrewer_1.1-2  tools_3.6.0         forcats_0.5.0       glue_1.3.0          purrr_0.3.4        
-## [67] maps_3.3.0          parallel_3.6.0      yaml_2.2.0          colorspace_1.4-0    cluster_2.0.8       base64url_1.4      
-## [73] rvest_0.3.5         knitr_1.28</code></pre>
+##  [1] Rcpp_1.0.1          txtq_0.2.0          lattice_0.20-38     tidyr_1.1.0         prettyunits_1.0.2  
+##  [6] assertthat_0.2.0    rprojroot_1.3-2     digest_0.6.25       utf8_1.1.4          R6_2.3.0           
+## [11] repr_1.1.0          backports_1.1.3     evaluate_0.14       highr_0.7           httr_1.4.1         
+## [16] pillar_1.4.4        rlang_0.4.6         progress_1.2.2      rstudioapi_0.11     hexbin_1.27.2      
+## [21] Matrix_1.2-17       rmarkdown_2.2       labeling_0.3        splines_3.6.0       webshot_0.5.2      
+## [26] readr_1.3.1         stringr_1.4.0       igraph_1.2.2        munsell_0.5.0       compiler_3.6.0     
+## [31] xfun_0.14           pkgconfig_2.0.2     base64enc_0.1-3     mgcv_1.8-28         htmltools_0.3.6    
+## [36] tidyselect_1.1.0    tibble_3.0.1        bookdown_0.19       fansi_0.4.0         viridisLite_0.3.0  
+## [41] crayon_1.3.4        dplyr_1.0.0         withr_2.1.2         MASS_7.3-51.4       grid_3.6.0         
+## [46] nlme_3.1-139        jsonlite_1.6        gtable_0.2.0        lifecycle_0.2.0     magrittr_1.5       
+## [51] storr_1.2.1         scales_1.0.0        cli_2.0.2           stringi_1.2.4       mapproj_1.2.7      
+## [56] latticeExtra_0.6-28 xml2_1.3.2          ellipsis_0.3.1      filelock_1.0.2      generics_0.0.2     
+## [61] vctrs_0.3.1         RColorBrewer_1.1-2  tools_3.6.0         forcats_0.5.0       glue_1.4.1         
+## [66] purrr_0.3.4         maps_3.3.0          parallel_3.6.0      yaml_2.2.0          colorspace_1.4-0   
+## [71] cluster_2.0.8       base64url_1.4       rvest_0.3.5         knitr_1.28</code></pre>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -3532,7 +3592,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0
