@@ -16,13 +16,13 @@
 getNZGridEA <- function(path, years, months){
   message("Checking what we have already...")
   # path <- gcParams$nzGridDataLoc
-  # years <- 2020
-  # month <- 1
+  
   filesToDateDT <- data.table::as.data.table(list.files(paste0(path, "/raw/"))) # get list of files already downloaded
   metaDT <- data.table::data.table() # stats collector
   for(y in years){
     for(month in months){
-      
+      # y <- 2014
+      # month <- 11
       # construct the filename
       if(nchar(month) == 1){
         # need to add 0 as prefix
@@ -58,7 +58,9 @@ getNZGridEA <- function(path, years, months){
         print(paste0("Trying to download ", rFile))
         req <- curl::curl_fetch_disk(rFile, "temp.csv") # https://cran.r-project.org/web/packages/curl/vignettes/intro.html
         if(req$status_code != 404){ #https://cran.r-project.org/web/packages/curl/vignettes/intro.html#exception_handling
-          dt <- data.table::fread(req$content)
+          #dt <- data.table::fread(req$content) # breaks on 2014-11, why?
+          df <- readr::read_csv(req$content)
+          dt <- data.table::as.data.table(df)
           message("File downloaded successfully, saving as ", rawfName)
           wf <- paste0(path, "/raw/", rawfName)
           data.table::fwrite(dt, wf)
