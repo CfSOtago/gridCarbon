@@ -24,9 +24,9 @@ localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- lubridate::today()
 
 # > data paths ----
-gridDataPath <- paste0(gcParams$gridDataLoc, 
+gridDataPath <- paste0(gcParams$nzGridDataLoc, 
                                   "processed/yearly/")
-nonGridDataPath <- paste0(gcParams$nonGridDataLoc, 
+nonGridDataPath <- paste0(gcParams$nzNonGridDataLoc, 
                                      "processed/yearly/")
 # > captions ----
 localParams$gridCaption <- paste0("Source: NZ Energy Authority",
