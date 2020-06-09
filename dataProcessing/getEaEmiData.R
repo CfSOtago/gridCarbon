@@ -23,7 +23,7 @@ gridCarbon::loadLibraries(reqLibs)
 # Parameters ----
 localParams <- list() # repo level params are in gcParams
 
-years <- seq(2014, 2014, 1) # change these to restrict or extend the file search
+years <- seq(2015, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 refresh <- 0 # set to 1 to try to download all files even if we already have them
@@ -51,29 +51,22 @@ embMetaDataDT <- gridCarbon::getNZEmbData(years = years,
                                           months = months,
                                           path = gcParams$nzNonGridDataLoc) # returns metadata
 
-gridYearlyResultDT <- gridCarbon::makeNZYearlyData(genType = "gridGen", 
+gridCarbon::makeNZYearlyData(genType = "gridGen", 
                                                    years = years,
                                                    path = gcParams$nzGridDataLoc)
-embYearlyResultDT <- gridCarbon::makeNZYearlyData(genType = "embeddedGen", 
+gridCarbon::makeNZYearlyData(genType = "embeddedGen", 
                                                    years = years,
                                                    path = gcParams$nzNonGridDataLoc)
 
-gridYearlyResultDT[, rDateTime := lubridate::as_datetime(rDateTime)]
-
 # tests
 skimr::skim(embMetaDataDT)
-skimr::skim(embYearlyResultDT)
-
-
 skimr::skim(gridMetaDataDT)
-skimr::skim(gridYearlyResultDT)
+
 
 # Finish off ----
 
 t <- proc.time() - startTime # how long did it take?
 elapsed <- t[[3]]
-
-summary(gridYearlyResultDT$rDateTime)
 
 
 print("Done")

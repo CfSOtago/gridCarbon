@@ -10,10 +10,10 @@ cleanNZEmbEA(dt)
 \item{dt}{the data.table to clean up}
 }
 \description{
-These are not in pretty form so we clean them up to a long form file and fix the dateTimes forcing to NZT just in case.
+These are not in pretty form so we clean them up to a long form file and fix the dateTimes.
 }
 \details{
-NB: rDateTimeNZT will be NA for TP49/50 which correspond to the DST breaks.
+NB: rDateTime will be NA for TP49/50 which correspond to the DST breaks.
 }
 \seealso{
 Other data: 
