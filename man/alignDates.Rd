@@ -4,17 +4,19 @@
 \alias{alignDates}
 \title{Re-align 2017-2019 dates so their weekdays match to 2020}
 \usage{
-alignDates(dt)
+alignDates(dt, dateTime)
 }
 \arguments{
 \item{dt}{the data.table to align}
+
+\item{dateTime}{the dateTime variable to use}
 }
 \description{
 \code{alignDates} returns a dt with `fixedDate` set to the date needed in 2017-2019 to match the nearest weekday
 in 2020. Use this for plots which try to compare daily values over time.
 }
 \details{
-The data.table to align *must* have `rDateTimeUTC` correctly set.
+The data.table to align *must* have a dateTime variable (bu tyou can tell it which one).
 }
 \seealso{
 Other data: 
