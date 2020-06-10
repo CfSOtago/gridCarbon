@@ -79,70 +79,76 @@ plan <- drake::drake_plan(
                                        update),
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
-  ukAlignedGridGenData = alignDates(ukGridGenData), # fix the dates so they line up
+  ukAlignedGridGenData = alignDates(ukGridGenData, "rDateTimeUTC"), # fix the dates so they line up
+  nzAlignedGridGenData = alignDates(nzGridGenData, "rDateTimeNZT"), # fix the dates so they line up
   ## >> GW stuff ----
-  recentDateTimeGWPlot = createRecentDateTimePlot(ukGridGenData, 
+  ukRecentDateTimeGWPlot = createRecentDateTimePlot(ukGridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                         yVar = "GENERATION", 
                                                         yCap = "Total generation (GW)",
                                                         yDiv = 1000), # GEN is in MW
-  recentHalfHourlyProfileGWPlot = createRecentHalfHourlyProfilePlot(ukGridGenData, 
+  nzRecentDateTimeGWPlot = createRecentDateTimePlot(nzGridGenData, 
+                                                    dateTime = "rDateTimeNZT",
+                                                    yVar = "GENERATION", 
+                                                    yCap = "Total generation (GW)",
+                                                    yDiv = 1000), # GEN is in MW
+  ukRecentHalfHourlyProfileGWPlot = createRecentHalfHourlyProfilePlot(ukGridGenData, 
                                                                      dateTime = "rDateTimeUTC",
                                                                      yVar = "GENERATION", 
                                                                      yCap = "Total generation (GW)",
                                                                      yDiv = 1000 # GEN is in MW
                                                                      ),
-  compareDailyGWPlot = createDailyMeanComparePlot(ukAlignedGridGenData, 
+  ukCompareDailyGWPlot = createDailyMeanComparePlot(ukAlignedGridGenData, 
                                                    yVar = "GENERATION", 
                                                    yCap = "Mean half hourly GW per day",
                                                    yDiv = 1000 # what to divide the y value by
                                                    ),
-  compareDailyGWpcPlot = createDailyPcComparePlot(ukAlignedGridGenData, 
+  ukCompareDailyGWpcPlot = createDailyPcComparePlot(ukAlignedGridGenData, 
                                                    yVar = "GENERATION", 
                                                    yCap = "% difference"
                                                    ),
   ## >> CI stuff ----
-  recentDateTimeCIPlot = createRecentDateTimePlot(ukGridGenData, 
+  ukRecentDateTimeCIPlot = createRecentDateTimePlot(ukGridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                    yVar = "CARBON_INTENSITY", 
                                                    yCap = "Carbon intensity",
                                                    yDiv = 1),
   
-  recentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(ukGridGenData, 
+  ukRecentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(ukGridGenData, 
                                                                      dateTime = "rDateTimeUTC",
                                                                      yVar = "CARBON_INTENSITY", 
                                                                      yCap = "Carbon intensity",
                                                                      yDiv = 1), 
-  compareDailyCIPlot = createDailyMeanComparePlot(ukAlignedGridGenData, 
+  ukCompareDailyCIPlot = createDailyMeanComparePlot(ukAlignedGridGenData, 
                                                    yVar = "CARBON_INTENSITY", 
                                                    yCap = "Mean daily half hourly carbon intensity",
                                                    yDiv = 1 # what to divide the y value by
   ),
-  compareDailyCIpcPlot = createDailyPcComparePlot(ukAlignedGridGenData, 
+  ukCompareDailyCIpcPlot = createDailyPcComparePlot(ukAlignedGridGenData, 
                                                    yVar = "CARBON_INTENSITY", 
                                                    yCap = "% difference"),
   ## >> CO2e kg stuff ----
-  recentDateTimeC02ekgPlot = createRecentDateTimePlot(ukGridGenData, 
+  ukRecentDateTimeC02ekgPlot = createRecentDateTimePlot(ukGridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                    yVar = "totalC02e_kg", 
                                                    yCap = "C02e emitted (T)",
                                                    yDiv = 1000), # totalC02e_kg in kg
   
   
-  recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(ukGridGenData, 
+  ukRecentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(ukGridGenData, 
                                                                      dateTime = "rDateTimeUTC",
                                                                      yVar = "totalC02e_kg", 
                                                                      yCap = "C02e emitted (T)",
                                                                      yDiv = 1000), # totalC02e_kg in kg 
   
   
-  compareDailyCO2ekgPlot = createDailyMeanComparePlot(ukAlignedGridGenData, 
+  ukCompareDailyCO2ekgPlot = createDailyMeanComparePlot(ukAlignedGridGenData, 
                                                    yVar = "totalC02e_kg", 
                                                    yCap = "Mean daily half hourly C02e (T)",
                                                    yDiv = 1000 # what to divide the y value by
                                                    ),
 
-  compareDailyC02ekgpcPlot = createDailyPcComparePlot(ukAlignedGridGenData, 
+  ukCompareDailyC02ekgpcPlot = createDailyPcComparePlot(ukAlignedGridGenData, 
                                                    yVar = "totalC02e_kg", 
                                                    yCap = "% difference")
 )
@@ -151,16 +157,23 @@ plan <- drake::drake_plan(
 plan # test the plan
 make(plan) # run the plan, re-loading data if needed
 
-gridGenDT <- drake::readd(gridGenData)
-alignedDT <- drake::readd(alignedGridGenData)
+ukGridGenDT <- drake::readd(ukGridGenData)
+ukAlignedDT <- drake::readd(ukAlignedGridGenData)
+nzGridGenDT <- drake::readd(nzGridGenData)
+nzAlignedDT <- drake::readd(nzAlignedGridGenData)
 
 # test a plot ----
-drake::readd(recentDateTimeGWPlot)
+#drake::readd(ukRecentDateTimeGWPlot)
+#drake::readd(nzRecentDateTimeGWPlot)
 
 # code ----
 
-print("Grid gen loaded")
-message("Loaded ", tidyNum(nrow(gridGenDT)), " rows of data")
+print("UK Grid gen loaded")
+message("Loaded ", tidyNum(nrow(ukGridGenDT)), " rows of data")
+
+print("NZ Grid gen loaded")
+message("Loaded ", tidyNum(nrow(nzGridGenDT)), " rows of data")
+
 
 
 # > Make report ----
@@ -171,7 +184,8 @@ subtitle <- paste0("covid 19 lockdown v", version)
 authors <- "Ben Anderson"
 
 # what dates to expect? 
-summary(gridGenDT$rDateTimeUTC)
+summary(ukGridGenDT$rDateTimeUTC)
+summary(nzGridGenDT$rDateTimeNZT)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
