@@ -3,7 +3,7 @@
 #' `createRecentDateTimePlot` returns a plot which plots yVar by dateTime and adds lockdown annotations
 #'
 #' @param dt the data
-#' @param dateTime the dateTime variable to use (allows for aligned dateTimes etc). Default = `rDateTimeUTC`
+#' @param dateTime the dateTime variable to use (allows for aligned dateTimes and for other timezones etc etc).
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = `1`
@@ -14,7 +14,7 @@
 #' @export
 #' @family plot
 #'
-createRecentDateTimePlot <- function(dt, dateTime = "rDateTimeUTC", yVar, yCap, yDiv = 1){
+createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1){
   # assumes the base gridGen half-hourly data
   # assumes we want mean of half-hourly obs
   dt[, dateTimeVar := get(dateTime)]

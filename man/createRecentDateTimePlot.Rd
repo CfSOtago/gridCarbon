@@ -4,12 +4,12 @@
 \alias{createRecentDateTimePlot}
 \title{Creates a half-hourly plot from the data.table given}
 \usage{
-createRecentDateTimePlot(dt, dateTime = "rDateTimeUTC", yVar, yCap, yDiv = 1)
+createRecentDateTimePlot(dt, dateTime, yVar, yCap, yDiv = 1)
 }
 \arguments{
 \item{dt}{the data}
 
-\item{dateTime}{the dateTime variable to use (allows for aligned dateTimes etc). Default = `rDateTimeUTC`}
+\item{dateTime}{the dateTime variable to use (allows for aligned dateTimes and for other timezones etc etc).}
 
 \item{yVar}{the variable you want to plot}
 

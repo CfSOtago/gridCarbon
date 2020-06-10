@@ -27,6 +27,7 @@ Other data:
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridMeta}()},
 \code{\link{getUkGridESO}()},
+\code{\link{loadNZEAYearlyGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
 \code{\link{makeUkGridESOYearlyData}()},

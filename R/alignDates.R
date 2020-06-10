@@ -3,9 +3,10 @@
 #' \code{alignDates} returns a dt with `fixedDate` set to the date needed in 2017-2019 to match the nearest weekday
 #' in 2020. Use this for plots which try to compare daily values over time.
 #' 
-#' The data.table to align *must* have `rDateTimeUTC` correctly set.
+#' The data.table to align *must* have a dateTime variable (bu tyou can tell it which one).
 #'
 #' @param dt the data.table to align
+#' @param dateTime the dateTime variable to use
 #' @import lubridate
 #' @import data.table
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
@@ -13,12 +14,12 @@
 #' @family data
 #' @family utils
 #'
-alignDates <- function(dt){
+alignDates <- function(dt, dateTime){
   # expects gridGenData from loadGenData as the dt
   # re-use the method from the airQual analysis to align the years
   # so kludgy it should not be allowed
   
-  dt[, obsDate := lubridate::date(rDateTimeUTC)]
+  dt[, obsDate := lubridate::date(get(dateTime))]
   dt[, decimalDate := lubridate::decimal_date(obsDate)] # gives year.% of year
   
   # set to 2020 'dates'
