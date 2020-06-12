@@ -27,6 +27,7 @@ Other utils:
 \code{\link{alignDates}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},
+\code{\link{nzCalculateCO2e}()},
 \code{\link{setPeakPeriod}()},
 \code{\link{setup}()},
 \code{\link{tidyNum}()}

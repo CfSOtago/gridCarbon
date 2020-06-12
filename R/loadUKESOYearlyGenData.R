@@ -48,11 +48,14 @@ loadUKESOYearlyGenData <- function(path, fromYear, update){
   #nrow(ok)
   dt <- dt[ok] # drops the dates with less than 48 observations
   #uniqueN(dt$obsDate)
-  
-  dt[, GW := GENERATION/1000]
+  dt[, GENERATION_MW := GENERATION]
+  dt[, GW := GENERATION_MW/1000]
+  dt[, GENERATION_MWh := GENERATION_MW/2] # total MWh per half hour = power / 2
+  dt[, GWh := GENERATION_MWh/1000]
   
   # Total CO2e - original grid gen data
-  dt[, totalC02e_g := ((1000*(GENERATION/2)) * CARBON_INTENSITY)]
+  # CI = g CO2e/kWh
+  dt[, totalC02e_g := (1000*GENERATION_MWh) * CARBON_INTENSITY]
   dt[, totalC02e_kg := totalC02e_g/1000]
   dt[, totalC02e_T := totalC02e_kg/1000 ]
   
