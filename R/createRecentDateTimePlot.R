@@ -45,8 +45,8 @@ createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1){
     guides(colour=guide_legend(nrow=2))
   
   p <- addLockdownRect(p,
-                       from = gcParams$UKlockDownStartDateTime,
-                       to = gcParams$UKlockDownEndDateTime,
+                       from = lockdownStart,
+                       to = lockdownEnd,
                        label = "Phase 1", yMin, yMax)
   p <- addWeekendRectsDateTime(p, yMin, yMax)
   
