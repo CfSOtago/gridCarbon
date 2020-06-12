@@ -4,7 +4,7 @@
 \alias{createDailyPcComparePlot}
 \title{Creates a daily mean half-hourly % difference plot from the data.table given}
 \usage{
-createDailyPcComparePlot(dt, yVar, yCap)
+createDailyPcComparePlot(dt, yVar, yCap, lockDownStart, lockDownEnd)
 }
 \arguments{
 \item{dt}{the data, assumed to be the aligned data (use alignDates() to create this)}
@@ -12,6 +12,10 @@ createDailyPcComparePlot(dt, yVar, yCap)
 \item{yVar}{the variable you want to plot}
 
 \item{yCap}{the caption for the y axis}
+
+\item{lockDownStart}{date for start of lockdown rectangle annotation}
+
+\item{lockDownEnd}{date for end of lockdown rectangle annotation}
 }
 \description{
 `createDailyPcComparePlot` returns a plot which calculates the daily mean of yVar and plots the % difference between the value for 2020 and

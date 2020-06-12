@@ -52,8 +52,9 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1, lockDownStart, 
   
   p <- addLockdownRect(p, 
                        from = lockDownStart, 
-                       to = lockDownEnd, 
-                       yMin, yMax)
+                       to = lockDownEnd,
+                       yMin = yMin, 
+                       yMax = yMax)
   
   p <- addWeekendRectsDate(p, 
                            yMin, 

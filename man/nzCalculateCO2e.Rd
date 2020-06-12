@@ -2,29 +2,28 @@
 % Please edit documentation in R/nzCalculateCO2e.R
 \name{nzCalculateCO2e}
 \alias{nzCalculateCO2e}
-\title{\code{nzCalculateCO2e} calculates the CO2e emissions per fuel per half-hour.}
+\title{\code{nzCalculateCO2e} calculates the CO2e emissions (in kg) per fuel per half-hour.}
 \usage{
 nzCalculateCO2e(dt, ef)
 }
 \arguments{
-\item{dt}{the data table with the half-hourly kWh values per fuel}
+\item{dt}{the data table with the half-hourly kWh values per fuel (do not include incomplete years)}
 
 \item{ef}{the MBIE emission factors file}
 }
 \description{
-Uses a long form data.table with each row defined by dateTime & fuel code (and generation station etc).
-Assumes kWh, adds variables for carbon intensity (kg CO2e/Kwh) and CO2e (kg) to the data.table and returns it
+Uses the EA grid generation data to sum yearly kWh by fuel and combines with the NZ efficiency and emission factors published at 
+https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-statistics-and-modelling/energy-statistics/new-zealand-energy-sector-greenhouse-gas-emissions/
 }
 \details{
-The calcultion uses imputed conversion factors from the latest NZ efficiency and emission factors published at 
-https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-statistics-and-modelling/energy-statistics/new-zealand-energy-sector-greenhouse-gas-emissions/
-
+Returns a data.table of carbon intensity (gCO2-e/kWh) per fuel per year for further use
+ 
 Notes:
 
- * we estimate the factors each year by dividing the MBIE per-year totals (kt) by the total per-year kWh in the data.table.
-If MBIE published the conversion factors this would not be necessary. But if they do, we have not been able to find them.
+ * we estimate the factors each year by dividing the MBIE per-year totals (kt CO2-e) by the total per fuel per-year kWh in the data.table and then converting
+ to g/kWh. If MBIE published the conversion factors this would not be necessary. But if they do, we have not been able to find them.
 
- * the geothermal conversion does _not_ include fugitive emissions (it probably should)
+ * the geothermal conversion _may not_ include fugitive emissions (?)
 }
 \seealso{
 Other data: 
@@ -37,7 +36,8 @@ Other data:
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
 \code{\link{getUkGridESO}()},
-\code{\link{loadNZEAYearlyGenData}()},
+\code{\link{loadNZEAYearlyEmbeddedGenData}()},
+\code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
 \code{\link{makeUkGridESOYearlyData}()},

@@ -6,6 +6,8 @@
 #' @param dt the data, assumed to be the aligned data (use alignDates() to create this)
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
+#' @param lockDownStart date for start of lockdown rectangle annotation
+#' @param lockDownEnd date for end of lockdown rectangle annotation
 #' 
 #' @import lubridate
 #' @import data.table
@@ -13,7 +15,7 @@
 #' @export
 #' @family plot
 #'
-createDailyPcComparePlot <- function(dt, yVar, yCap){
+createDailyPcComparePlot <- function(dt, yVar, yCap, lockDownStart, lockDownEnd){
   # assumes the dateFixed half-hourly data
   # assumes we want mean of half-hourly obs
   dt <- dt[dateFixed <= lubridate::today() & 
@@ -49,6 +51,13 @@ createDailyPcComparePlot <- function(dt, yVar, yCap){
     theme(legend.position="bottom") +
     geom_hline(yintercept = 0, linetype = 3)
   
+  p <- addLockdownRect(p, 
+                       from = lockDownStart, 
+                       to = lockDownEnd,
+                       yMin = yMin, 
+                       yMax = yMax)
+  
   p <- addWeekendRectsDate(p, yMin, yMax)
+  
   return(p)
 }
