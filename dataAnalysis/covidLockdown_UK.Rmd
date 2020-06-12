@@ -104,27 +104,29 @@ Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have
 > NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the [ESO forecast methodology document](https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf) states that it is.
  
 ```{r descData}
-t <- gridGenDT[, .(col1 = mean(GENERATION),
-                 col2 = mean(CARBON_INTENSITY),
-                 col3 = mean(totalC02e_T),
-                 col4 = max(obsDate),
+t <- gridGenDT[, .(mGen = mean(GW),
+                   sGen = sum(GWh)/1000, # TWh
+                 mCI = mean(CARBON_INTENSITY),
+                 sC = sum(totalC02e_T)/1000000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+                 maxDate = max(obsDate),
                  "N months to date" = uniqueN(lubridate::month(rDateTime)),
                  nObs = .N), keyby = .(year)]
-
-ci2017 <- t[year == 2017, col2]
-ci2020 <- t[year == 2020, col2]
+# gen decrease
+ci2017 <- t[year == 2017, sGen]
+ci2020 <- t[year == 2020, sGen]
 ciDecrease_pc <- round(100*((ci2017 - ci2020)/ci2017))
 #ciDecrease_pc
-c2017 <- t[year == 2017, col3]
-c2020 <- t[year == 2020, col3]
+c2017 <- t[year == 2017, sC]
+c2020 <- t[year == 2020, sC]
 cDecrease_pc <- round(100*((c2017 - c2020)/c2017))
 
-col1 <- paste0("Mean halfhourly generation \n (", localParams$genUnits, ")")
-col2 <- paste0("Mean half-hourly carbon intensity \n (" , localParams$ciUnits, ")")
-col3 <- paste0("Mean total half-hourly CO2e (Tonnes)")
-col4 <- paste0("Max data in range")
-data.table::setnames(t, c("col1","col2", "col3", "col4"), # old
-                     c(col1,col2,col3,col4) # new
+mGen <- paste0("Mean halfhourly generation \n (GWh)")
+sGen <- paste0("Total annual generation \n (TWh)")
+mCI <- paste0("Mean half-hourly carbon intensity \n (" , localParams$ciUnits, ")")
+sC <- paste0("Total annual CO2e (MtCO2e)")
+maxDate <- paste0("Max date in range")
+data.table::setnames(t, c("mGen", "sGen", "mCI", "sC", "maxDate"), # old, must be a better way
+                     c(mGen,sGen, mCI,sC,maxDate) # new
                      ) # easy way to set human-readable col names
 
 kableExtra::kable(t, digits = 2,

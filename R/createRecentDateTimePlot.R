@@ -46,6 +46,7 @@ createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDow
     scale_color_viridis_d(name = "Day of the week") +
     guides(colour=guide_legend(nrow=2))
   
+
   p <- addLockdownRect(p, 
                        from = lockDownStart, 
                        to = lockDownEnd,
