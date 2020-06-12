@@ -24,6 +24,7 @@ Other data:
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
 \code{\link{makeUkGridESOYearlyData}()},
+\code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeGenDT}()},
 \code{\link{saveUkGridESO}()},
 \code{\link{setEmbeddedGenTimePeriod}()},
