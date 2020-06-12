@@ -4,7 +4,15 @@
 \alias{createRecentDateTimePlot}
 \title{Creates a half-hourly plot from the data.table given}
 \usage{
-createRecentDateTimePlot(dt, dateTime, yVar, yCap, yDiv = 1)
+createRecentDateTimePlot(
+  dt,
+  dateTime,
+  yVar,
+  yCap,
+  yDiv = 1,
+  lockDownStart,
+  lockDownEnd
+)
 }
 \arguments{
 \item{dt}{the data}
@@ -16,9 +24,13 @@ createRecentDateTimePlot(dt, dateTime, yVar, yCap, yDiv = 1)
 \item{yCap}{the caption for the y axis}
 
 \item{yDiv}{the value you want to divide yVar by to make the y axis more sensible. Default = `1`}
+
+\item{lockDownStart}{date for start of lockdown rectangle annotation}
+
+\item{lockDownEnd}{date for end of lockdown rectangle annotation}
 }
 \description{
-`createRecentDateTimePlot` returns a plot which plots yVar by dateTime and adds lockdown annotations
+`createRecentDateTimePlot` returns a plot which plots yVar by dateTime and adds lockdown annotations.  This assumes users pass in the aligned-date data (`dateFixed`).
 }
 \seealso{
 Other plot: 

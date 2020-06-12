@@ -20,6 +20,7 @@ Other utils:
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},
+\code{\link{nzCalculateCO2e}()},
 \code{\link{setPeakPeriod}()},
 \code{\link{setup}()}
 }

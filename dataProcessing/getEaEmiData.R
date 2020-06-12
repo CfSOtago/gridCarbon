@@ -1,6 +1,7 @@
 # Get NZ Generation data: ----
 # This is:
 # > EA Wholesale generation data - https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/
+# Units are kilowatt hours (kWh).
 # > EA Embedded Generation data - https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation
 
 # - gets or refreshes the EA generation data

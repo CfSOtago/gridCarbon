@@ -32,6 +32,7 @@ Other data:
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
 \code{\link{makeUkGridESOYearlyData}()},
+\code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
 \code{\link{saveUkGridESO}()},
@@ -44,6 +45,7 @@ Other utils:
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},
+\code{\link{nzCalculateCO2e}()},
 \code{\link{setPeakPeriod}()},
 \code{\link{setup}()},
 \code{\link{tidyNum}()}

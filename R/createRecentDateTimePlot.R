@@ -1,12 +1,14 @@
 #' Creates a half-hourly plot from the data.table given
 #'
-#' `createRecentDateTimePlot` returns a plot which plots yVar by dateTime and adds lockdown annotations
+#' `createRecentDateTimePlot` returns a plot which plots yVar by dateTime and adds lockdown annotations.  This assumes users pass in the aligned-date data (`dateFixed`).
 #'
 #' @param dt the data
 #' @param dateTime the dateTime variable to use (allows for aligned dateTimes and for other timezones etc etc).
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = `1`
+#' @param lockDownStart date for start of lockdown rectangle annotation
+#' @param lockDownEnd date for end of lockdown rectangle annotation
 #' 
 #' @import lubridate
 #' @import data.table
@@ -14,7 +16,7 @@
 #' @export
 #' @family plot
 #'
-createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1){
+createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd){
   # assumes the base gridGen half-hourly data
   # assumes we want mean of half-hourly obs
   dt[, dateTimeVar := get(dateTime)]
@@ -44,10 +46,11 @@ createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1){
     scale_color_viridis_d(name = "Day of the week") +
     guides(colour=guide_legend(nrow=2))
   
-  p <- addLockdownRect(p,
-                       from = gcParams$UKlockDownStartDateTime,
-                       to = gcParams$UKlockDownEndDateTime,
-                       label = "Phase 1", yMin, yMax)
+  p <- addLockdownRect(p, 
+                       from = lockDownStart, 
+                       to = lockDownEnd,
+                       yMin, yMax)
+  
   p <- addWeekendRectsDateTime(p, yMin, yMax)
   
   return(p)

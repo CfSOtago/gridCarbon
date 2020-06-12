@@ -28,6 +28,7 @@ Other data:
 \code{\link{loadNZEAYearlyGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
+\code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
 \code{\link{saveUkGridESO}()},

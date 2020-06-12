@@ -49,8 +49,6 @@ createDailyPcComparePlot <- function(dt, yVar, yCap){
     theme(legend.position="bottom") +
     geom_hline(yintercept = 0, linetype = 3)
   
-  p <- addLockdownRect(p, from = gcParams$UKlockDownStartDate, to = gcParams$UKlockDownEndDate, 
-                       label = "Phase 1", yMin, yMax)
   p <- addWeekendRectsDate(p, yMin, yMax)
   return(p)
 }
