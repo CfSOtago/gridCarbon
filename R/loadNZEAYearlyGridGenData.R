@@ -1,6 +1,6 @@
 #' Load the pre-downloaded yearly NZ EA grid generation files in to a data.table
 #'
-#' \code{loadNZEAYearlyGenData} returns a dt with a proper rDateTimeNZT added & set to NZ tzone.
+#' \code{loadNZEAYearlyGridGenData} returns a dt with a proper rDateTimeNZT added & set to NZ tzone.
 #'
 #' @param path the folder to look in for the data
 #' @param fromYear the year to start from (needs to be in the data file names - you did name them sensibly, yes?)
@@ -10,7 +10,7 @@
 #' @export
 #' @family data
 #'
-loadNZEAYearlyGenData <- function(path, fromYear, update){
+loadNZEAYearlyGridGenData <- function(path, fromYear, update){
   # update = dummy used to force re-load
   # lists files within a folder (path) & loads fromYear
   # path <- localParams$nzGridDataLoc
@@ -53,11 +53,22 @@ loadNZEAYearlyGenData <- function(path, fromYear, update){
   # we also need to sum within fuels as we don't the data per site
   # we can do this all at the same time and very fast
   
-  dtw <- dcast(dt, rDateTimeNZT ~ Fuel_Code, # each row is a unique dateTime, each col is a Fuel_Code
+  # NB there are a few small -ve kWh values. These are for clyde & Te Mihi
+  # we ignore them
+  
+  with(dt[kWh < 0], table(Gen_Code, year))
+  
+  dtw <- dcast(dt[!is.na(kWh)], # remove NA now so sum works
+               rDateTimeNZT ~ Fuel_Code, # each row is a unique dateTime, each col is a Fuel_Code
                value.var = "kWh", # what to sum
                fun.aggregate = sum)
-  dtw[, GENERATION := (Coal + Diesel + Gas + Geo + Hydro + Wind + Wood)/1000] # set to MW same as GB data
-  dtw[, GW := GENERATION/1000]
+  dtw[, GasOil := `Gas&Oil`]
+  dtw[, `Gas&Oil` := NULL]
+  dtw[, GENERATION_MWh := (Coal + Diesel + Gas + GasOil + Geo + Hydro + Wind + Wood)/1000] # set to MWh
+  dtw[, GWh := GENERATION_MWh/1000]
+  dtw[, GENERATION_MW := (GENERATION_MWh * 2)] # convert to MW to match UK data
+  dtw[, GW := GENERATION_MW/1000]
+
   dtw[, hms := hms::as_hms(rDateTimeNZT)]
   dtw[, year := lubridate::year(rDateTimeNZT)]
   dtw <- setPeakPeriod(dtw, dateTime = "rDateTimeNZT") 
@@ -66,6 +77,13 @@ loadNZEAYearlyGenData <- function(path, fromYear, update){
   # Needs conversion factors per fuel
   
   # Total CO2e - original grid gen data
+  
+  ciDT <- nzCalculateCO2e(dtw[year < 2020], localParams$nzEmissionsFile) # no incomplete years please
+  setkey(ciDT, year)
+  setkey(dtw, year)
+  
+  tempDT <- ciDT[dtw]
+  
   #dt[, totalC02e_g := ((1000*(GENERATION/2)) * CARBON_INTENSITY)]
   #dt[, totalC02e_kg := totalC02e_g/1000]
   #dt[, totalC02e_T := totalC02e_kg/1000 ]

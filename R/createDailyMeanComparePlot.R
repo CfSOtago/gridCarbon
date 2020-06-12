@@ -1,12 +1,14 @@
 #' Creates a daily half-hourly mean plot from the data.table given
 #'
 #' `createDailyMeanComparePlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 
-#' compare the values for the same date over previous years. This assumes use pass in the aligned-date data. 
+#' compare the values for the same date over previous years. This assumes users pass in the aligned-date data (`dateFixed`). 
 #'
 #' @param dt the data, assumed to be the aligned data (use alignDates() to do this)
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = 1
+#' @param lockDownStart date for start of lockdown rectangle annotation
+#' @param lockDownEnd date for end of lockdown rectangle annotation
 #' 
 #' @import lubridate
 #' @import data.table
@@ -14,7 +16,7 @@
 #' @export
 #' @family plot
 #'
-createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1){
+createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd){
   # assumes the dateFixed half-hourly data
   # assumes we want mean of half-hourly obs
   plotDT <- dt[dateFixed <= lubridate::today() & 
@@ -49,9 +51,9 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1){
     guides(shape=guide_legend(nrow=2))
   
   p <- addLockdownRect(p, 
-                       from = gcParams$UKlockDownStartDate, 
-                       to = gcParams$UKlockDownEndDate, 
-                       label = "Phase 1", yMin, yMax)
+                       from = lockDownStart, 
+                       to = lockDownEnd, 
+                       yMin, yMax)
   
   p <- addWeekendRectsDate(p, 
                            yMin, 
