@@ -50,7 +50,8 @@ createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDow
   p <- addLockdownRect(p, 
                        from = lockDownStart, 
                        to = lockDownEnd,
-                       yMin, yMax)
+                       yMin = yMin, 
+                       yMax = yMax)
   
   p <- addWeekendRectsDateTime(p, yMin, yMax)
   
