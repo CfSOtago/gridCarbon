@@ -81,8 +81,8 @@ gcParams$NZLevel3StartDate <- as.Date("2020-04-27")
 gcParams$NZLevel3StartDateTime <- lubridate::as_datetime("2020-04-27 23:59:00")
 gcParams$NZLevel2StartDate <- as.Date("2020-05-13")
 gcParams$NZLevel2StartDateTime <- lubridate::as_datetime("2020-05-13 23:59:00")
-gcParams$NZlockDownEndDate <- lubridate::today() # for plots
-gcParams$NZlockDownEndDateTime <- lubridate::now()
+gcParams$NZlockDownEndDate <- as.Date("2020-06-08") # for plots
+gcParams$NZlockDownEndDateTime <- lubridate::as_datetime("2020-06-08 23:59:00")
 
 # For .Rmd ----
 # > Default yaml for Rmd ----
