@@ -28,7 +28,7 @@ update <- "yep" # edit to force data re-load - forces everything re-build :-)
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2015 # a way to limit the number of years of data files loaded
+localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
 
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
@@ -103,7 +103,7 @@ plan <- drake::drake_plan(
                                                    ),
   
   compareDailyGWpcPlot = createDailyPcComparePlot(alignedGridGenData, 
-                                                   yVar = "GENERATION", 
+                                                   yVar = "GW", 
                                                    yCap = "% difference",
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
@@ -144,8 +144,8 @@ plan <- drake::drake_plan(
                                                    yVar = "totalC02e_kg", 
                                                    yCap = "C02e emitted (T)",
                                                    yDiv = 1000, # totalC02e_kg is in kg
-                                                   lockDownStart = gcParams$UKlockDownStartDate,
-                                                   lockDownEnd = gcParams$UKlockDownEndDate), 
+                                                   lockDownStart = gcParams$UKlockDownStartDateTime,
+                                                   lockDownEnd = gcParams$UKlockDownEndDateTime), 
   
   
   # recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
@@ -200,6 +200,6 @@ summary(gridGenDT$rDateTimeUTC)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
-#makeReport(rmdFile)
+makeReport(rmdFile)
 
 # done
