@@ -104,12 +104,11 @@ Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have
 > NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the [ESO forecast methodology document](https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf) states that it is.
  
 ```{r descData}
-t <- gridGenDT[, .(mGen = mean(GW),
+t <- gridGenDT[, .(sC = sum(totalC02e_T)/1000000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+                   mCI = mean(CARBON_INTENSITY),
+                   mGen = mean(GW),
                    sGen = sum(GWh)/1000, # TWh
-                 mCI = mean(CARBON_INTENSITY),
-                 sC = sum(totalC02e_T)/1000000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
                  maxDate = max(obsDate),
-                 "N months to date" = uniqueN(lubridate::month(rDateTime)),
                  nObs = .N), keyby = .(year)]
 # gen decrease
 ci2017 <- t[year == 2017, sGen]
@@ -120,15 +119,21 @@ c2017 <- t[year == 2017, sC]
 c2020 <- t[year == 2020, sC]
 cDecrease_pc <- round(100*((c2017 - c2020)/c2017))
 
+# from https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+dbeisDT <- data.table::fread(here::here("publicData", "dbeisDataTo2018.csv"))
+dbeisCO2 <- c("DBEIS", "")
 mGen <- paste0("Mean halfhourly generation \n (GWh)")
 sGen <- paste0("Total annual generation \n (TWh)")
 mCI <- paste0("Mean half-hourly carbon intensity \n (" , localParams$ciUnits, ")")
-sC <- paste0("Total annual CO2e (MtCO2e)")
+sC <- paste0("Total annual CO2e (MtCO2e, calculated)")
 maxDate <- paste0("Max date in range")
+
 data.table::setnames(t, c("mGen", "sGen", "mCI", "sC", "maxDate"), # old, must be a better way
                      c(mGen,sGen, mCI,sC,maxDate) # new
                      ) # easy way to set human-readable col names
-
+setkey(t, year)
+setkey(dbeisDT, year)
+t <- dbeisDT[t]
 kableExtra::kable(t, digits = 2,
                   caption = "Mean half hourly power, carbon intensity and total CO2e emissions by year - note that 2020 is incomplete") %>%
   kable_styling()
@@ -246,27 +251,6 @@ out <- openair::timeVariation(plotDT,
                        difference = TRUE)
 ```
 
-
-```{r extractPlotsGW}
-# Extract the plots we want...
-p <- out$plot$day
-png(filename=here::here("docs/plots/openAir_UK_DailyGW.png"))
-plot(p)
-dev.off()
-#ggplot2::ggsave(here::here("docs/plots/openAir_UK_DailyGW.png"), p)
-p <- out$plot$hour
-png(filename=here::here("docs/plots/openAir_UK_HourlyGW.png"))
-plot(p)
-dev.off()
-p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAir_UK_WeekdaysGW.png"), width = 800, height = 600)
-plot(p)
-dev.off()
-p <- out$plot$day.hour
-svg(filename=here::here("docs/plots/openAir_UK_WeekdaysGW.svg"), width = 800, height = 600)
-plot(p)
-dev.off()
-```
 
 Figure \@ref(fig:timeVariationGWnormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGW)).
 
