@@ -9,6 +9,8 @@ library(here)
 
 gcParams <- list() # params holder as a list. Sooooo much easier with tab complete
 
+gcParams$repoLoc <- here::here() # try not to use this, use here() instead
+
 # Data ----
 # attempt to guess the platform & user
 gcParams$info <- Sys.info()
@@ -20,10 +22,17 @@ gcParams$user <- gcParams$info[[7]]
 # > Set data path ----
 if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & 
    gcParams$sysname == "Linux"){ # Otago CS RStudio server
+  
   gcParams$GreenGrid <- path.expand("~/greenGridData/")
   gcParams$GreenGridData <- path.expand("~/greenGridData/cleanData/safe/")
   gcParams$censusData <- path.expand("~/greenGridData/externalData/nzCensus/") # fix for your platform
   gcParams$gxpData <- path.expand("~/greenGridData/externalData/EA_GXP_Data/") # fix for your platform
+  gcParams$nzGridDataLoc <- paste0(gcParams$GreenGrid, 
+                                 "externalData/EA_Generation_Data/")
+  gcParams$nzNonGridDataLoc <- paste0(gcParams$GreenGrid, 
+                                    "externalData/EA_Embedded_Generation_Data/")
+  gcParams$nzData <- gcParams$GreenGridData
+  gcParams$ukData <- path.expand("not set")
 }
 if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
   # Ben's laptop
@@ -31,15 +40,27 @@ if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
   gcParams$GreenGridData <- path.expand("~/Data/NZ_GREENGrid/safe/")
   gcParams$censusData <- path.expand("~/Data/NZ_Census/") # fix for your platform
   gcParams$gxpData <- path.expand("~/Data/NZ_EA_EMI/gxp/") # fix for your platform
+  gcParams$nzGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Generation_Data/")
+  gcParams$nzNonGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
+  gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "carsten.dortans" & gcParams$sysname == "Darwin"){
   # Carsten's laptop
   gcParams$GreenGridData <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/cleanData/safe/")
+  gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$GreenGridData, 
+                                               "/EA_Generation_Data/"))
+  gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$GreenGridData, 
+                                                  "/EA_Embedded_Generation_Data/"))
+  gcParams$nzData <- gcParams$GreenGridData
 }
 if(gcParams$user == "ba1e12" & gcParams$sysname == "Linux" & gcParams$nodename == "srv02405"){
   # UoS RStudio server
-  gcParams$GreenGridData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
   gcParams$ukData <- path.expand("/mnt/SERG_data/UK_National_Grid")
+  gcParams$ukGridDataLoc <- path.expand(paste0(gcParams$ukData, "/EA_Generation_Data/"))
+  gcParams$ukNonGridDataLoc <- path.expand(paste0(gcParams$ukData, "EA_Embedded_Generation_Data/"))
+  gcParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
+  gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Generation_Data/"))
+  gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Embedded_Generation_Data/"))
 }
 
 # > Misc data ----
@@ -49,7 +70,7 @@ gcParams$bytesToMb <- 0.000001
 # set values for annotations
 gcParams$UKlockDownStartDate <- as.Date("2020-03-24")
 gcParams$UKlockDownStartDateTime <- lubridate::as_datetime("2020-03-23 23:59:00")
-gcParams$UKlockDownRelaxDate_1 <- as.Date("2020-05-10")
+gcParams$UKlockDownRelaxDate_1 <- as.Date("2020-05-11") # BJ speech 10th May
 gcParams$UKlockDownRelaxDateTime_1 <- lubridate::as_datetime("2020-05-10 23:59:00")
 gcParams$UKlockDownEndDate <- lubridate::today() # for plots
 gcParams$UKlockDownEndDateTime <- lubridate::now()
@@ -60,8 +81,8 @@ gcParams$NZLevel3StartDate <- as.Date("2020-04-27")
 gcParams$NZLevel3StartDateTime <- lubridate::as_datetime("2020-04-27 23:59:00")
 gcParams$NZLevel2StartDate <- as.Date("2020-05-13")
 gcParams$NZLevel2StartDateTime <- lubridate::as_datetime("2020-05-13 23:59:00")
-gcParams$NZlockDownEndDate <- lubridate::today() # for plots
-gcParams$NZlockDownEndDateTime <- lubridate::now()
+gcParams$NZlockDownEndDate <- as.Date("2020-06-08") # for plots
+gcParams$NZlockDownEndDateTime <- lubridate::as_datetime("2020-06-08 23:59:00")
 
 # For .Rmd ----
 # > Default yaml for Rmd ----
@@ -84,5 +105,5 @@ gcParams$history <- paste0(here::here(), "/includes/historyGeneric.Rmd")
 gcParams$citation <- paste0(here::here(), "/includes/citationGeneric.Rmd")
 
 message("We're ", gcParams$user, " using " , gcParams$sysname, " on ", gcParams$nodename)
-message("NZ data path : ", gcParams$GreenGrid)
+message("NZ data path : ", gcParams$nzData)
 message("UK data path : ", gcParams$ukData)

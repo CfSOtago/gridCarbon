@@ -4,7 +4,14 @@
 \alias{createDailyMeanComparePlot}
 \title{Creates a daily half-hourly mean plot from the data.table given}
 \usage{
-createDailyMeanComparePlot(dt, yVar, yCap, yDiv = 1)
+createDailyMeanComparePlot(
+  dt,
+  yVar,
+  yCap,
+  yDiv = 1,
+  lockDownStart,
+  lockDownEnd
+)
 }
 \arguments{
 \item{dt}{the data, assumed to be the aligned data (use alignDates() to do this)}
@@ -14,13 +21,18 @@ createDailyMeanComparePlot(dt, yVar, yCap, yDiv = 1)
 \item{yCap}{the caption for the y axis}
 
 \item{yDiv}{the value you want to divide yVar by to make the y axis more sensible. Default = 1}
+
+\item{lockDownStart}{date for start of lockdown rectangle annotation}
+
+\item{lockDownEnd}{date for end of lockdown rectangle annotation}
 }
 \description{
 `createDailyMeanComparePlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 
-compare the values for the same date over previous years. This assumes use pass in the aligned-date data.
+compare the values for the same date over previous years. This assumes users pass in the aligned-date data (`dateFixed`).
 }
 \seealso{
 Other plot: 
+\code{\link{addLockdownRect}()},
 \code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentDateTimePlot}()},
 \code{\link{createRecentHalfHourlyProfilePlot}()}

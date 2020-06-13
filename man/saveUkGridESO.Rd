@@ -14,6 +14,29 @@ saveUkGridESO(dt, path)
 \description{
 \code{saveUkGridESO} saves the UK Grid ESO data to the location you tell it
 }
+\seealso{
+Other data: 
+\code{\link{alignDates}()},
+\code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGridEA}()},
+\code{\link{cleanUkGridESO}()},
+\code{\link{getNZEmbData}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getNZGridEA}()},
+\code{\link{getNZGridMeta}()},
+\code{\link{getUkGridESO}()},
+\code{\link{loadNZEAYearlyEmbeddedGenData}()},
+\code{\link{loadNZEAYearlyGridGenData}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeNZYearlyData}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{nzCalculateCO2e}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{data}

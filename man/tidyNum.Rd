@@ -14,10 +14,14 @@ tidyNum(number)
 }
 \seealso{
 Other utils: 
+\code{\link{addLockdownRect}()},
 \code{\link{addNZSeason}()},
+\code{\link{alignDates}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},
+\code{\link{nzCalculateCO2e}()},
+\code{\link{setPeakPeriod}()},
 \code{\link{setup}()}
 }
 \author{

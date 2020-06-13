@@ -16,13 +16,27 @@ addNZSeason(dt, date)
 }
 \seealso{
 Other utils: 
+\code{\link{addLockdownRect}()},
+\code{\link{alignDates}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},
+\code{\link{nzCalculateCO2e}()},
+\code{\link{setPeakPeriod}()},
 \code{\link{setup}()},
 \code{\link{tidyNum}()}
+
+Other NZ: 
+\code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGridEA}()},
+\code{\link{getNZEmbData}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getNZGridEA}()},
+\code{\link{getNZGridMeta}()},
+\code{\link{makeNZYearlyData}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
 }
+\concept{NZ}
 \concept{utils}

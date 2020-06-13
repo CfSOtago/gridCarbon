@@ -12,6 +12,29 @@ cleanUkGridESO(dt)
 \description{
 - adds proper dateTime
 }
+\seealso{
+Other data: 
+\code{\link{alignDates}()},
+\code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGridEA}()},
+\code{\link{getNZEmbData}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getNZGridEA}()},
+\code{\link{getNZGridMeta}()},
+\code{\link{getUkGridESO}()},
+\code{\link{loadNZEAYearlyEmbeddedGenData}()},
+\code{\link{loadNZEAYearlyGridGenData}()},
+\code{\link{loadUKESOYearlyGenData}()},
+\code{\link{makeNZYearlyData}()},
+\code{\link{makeUkGridESOYearlyData}()},
+\code{\link{nzCalculateCO2e}()},
+\code{\link{reshapeEmbeddedGenDT}()},
+\code{\link{reshapeGenDT}()},
+\code{\link{saveUkGridESO}()},
+\code{\link{setEmbeddedGenTimePeriod}()},
+\code{\link{setGridGenTimePeriod}()}
+}
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
+\concept{data}

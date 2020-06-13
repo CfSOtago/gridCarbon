@@ -4,6 +4,7 @@
 #' @param path the folder to put it in
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
+#' @family data
 #'
 saveUkGridESO <- function(dt,path){
   # localParams$rawUkEsoDataPath

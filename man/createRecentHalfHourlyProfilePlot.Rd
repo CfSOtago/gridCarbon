@@ -28,6 +28,7 @@ createRecentHalfHourlyProfilePlot(
 }
 \seealso{
 Other plot: 
+\code{\link{addLockdownRect}()},
 \code{\link{createDailyMeanComparePlot}()},
 \code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentDateTimePlot}()}

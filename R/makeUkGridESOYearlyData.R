@@ -4,7 +4,8 @@
 #' @param path the folder to put the yearly files in
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
-#'
+#' @family data
+#' 
 makeUkGridESOYearlyData <- function(dt,path){
   dt[, year := lubridate::year(rDateTime)]
   t <- dt[, .(nObs = .N), keyby = .(year)]

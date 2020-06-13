@@ -32,7 +32,7 @@ localParams$url <- "http://data.nationalgrideso.com/backend/dataset/88313ae5-94e
 localParams$rawUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/raw/"))
 localParams$processedUkEsoDataPath <- path.expand(paste0(gcParams$ukData, "/processed/"))
 
-update <- "Please" # doesn't matter what this is but to force an update, edit it :-)
+update <- "yes" # doesn't matter what this is but to force an update, edit it :-)
 
 # Local functions ----
 
@@ -61,6 +61,9 @@ gridGenDT <- drake::readd(cleanData)
 
 # tests
 skimr::skim(gridGenDT)
+
+# latest dates:
+message("We now have data up to: ", max(gridGenDT$rDateTime))
 
 # Finish off ----
 
