@@ -321,6 +321,21 @@ out <- openair::timeVariation(plotDT,
                        difference = TRUE)
 ```
 
+```{r extractPlotsGWh}
+# Extract the plots we want...
+p <- out$plot$day
+png(filename=here::here("docs/plots/openAir_UK_DailyGWh.png"))
+plot(p)
+dev.off()
+p <- out$plot$hour
+png(filename=here::here("docs/plots/openAir_UK_HourlyGWh.png"))
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+png(filename=here::here("docs/plots/openAir_UK_WeekdaysGWh.png"), width = 800, height = 600)
+plot(p)
+dev.off()
+```
 
 Figure \@ref(fig:timeVariationGWhNormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGWh)).
 
@@ -331,6 +346,7 @@ openair::timeVariation(plotDT,
                        group = "compareYear", type = "plotPeriod", 
                        key.columns = 2, difference = TRUE)
 ```
+
 
 ### Daily patterns
 
@@ -492,7 +508,7 @@ plotDT[, date := rDateTimeUTC]
 message("Plot start date: ", min(plotDT$date))
 message("Plot end date: ", max(plotDT$date))
 
-openair::timeVariation(plotDT, 
+out <- openair::timeVariation(plotDT, 
                        "CARBON_INTENSITY", ylab = "CO2e kg/kWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
                        key.columns = 2, difference = TRUE)
@@ -612,7 +628,7 @@ plotDT[, date := rDateTimeUTC]
 message("Plot start date: ", min(plotDT$date))
 message("Plot end date: ", max(plotDT$date))
 
-openair::timeVariation(plotDT, 
+out <- openair::timeVariation(plotDT, 
                        "C02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
                        key.columns = 2, difference = TRUE)
