@@ -2,6 +2,8 @@
 
 export(addLockdownRect)
 export(addNZSeason)
+export(addVeDayDate)
+export(addVeDayDateTime)
 export(addWeekendRectsDate)
 export(addWeekendRectsDateTime)
 export(alignDates)

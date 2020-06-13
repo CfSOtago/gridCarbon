@@ -55,9 +55,9 @@ loadUKESOYearlyGenData <- function(path, fromYear, update){
   
   # Total CO2e - original grid gen data
   # CI = g CO2e/kWh
-  dt[, totalC02e_g := (1000*GENERATION_MWh) * CARBON_INTENSITY]
-  dt[, totalC02e_kg := totalC02e_g/1000]
-  dt[, totalC02e_T := totalC02e_kg/1000 ]
+  dt[, C02e_g := (1000*GENERATION_MWh) * CARBON_INTENSITY]
+  dt[, C02e_kg := C02e_g/1000]
+  dt[, C02e_T := C02e_kg/1000 ]
   
   return(dt) # large, possibly very large depending on fromYear
 }
