@@ -23,7 +23,7 @@ drake::expose_imports(gridCarbon) # should track our functions
 # check
 
 # Parameters ----
-update <- "yep" # edit to force data re-load - forces everything re-build :-)
+update <- "yes" # edit to force data re-load - forces everything re-build :-)
 
 localParams <- list()
 
@@ -137,30 +137,30 @@ plan <- drake::drake_plan(
   ## >> CO2e kg stuff ----
   recentDateTimeC02ekgPlot = createRecentDateTimePlot(gridGenData, 
                                                    dateTime = "rDateTimeUTC",
-                                                   yVar = "totalC02e_kg", 
+                                                   yVar = "C02e_T", 
                                                    yCap = "C02e emitted (T)",
-                                                   yDiv = 1000, # totalC02e_kg is in kg
+                                                   yDiv = 1, # totalC02e_kg is in kg
                                                    lockDownStart = gcParams$UKlockDownStartDateTime,
                                                    lockDownEnd = gcParams$UKlockDownEndDateTime), 
   
   
   recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
                                                                    dateTime = "rDateTimeUTC",
-                                                                    yVar = "totalC02e_kg", 
+                                                                    yVar = "C02e_T", 
                                                                     yCap = "C02e emitted (T)",
-                                                                    yDiv = 1000 # totalC02e_kg is in kg
+                                                                    yDiv = 1 # totalC02e_kg is in kg
                                                                    ), 
   
   compareDailyCO2ekgPlot = createDailyMeanComparePlot(alignedGridGenData, 
-                                                   yVar = "totalC02e_kg", 
-                                                   yCap = "Mean daily half hourly C02e (T)",
-                                                   yDiv = 1000 , # totalC02e_kg is in kg
+                                                   yVar = "C02e_T", 
+                                                   yCap = "Mean half hourly C02e (T)",
+                                                   yDiv = 1 , # totalC02e_kg is in kg
                                                    lockDownStart = gcParams$UKlockDownStartDate,
                                                    lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
 
   compareDailyC02ekgpcPlot = createDailyPcComparePlot(alignedGridGenData, 
-                                                   yVar = "totalC02e_kg", 
+                                                   yVar = "C02e_T", 
                                                    yCap = "% difference",
                                                    lockDownStart = gcParams$UKlockDownStartDate,
                                                    lockDownEnd = gcParams$UKlockDownEndDate)
@@ -194,6 +194,6 @@ summary(gridGenDT$rDateTimeUTC)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
-makeReport(rmdFile)
+#makeReport(rmdFile)
 
 # done
