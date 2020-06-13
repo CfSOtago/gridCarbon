@@ -194,6 +194,6 @@ summary(gridGenDT$rDateTimeUTC)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
-#makeReport(rmdFile)
+makeReport(rmdFile)
 
 # done
