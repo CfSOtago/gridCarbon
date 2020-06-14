@@ -74,13 +74,15 @@ makeReport <- function(f){
 
 plan <- drake::drake_plan(
   ## >> data stuff ----
-  gridGenData = loadUKESOYearlyGenData(localParams$gridDataLoc, # from where?
-                                       localParams$fromYear, # from what date?
-                                       localParams$toDate, # to when?
+  gridGenData = loadUKESOYearlyGenData(path = localParams$gridDataLoc, # from where?
+                                       fromYear = localParams$fromYear, # from what date?
+                                       toDate = localParams$toDate, # to when?
                                        update), 
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
-  alignedGridGenData = alignDates(gridGenData, dateTime = "rDateTimeUTC"), # fix the dates so they line up
+  alignedGridGenData = alignDates(gridGenData, 
+                                  dateTime = "rDateTimeUTC",
+                                  toDate = localParams$toDate), # to when? # fix the dates so they line up
   
   ## >> GW stuff ----
   recentDateTimeGWhPlot = createRecentDateTimePlot(gridGenData, 
