@@ -4,13 +4,14 @@
 #'
 #' @param path the folder to look in for the data
 #' @param fromYear the year to start from (needs to be in the data file names - you did name them sensibly, yes?)
+#' @param toDate up to but not including this date. e.g. toDate = as.Date("2020-06-01") will be up to and including May 2020
 #' @import lubridate
 #' @import data.table
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
 #' @family data
 #'
-loadUKESOYearlyGenData <- function(path, fromYear, update){
+loadUKESOYearlyGenData <- function(path, fromYear, toDate, update){
   # update = dummy used to force re-load
   # lists files within a folder (path) & loads fromYear
   filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
@@ -59,5 +60,5 @@ loadUKESOYearlyGenData <- function(path, fromYear, update){
   dt[, C02e_kg := C02e_g/1000]
   dt[, C02e_T := C02e_kg/1000 ]
   
-  return(dt) # large, possibly very large depending on fromYear
+  return(dt[obsDate < as.Date(toDate)]) # large, possibly very large depending on fromYear & toDate
 }
