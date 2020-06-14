@@ -1,0 +1,5 @@
+If you wish to use any of the material from this report please cite as:
+
+  * `r params$authors` (`r lubridate::year(today())`) _`r params$title`: `r params$subtitle`_, `r localParams$pubLoc`.
+
+This work is (c) `r lubridate::year(today())` the authors. Usage rights are specified in the License section (\@ref(license)).

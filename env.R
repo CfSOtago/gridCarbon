@@ -103,6 +103,7 @@ gcParams$licenseCCBY <- paste0(here::here(), "/includes/licenseCCBY.Rmd")
 gcParams$support <- paste0(here::here(), "/includes/supportGeneric.Rmd")
 gcParams$history <- paste0(here::here(), "/includes/historyGeneric.Rmd")
 gcParams$citation <- paste0(here::here(), "/includes/citationGeneric.Rmd")
+gcParams$citationUoS <- paste0(here::here(), "/includes/citationUoS.Rmd")
 
 message("We're ", gcParams$user, " using " , gcParams$sysname, " on ", gcParams$nodename)
 message("NZ data path : ", gcParams$nzData)
