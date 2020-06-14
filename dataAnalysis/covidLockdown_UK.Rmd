@@ -596,7 +596,7 @@ Figure \@ref(fig:timeVariationCI) shows the difference between hourly and weekda
 
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
-                                               localParams$toDate]
+                                               dateFixed < localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
 
@@ -724,7 +724,7 @@ Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and week
 ```{r timeVariationCO2e, fig.cap=paste0("timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
-                                               localParams$toDate]
+                                               dateFixed < localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
 
