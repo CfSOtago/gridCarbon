@@ -104,7 +104,7 @@ Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have
 > NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the [ESO forecast methodology document](https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf) states that it is.
  
 ```{r descData}
-t <- gridGenDT[, .(sC = sum(C02e_T)/1000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+t <- gridGenDT[, .(sC = sum(C02e_T)/1000000, # convert to Mt for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
                    mC = mean(C02e_T), # in T
                    mCI = mean(CARBON_INTENSITY),
                    mGen = mean(GW),
@@ -195,9 +195,12 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 # use mean of half-hourly GWh otherwise the periods with more half-hours tend to visually dominate
 oaGWh <- openair::TheilSen(gridGenDT, "GWh", 
                   ylab = "GWh", deseason = TRUE,
-                  type = c("peakPeriod"), layout = c(1,5))
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
 p <- oaGWh$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenGWhPlot.png"), width = 800, units = "px")
+png(filename=here::here("docs/plots/openAir_UK_TheilSenGWhPlot.png"), width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
 dev.off()
@@ -213,6 +216,8 @@ kableExtra::kable(t, caption = "Mean half-hourly GWh by year and peak period - 2
 ```
 
 Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. Do this by applying slope.percent to the values for the month 1 year in the past.
+
+> not a good idea: if the Jan 2019 value is an outlier this is not a good estimate
 
 ```{r calculateGWhDiffFromExpected}
 getTrendTable <- function(oa){
@@ -246,6 +251,83 @@ kableExtra::kable(t, caption = "% above/below expected mean half-hourly GWh by m
 
 ```
 
+> need to use the Theil-Sen slope model to estimate what the values would have been
+
+```{r calculateGWhDiffFromTrend}
+getModelTrendTable <- function(oa){
+  # oa is an openAir object created by theilSen
+  # oa <- oaGWh
+  oaData <- as.data.table(oa$data$main.data)
+  oaRes <- as.data.table(oa$data$res2)
+  nMonths <- uniqueN(oaData$date)
+  jan2020Month <- uniqueN(oaData[date <= as.Date("2020-01-01")]$date)
+  feb2020Month <- uniqueN(oaData[date <= as.Date("2020-02-01")]$date)
+  mar2020Month <- uniqueN(oaData[date <= as.Date("2020-03-01")]$date)
+  apr2020Month <- uniqueN(oaData[date <= as.Date("2020-04-01")]$date)
+  may2020Month <- uniqueN(oaData[date <= as.Date("2020-05-01")]$date)
+  jun2020Month <- uniqueN(oaData[date <= as.Date("2020-06-01")]$date)
+  
+  janMt <- data.table::data.table(date = "2020-01-01", 
+                                  peakPeriod = oaRes$peakPeriod, 
+                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
+                                  nMonths = jan2020Month)
+  janMt[, expectedVal := a + (slope*nMonths)] # yes?
+  
+  febMt <- data.table::data.table(date = "2020-02-01", 
+                                  peakPeriod = oaRes$peakPeriod, 
+                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
+                                  nMonths = feb2020Month)
+  febMt[, expectedVal := a + (slope*nMonths)] # yes?
+  
+  marMt <- data.table::data.table(date = "2020-03-01", 
+                                  peakPeriod = oaRes$peakPeriod, 
+                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
+                                  nMonths = mar2020Month)
+  marMt[, expectedVal := a + (slope*nMonths)] # yes?
+  
+  aprMt <- data.table::data.table(date = "2020-04-01", 
+                                  peakPeriod = oaRes$peakPeriod, 
+                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
+                                  nMonths = apr2020Month)
+  aprMt[, expectedVal := a + (slope*nMonths)] # yes?
+  
+  mayMt <- data.table::data.table(date = "2020-05-01", 
+                                  peakPeriod = oaRes$peakPeriod, 
+                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
+                                  nMonths = may2020Month)
+  mayMt[, expectedVal := a + (slope*nMonths)] # yes?
+  
+  junMt <- data.table::data.table(date = "2020-06-01", 
+                                  peakPeriod = oaRes$peakPeriod, 
+                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
+                                  nMonths = jun2020Month)
+  junMt[, expectedVal := a + (slope*nMonths)] # yes?
+  
+  mt <- rbind(janMt, febMt, marMt, aprMt, mayMt, junMt)
+  # get the data we want for comparison (only)
+  
+  extract <- oaData[date >= as.Date("2020-01-01"), 
+                    .(date, peakPeriod, conc)]
+
+  setkey(extract, date, peakPeriod)
+  mt[, date := as.Date(date)]
+  setkey(mt, date, peakPeriod)
+  dt <- extract[mt]
+  dt[, diff := conc - expectedVal]
+  dt[, pcDiff := (diff/expectedVal)*100]
+  
+  t <- dt[,.(peakPeriod, date, pcDiff)]
+  t <- dcast(t, date ~ peakPeriod, value.var = "pcDiff")
+  t[, date := format.Date(date, format = "%b %Y")]
+  return(t)
+}
+
+t <- getModelTrendTable(oaGWh)
+
+kableExtra::kable(t, caption = "% above/below expected mean half-hourly GWh by month", digits = 2) %>%
+  kable_styling()
+
+```
 
 ### Half hourly patterns
 
@@ -443,7 +525,10 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
 oaCI <- openair::TheilSen(gridGenDT, "CARBON_INTENSITY", 
                   ylab = "Carbon Intensity (kg CO2e/kWh)", deseason = TRUE,
-                  type = c("peakPeriod"), layout = c(1,5))
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
 
 t <- gridGenDT[, .("Mean CI" = mean(CARBON_INTENSITY),
                    "N obs" = .N), keyby = .(year, peakPeriod)]
@@ -463,15 +548,13 @@ dev.off()
 
 
 
-Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. Do this by applying slope.percent to the values for the month 1 year in the past.
+Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. 
 
-> check these are right
+```{r calculateCIDiffFromTrend}
 
-```{r calculateCIDiffFromExpected}
+t <- getModelTrendTable(oaCI)
 
-t <- getTrendTable(oaCI)
-
-kableExtra::kable(t, caption = "% above/below expected mean half-hourly carbon intensity by month - not June is incomplete", digits = 2) %>%
+kableExtra::kable(t, caption = "% above/below expected mean half-hourly carbon intensity by month", digits = 2) %>%
   kable_styling()
 
 ```
@@ -569,7 +652,10 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
 oaCO2 <- openair::TheilSen(gridGenDT, "C02e_T", 
                   ylab = "Mean half-hourly C02e (T)", deseason = TRUE,
-                  type = c("peakPeriod"), layout = c(1,5))
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
 p <- oaCO2$plot
 png(filename=here::here("docs/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), width = 800, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
@@ -586,18 +672,17 @@ kableExtra::kable(t, caption = "Mean half-hourly C02e (T) by year and peak perio
   kable_styling()
 ```
 
-Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. Do this by applying slope.percent to the values for the month 1 year in the past.
+Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. 
 
-> check these are right
+```{r calculateCO2DiffFromTrend}
 
-```{r calculateCO2eDiffFromExpected}
+t <- getModelTrendTable(oaCO2)
 
-t <- getTrendTable(oaCO2)
-
-kableExtra::kable(t, caption = "% above/below expected mean half-hourly GHG emissions by month - note June is incomplete", digits = 2) %>%
+kableExtra::kable(t, caption = "% above/below expected mean half-hourly CO2e (T) by month", digits = 2) %>%
   kable_styling()
 
 ```
+
 
 ### Half-hourly patterns
 
@@ -682,7 +767,7 @@ tbc
 
 ## Citation
 
-```{r citation, child=gcParams$citation}
+```{r citation, child=gcParams$citationUoS}
 ```
 
 ## Report circulation
