@@ -351,6 +351,8 @@ p
 ```{r setCutYear}
 cutYear <- 2018 # just compare with 2018 & 2019
 compareYearsLabel <- "2018 & 2019"
+alignedDT[, compareYear := ifelse(compareYear == 2020, compareYear,
+                                  compareYearsLabel)]
 gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
 ```
@@ -384,7 +386,7 @@ openair::timeVariation(plotDT, pollutant = "GWh", ylab = "GWh", # normalise = TR
 
 Repeat but less detail.
 
-```{r timeVariationGWh, fig.cap=paste0("timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+```{r timeVariationGWh, fig.cap=paste0("timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to ", localParams$toDate)}
 
 alignedDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
                             "A: Pre-lockdown Jan - Mar", NA)] #
@@ -394,17 +396,26 @@ t <- alignedDT[, .(min = min(rDateTimeUTC),
               max = max(rDateTimeUTC)), keyby = .(plotPeriod, compareYear)]
 
 
-plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & dateFixed < today()]
+plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+                      dateFixed < localParams$toDate] # forces the comparison period
 plotDT[, date := rDateTimeUTC]
 
 out <- openair::timeVariation(plotDT, 
                        "GWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "compareYear", type = "plotPeriod", 
-                       difference = TRUE)
+                       group = "compareYear", type = "plotPeriod")
+
+message("Confirming dates plotted: date (as set for openair)")
+summary(plotDT$date)
+message("Confirming dates plotted: dateFixed")
+summary(plotDT$dateFixed)
+message("Confirming months plotted: date")
+plotDT[, month := lubridate::month(date, lab = TRUE)]
+table(plotDT$month)
 ```
 
 ```{r extractPlotsGWh}
 # Extract the plots we want...
+# do we get a legend?
 p <- out$plot$day
 png(filename=here::here("docs/plots/openAir_UK_DailyGWh.png"))
 plot(p)
@@ -426,7 +437,7 @@ Figure \@ref(fig:timeVariationGWhNormalised) is a similar plot but in this case 
 openair::timeVariation(plotDT, 
                        "GW", ylab = "GW", normalise = TRUE, # 
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       key.columns = 2)
 ```
 
 
@@ -581,20 +592,26 @@ p
 
 Figure \@ref(fig:timeVariationCI) shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January `r cutYear`. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.
 
-```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to ", localParams$toDate)}
 
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < today()]
+                                               localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
-message("Plot start date: ", min(plotDT$date))
-message("Plot end date: ", max(plotDT$date))
 
 out <- openair::timeVariation(plotDT, 
                        "CARBON_INTENSITY", ylab = "CO2e kg/kWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       key.columns = 2)
+
+message("Confirming dates plotted: date (as set for openair)")
+summary(plotDT$date)
+message("Confirming dates plotted: dateFixed")
+summary(plotDT$dateFixed)
+message("Confirming months plotted: date")
+plotDT[, month := lubridate::month(date, lab = TRUE)]
+table(plotDT$month)
 ```
 
 ```{r extractPlotsCI}
@@ -707,16 +724,22 @@ Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and week
 ```{r timeVariationCO2e, fig.cap=paste0("timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < today()]
+                                               localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
-message("Plot start date: ", min(plotDT$date))
-message("Plot end date: ", max(plotDT$date))
 
 out <- openair::timeVariation(plotDT, 
                        "C02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       key.columns = 2)
+
+message("Confirming dates plotted: date (as set for openair)")
+summary(plotDT$date)
+message("Confirming dates plotted: dateFixed")
+summary(plotDT$dateFixed)
+message("Confirming months plotted: date")
+plotDT[, month := lubridate::month(date, lab = TRUE)]
+table(plotDT$month)
 ```
 
 ```{r extractPlotsCO2e_T}
