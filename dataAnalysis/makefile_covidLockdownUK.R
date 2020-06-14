@@ -29,6 +29,7 @@ localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
+localParams$toDate <- as.Date("2020-06-01") # up to but not including
 
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
@@ -44,6 +45,9 @@ localParams$gamCap <- "Trend line = Generalized additive model (gam) with integr
 localParams$loessCap <- "Trend line = Locally estimated scatterplot smoothing (loess)"
 localParams$lockdownCap <- "\nColoured rectangles = UK covid lockdown periods to date"
 localParams$weekendCap <- "\nShaded rectangle = weekends"
+
+# > rmd
+localParams$pubLoc <- "University of Southampton: Sustainable Energy Research Centre"
 
 # > defn of peak ----
 localParams$amPeakStart <- hms::as_hms("07:00:00")
@@ -72,6 +76,7 @@ plan <- drake::drake_plan(
   ## >> data stuff ----
   gridGenData = loadUKESOYearlyGenData(localParams$gridDataLoc, # from where?
                                        localParams$fromYear, # from what date?
+                                       localParams$toDate, # to when?
                                        update), 
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
