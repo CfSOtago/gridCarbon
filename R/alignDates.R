@@ -7,6 +7,8 @@
 #'
 #' @param dt the data.table to align
 #' @param dateTime the dateTime variable to use
+#' @param toDate return data up to but not including this date
+#' 
 #' @import lubridate
 #' @import data.table
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
@@ -14,7 +16,7 @@
 #' @family data
 #' @family utils
 #'
-alignDates <- function(dt, dateTime){
+alignDates <- function(dt, dateTime, toDate){
   # expects gridGenData from loadGenData as the dt
   # re-use the method from the airQual analysis to align the years
   # so kludgy it should not be allowed
@@ -70,5 +72,5 @@ alignDates <- function(dt, dateTime){
                               "Weekend", # makes some plots clearer
                               "Weekday")
           ]
-  return(fixedDT)
+  return(fixedDT[dateFixed < toDate])
 }
