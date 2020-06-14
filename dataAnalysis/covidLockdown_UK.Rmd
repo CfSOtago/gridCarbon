@@ -200,7 +200,8 @@ oaGWh <- openair::TheilSen(gridGenDT, "GWh",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
 p <- oaGWh$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenGWhPlot.png"), width = 960, units = "px")
+png(filename=here::here("docs/plots/openAir_UK_TheilSenGWhPlot.png"), 
+    width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
 dev.off()
@@ -550,7 +551,8 @@ kableExtra::kable(t, digits = 2,
   kable_styling()
 
 p <- oaCI$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenCIPlot.png"), width = 800, units = "px")
+png(filename=here::here("docs/plots/openAir_UK_TheilSenCIPlot.png"), 
+    width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
 dev.off()
@@ -674,7 +676,8 @@ oaCO2 <- openair::TheilSen(gridGenDT, "C02e_T",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
 p <- oaCO2$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), width = 800, units = "px")
+png(filename=here::here("docs/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), 
+    width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
 dev.off()
