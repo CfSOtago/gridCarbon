@@ -216,116 +216,41 @@ kableExtra::kable(t, caption = "Mean half-hourly GWh by year and peak period - 2
 
 ```
 
-Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. Do this by applying slope.percent to the values for the month 1 year in the past.
-
-> not a good idea: if the Jan 2019 value is an outlier this is not a good estimate
-
-```{r calculateGWhDiffFromExpected}
-getTrendTable <- function(oa){
-  # oa is an openAir object created by theilSen
-  oaData <- as.data.table(oa$data$main.data)
-  # if we apply the slope.percent to the 2019 value to estimate what the Jan - > June values should have been
-  extract <- oaData[date >= as.Date("2019-01-01") & date <= as.Date("2019-06-01"), 
-                    .(date, peakPeriod, conc, slope.percent)]
-  extract[date <= as.Date("2020-01-01"), newDate := lubridate::ymd(paste0("2020-", lubridate::month(date), "-01"))]
-  extract[, expectedConc := conc + (conc*(slope.percent/100))]
-  expected <- extract[, .(newDate, expectedConc, peakPeriod)]
-  setkey(expected, newDate, peakPeriod)
-  setkey(oaData, date, peakPeriod)
-  dt <- oaData[expected]
-  dt[, diff := conc - expectedConc]
-  dt[, pcDiff := (diff/expectedConc)*100]
-  
-  tail(dt[,.(peakPeriod, date, conc, slope.percent, expectedConc, diff, pcDiff)])
-  ggplot2::ggplot(dt, aes(x = date, y = pcDiff, colour = peakPeriod)) + geom_line()
-  
-  t <- dt[,.(peakPeriod, date, pcDiff)]
-  t <- dcast(t, date ~ peakPeriod, value.var = "pcDiff")
-  t[, date := format.Date(date, format = "%b %Y")]
-  return(t)
-}
-
-t <- getTrendTable(oaGWh)
-
-kableExtra::kable(t, caption = "% above/below expected mean half-hourly GWh by month - not June is incomplete", digits = 2) %>%
-  kable_styling()
-
-```
+Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued.
 
 > need to use the Theil-Sen slope model to estimate what the values would have been
 
 ```{r calculateGWhDiffFromTrend}
-getModelTrendTable <- function(oa){
+getModelTrendTable <- function(oa, fname){
   # oa is an openAir object created by theilSen
   # oa <- oaGWh
   oaData <- as.data.table(oa$data$main.data)
-  oaRes <- as.data.table(oa$data$res2)
-  nMonths <- uniqueN(oaData$date)
-  jan2020Month <- uniqueN(oaData[date <= as.Date("2020-01-01")]$date)
-  feb2020Month <- uniqueN(oaData[date <= as.Date("2020-02-01")]$date)
-  mar2020Month <- uniqueN(oaData[date <= as.Date("2020-03-01")]$date)
-  apr2020Month <- uniqueN(oaData[date <= as.Date("2020-04-01")]$date)
-  may2020Month <- uniqueN(oaData[date <= as.Date("2020-05-01")]$date)
-  jun2020Month <- uniqueN(oaData[date <= as.Date("2020-06-01")]$date)
+  rDT <- oaData[, .(peakPeriod, date, conc, a,b,slope)]
+  # https://github.com/davidcarslaw/openair/blob/master/R/TheilSen.R#L192
+  # and
+  # https://github.com/davidcarslaw/openair/blob/master/R/TheilSen.R#L625
+  rDT[, x := time_length(date - as.Date("1970-01-01"), unit="days")] # n days since x = 0
+  rDT[, expectedVal := a + (b * x)] # b = slope / 365
   
-  janMt <- data.table::data.table(date = "2020-01-01", 
-                                  peakPeriod = oaRes$peakPeriod, 
-                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
-                                  nMonths = jan2020Month)
-  janMt[, expectedVal := a + (slope*nMonths)] # yes?
+  # checks
+  p <- ggplot2::ggplot(rDT, aes(x = date, colour = peakPeriod)) + 
+    geom_line(aes(y = conc)) +
+    labs(y = "Value",
+         caption = fname)
+  p <- p + geom_line(aes(y = expectedVal), linetype = "dashed")
+  ggplot2::ggsave(here::here("docs", "plots", paste0("UK_trendModelTestPlot_", fname, ".png")))
+  rDT[, diff := conc - expectedVal]
+  rDT[, pcDiff := (diff/expectedVal)*100]
   
-  febMt <- data.table::data.table(date = "2020-02-01", 
-                                  peakPeriod = oaRes$peakPeriod, 
-                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
-                                  nMonths = feb2020Month)
-  febMt[, expectedVal := a + (slope*nMonths)] # yes?
-  
-  marMt <- data.table::data.table(date = "2020-03-01", 
-                                  peakPeriod = oaRes$peakPeriod, 
-                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
-                                  nMonths = mar2020Month)
-  marMt[, expectedVal := a + (slope*nMonths)] # yes?
-  
-  aprMt <- data.table::data.table(date = "2020-04-01", 
-                                  peakPeriod = oaRes$peakPeriod, 
-                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
-                                  nMonths = apr2020Month)
-  aprMt[, expectedVal := a + (slope*nMonths)] # yes?
-  
-  mayMt <- data.table::data.table(date = "2020-05-01", 
-                                  peakPeriod = oaRes$peakPeriod, 
-                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
-                                  nMonths = may2020Month)
-  mayMt[, expectedVal := a + (slope*nMonths)] # yes?
-  
-  junMt <- data.table::data.table(date = "2020-06-01", 
-                                  peakPeriod = oaRes$peakPeriod, 
-                                  a = oaRes$a, b=oaRes$b, slope = oaRes$slope, 
-                                  nMonths = jun2020Month)
-  junMt[, expectedVal := a + (slope*nMonths)] # yes?
-  
-  mt <- rbind(janMt, febMt, marMt, aprMt, mayMt, junMt)
-  # get the data we want for comparison (only)
-  
-  extract <- oaData[date >= as.Date("2020-01-01"), 
-                    .(date, peakPeriod, conc)]
-
-  setkey(extract, date, peakPeriod)
-  mt[, date := as.Date(date)]
-  setkey(mt, date, peakPeriod)
-  dt <- extract[mt]
-  dt[, diff := conc - expectedVal]
-  dt[, pcDiff := (diff/expectedVal)*100]
-  
-  t <- dt[,.(peakPeriod, date, pcDiff)]
-  t <- dcast(t, date ~ peakPeriod, value.var = "pcDiff")
-  t[, date := format.Date(date, format = "%b %Y")]
+  t <- rDT[,.(peakPeriod, date, conc, nMonths, a,b,slope,expectedVal, diff, pcDiff)]
   return(t)
 }
 
-t <- getModelTrendTable(oaGWh)
+t <- getModelTrendTable(oaGWh, "oaGWh")
 
-kableExtra::kable(t, caption = "% above/below expected mean half-hourly GWh by month", digits = 2) %>%
+ft <- dcast(t[date >= as.Date("2020-01-01")], date ~ peakPeriod, value.var = "pcDiff")
+ft[, date := format.Date(date, format = "%b %Y")]
+kableExtra::kable(ft, caption = "% above/below expected mean half-hourly GWh by month", digits = 2) %>%
   kable_styling()
 
 ```
@@ -565,9 +490,10 @@ Use the openair results object to estimate what the 2020 values would have been 
 
 ```{r calculateCIDiffFromTrend}
 
-t <- getModelTrendTable(oaCI)
-
-kableExtra::kable(t, caption = "% above/below expected mean half-hourly carbon intensity by month", digits = 2) %>%
+t <- getModelTrendTable(oaCI, "oaCI")
+ft <- dcast(t[date >= as.Date("2020-01-01")], date ~ peakPeriod, value.var = "pcDiff")
+ft[, date := format.Date(date, format = "%b %Y")]
+kableExtra::kable(ft, caption = "% above/below expected mean half-hourly carbon intensity by month", digits = 2) %>%
   kable_styling()
 
 ```
@@ -696,11 +622,12 @@ Use the openair results object to estimate what the 2020 values would have been 
 
 ```{r calculateCO2DiffFromTrend}
 
-t <- getModelTrendTable(oaCO2)
+t <- getModelTrendTable(oaCO2, "oaCO2")
 
-kableExtra::kable(t, caption = "% above/below expected mean half-hourly CO2e (T) by month", digits = 2) %>%
+ft <- dcast(t[date >= as.Date("2020-01-01")], date ~ peakPeriod, value.var = "pcDiff")
+ft[, date := format.Date(date, format = "%b %Y")]
+kableExtra::kable(ft, caption = "% above/below expected mean half-hourly CO2e by month", digits = 2) %>%
   kable_styling()
-
 ```
 
 
