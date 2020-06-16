@@ -179,6 +179,23 @@ make(plan) # run the plan, re-loading data if needed
 
 gridGenDT <- drake::readd(gridGenData)
 alignedDT <- drake::readd(alignedGridGenData)
+# set lockdown period categories for plots
+dstBreak <- as.Date("2020-03-29") #https://www.timeanddate.com/time/change/uk
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+                                         "A: Pre-lockdown Jan - Mar", NA)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownStartDate &
+                                           dateFixed < dstBreak, 
+                                         "B: Lockdown to DST 31/3", plotPeriodDetailed)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed > dstBreak &
+                                           obsDate < gcParams$UKlockDownRelaxDate_1, 
+                                         "C: Lockdown 31/3 - 11/5", plotPeriodDetailed)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownRelaxDate_1, 
+                                         "D: Lockdown since 11/5", plotPeriodDetailed)] #
+
+alignedDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+                                 "A: Pre-lockdown Jan - Mar", NA)] #
+alignedDT[, plotPeriod := ifelse(dateFixed >= gcParams$UKlockDownStartDate , 
+                                 "B: Lockdown", plotPeriod)] 
 
 # test a plot ----
 #drake::readd(recentDateTimeGWPlot)
