@@ -20,7 +20,7 @@ makeWeekdayTimePlot <- function(dt, yVar, yLab, yDiv){
   # by weekday and hour
   # use proportion to show relative shifts
   # wkdayFixed = obs (they are the same - that was the whole idea!)
-  dt <- plotDT[, .(yVals = mean(get(yVar))/yDiv), keyby = .(hms, plotPeriod, compareYear, wkdayFixed)]
+  dt <- dt[, .(yVals = mean(get(yVar))/yDiv), keyby = .(hms, plotPeriod, compareYear, wkdayFixed)]
   sums <- dt[, .(sum = sum(yVals)), keyby = .(compareYear, plotPeriod, wkdayFixed)]
   setkey(sums, compareYear, plotPeriod, wkdayFixed)
   setkey(dt, compareYear, plotPeriod, wkdayFixed)

@@ -19,7 +19,7 @@ makeWeekdayPlot <- function(dt, yVar, yLab, yDiv){
   # by weekday 
   # not proportions - absolute
   # wkdayFixed = obs (they are the same - that was the whole idea!)
-  pDT <- plotDT[, .(yVals = mean(get(yVar))/yDiv), keyby = .(plotPeriod, compareYear, wkdayFixed)]
+  pDT <- dt[, .(yVals = mean(get(yVar))/yDiv), keyby = .(plotPeriod, compareYear, wkdayFixed)]
   p <- ggplot2::ggplot(pDT, aes(x = wkdayFixed, y = yVals, 
                                colour = compareYear, group = compareYear)) + 
     geom_line() +

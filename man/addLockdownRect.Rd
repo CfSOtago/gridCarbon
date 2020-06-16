@@ -31,7 +31,9 @@ Other plot:
 \code{\link{createDailyMeanComparePlot}()},
 \code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentDateTimePlot}()},
-\code{\link{createRecentHalfHourlyProfilePlot}()}
+\code{\link{createRecentHalfHourlyProfilePlot}()},
+\code{\link{makeWeekdayPlot}()},
+\code{\link{makeWeekdayTimePlot}()}
 
 Other utils: 
 \code{\link{addNZSeason}()},

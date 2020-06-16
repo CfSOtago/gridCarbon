@@ -31,7 +31,9 @@ Other plot:
 \code{\link{addLockdownRect}()},
 \code{\link{createDailyMeanComparePlot}()},
 \code{\link{createDailyPcComparePlot}()},
-\code{\link{createRecentDateTimePlot}()}
+\code{\link{createRecentDateTimePlot}()},
+\code{\link{makeWeekdayPlot}()},
+\code{\link{makeWeekdayTimePlot}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}
