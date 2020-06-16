@@ -11,6 +11,7 @@
 #' @param lockDownEnd date for end of lockdown rectangle annotation
 #' 
 #' @import lubridate
+#' @import ggplot2
 #' @import data.table
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
