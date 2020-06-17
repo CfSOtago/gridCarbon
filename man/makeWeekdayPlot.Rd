@@ -4,10 +4,12 @@
 \alias{makeWeekdayPlot}
 \title{Creates a plot by weekday from the data.table given}
 \usage{
-makeWeekdayPlot(dt, yVar, yLab, yDiv)
+makeWeekdayPlot(dt, xVar, yVar, yLab, yDiv)
 }
 \arguments{
 \item{dt}{the data}
+
+\item{xVar}{the weekday variable you want to use}
 
 \item{yVar}{the variable you want to plot}
 
@@ -19,8 +21,7 @@ makeWeekdayPlot(dt, yVar, yLab, yDiv)
 a plot
 }
 \description{
-`makeWeekdayPlot` returns a plot which shows yVar by weekday, compareYear and plotPeriod (assumed to be lockdown). 
-Assumes this is the date aligned data.
+`makeWeekdayPlot` returns a box plot which showing yVar by weekday, compareYear and plotPeriod (assumed to be lockdown).
 }
 \seealso{
 Other plot: 
