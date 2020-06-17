@@ -27,7 +27,7 @@ makeWeekdayPlot <- function(dt, xVar, yVar, yLab, yDiv){
     geom_boxplot() +
     theme(legend.position="bottom") +
     scale_color_discrete(name="Year") +
-    facet_grid(plotPeriod ~ . ) +
+    facet_grid(. ~ plotPeriod ) +
     labs( y = yLab,
           x = "Weekday")
   return(p)
