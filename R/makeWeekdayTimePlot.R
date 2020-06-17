@@ -28,7 +28,8 @@ makeWeekdayTimePlot <- function(dt, yVar, yLab, yDiv){
   mDT[, pVal := (yVals/sum)*100]
   p <- ggplot2::ggplot(mDT, aes(x = hms, y = pVal, 
                                 colour = compareYear)) + 
-    geom_line() +
+    #geom_line() +
+    geom_point() +
     scale_x_time(labels = NULL) +
     #scale_x_datetime(breaks=date_breaks('4 hour'),labels=date_format('%H:%M')) +
     theme(legend.position="bottom") +
