@@ -184,10 +184,11 @@ p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = meanGW, colour = Fuel)) +
   geom_point() +
   geom_smooth(method = "loess") +
   theme(legend.position = "bottom") + 
+  #scale_y_log10() +
   facet_grid(. ~ peakPeriod) +
   labs(x = dateLab,
          y = "Mean half hourly GW",
-         caption = "Shaded rectangle: UK lockdown\nTrend : loess")
+         caption = "Trend: loess")
 
 # yMax <- max(plotDT$meanGW)
 # yMin <- min(plotDT$meanGW)
