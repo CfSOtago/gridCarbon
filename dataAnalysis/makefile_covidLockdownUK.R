@@ -68,7 +68,7 @@ makeReport <- function(f){
                     params = list(title = title,
                                   subtitle = subtitle,
                                   authors = authors),
-                    output_file = paste0(here::here("docs/"), f,"_to_",localParams$toDate,".html")
+                    output_file = paste0(here::here("docs/"), f,"_upTo_",localParams$toDate,".html")
   )
 }
 

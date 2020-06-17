@@ -366,18 +366,20 @@ gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
 ```
 
-Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
+Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayGWhPlot, fig.cap="Half-hourly GWh"}
 dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 yVar <- "GWh"
-p <- makeWeekdayPlot(dt, yVar = yVar, yLab = yVar, yDiv = 1000)
+xVar <- "wkdayFixed"
+p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yVar, yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
                   path = here::here("docs", "plots"), 
                   plot = p, width = 9, units = "in")
 p
+
 ```
 
 Figure \@ref(fig:makeWeekdayTimeGWhPlot) shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
@@ -638,7 +640,8 @@ Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly CO2e per day. Nee
 dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 yVar <- "CARBON_INTENSITY"
-p <- makeWeekdayPlot(dt, yVar = yVar, yLab = "g C02e/kWh", yDiv = 1)
+xVar <- "wkdayFixed"
+p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "g C02e/kWh", yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
                   path = here::here("docs", "plots"), 
@@ -814,7 +817,8 @@ Figure \@ref(fig:makeWeekDayCO2eTPlot) shows the mean half-hourly CO2e per day. 
 dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 yVar <- "C02e_T"
-p <- makeWeekdayPlot(dt, yVar = yVar, yLab = "C02e (kT)", yDiv = 1000)
+xVar <- "wkdayFixed"
+p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "C02e (kT)", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
                   path = here::here("docs", "plots"), 
