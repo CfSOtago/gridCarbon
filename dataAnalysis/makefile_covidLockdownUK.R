@@ -45,8 +45,8 @@ localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
 localParams$gridURL <- paste0("https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix")
 localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
 localParams$loessCap <- "Trend line = Locally estimated scatterplot smoothing (loess)"
-localParams$lockdownCap <- "\nColoured rectangles = UK covid lockdown periods to date"
-localParams$weekendCap <- "\nShaded rectangle = weekends"
+localParams$lockdownCap <- "\nColoured rectangle = UK covid lockdown period to date"
+localParams$weekendCap <- "\nShaded rectangles = weekends"
 
 # > rmd
 localParams$pubLoc <- "University of Southampton: Sustainable Energy Research Centre"
