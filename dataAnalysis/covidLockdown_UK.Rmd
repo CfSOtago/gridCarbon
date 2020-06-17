@@ -187,8 +187,7 @@ p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = meanGW, colour = Fuel)) +
   #scale_y_log10() +
   facet_grid(. ~ peakPeriod) +
   labs(x = dateLab,
-         y = "Mean half hourly GW",
-         caption = "Trend: loess")
+         y = "Mean half hourly GW")
 
 # yMax <- max(plotDT$meanGW)
 # yMin <- min(plotDT$meanGW)
@@ -198,6 +197,7 @@ p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = meanGW, colour = Fuel)) +
 #                 yMin = yMin, yMax = yMax)
 p
 ggplot2::ggsave(here::here("docs", "plots", "ukGWFuelsTrends.png"), 
+                width = 10, units = "in",
                 p)
 ```
 
@@ -477,7 +477,12 @@ Figure \@ref(fig:compareDailyGWhPlot) shows the most recent mean daily half-hour
 p <- drake::readd(compareDailyGWhPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:compareDailyGWhpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
@@ -488,7 +493,11 @@ p <- drake::readd(compareDailyGWhpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
 addVeDayDate(p, yMin = yMin, yMax = yMax)
-
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh_pcCompare.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:peakyTest) shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less 'peaky' than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.
@@ -711,6 +720,11 @@ p <- drake::readd(compareDailyCIPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
 addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:compareDailyCIpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
@@ -720,6 +734,11 @@ p <- drake::readd(compareDailyCIpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
 addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI_pcCompare.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 ### Weekly patterns
@@ -888,6 +907,11 @@ p <- drake::readd(compareDailyCO2ekgPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
 addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:compareDailyC02ekgpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
@@ -897,6 +921,11 @@ p <- drake::readd(compareDailyC02ekgpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
 addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e_pcCompare.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 ### Weekly patterns
