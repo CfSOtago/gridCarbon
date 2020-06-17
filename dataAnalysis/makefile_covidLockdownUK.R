@@ -23,13 +23,15 @@ drake::expose_imports(gridCarbon) # should track our functions
 # check
 
 # Parameters ----
-update <- "yes" # edit to force data re-load - forces everything re-build :-)
+update <- "yep" # edit to force data re-load - forces everything re-build :-)
 
 localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
-localParams$toDate <- as.Date("2020-06-01") # up to but not including
+# up to but not including
+localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
+#localParams$toDate <- lubridate::today() # for latest
 
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
@@ -66,7 +68,7 @@ makeReport <- function(f){
                     params = list(title = title,
                                   subtitle = subtitle,
                                   authors = authors),
-                    output_file = paste0(here::here("docs/"), f,".html")
+                    output_file = paste0(here::here("docs/"), f,"_to_",localParams$toDate,".html")
   )
 }
 
