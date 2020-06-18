@@ -26,7 +26,9 @@ Other plot:
 \code{\link{addLockdownRect}()},
 \code{\link{createDailyMeanComparePlot}()},
 \code{\link{createRecentDateTimePlot}()},
-\code{\link{createRecentHalfHourlyProfilePlot}()}
+\code{\link{createRecentHalfHourlyProfilePlot}()},
+\code{\link{makeWeekdayPlot}()},
+\code{\link{makeWeekdayTimePlot}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}

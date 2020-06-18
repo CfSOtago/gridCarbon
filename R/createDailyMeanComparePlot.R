@@ -3,6 +3,8 @@
 #' `createDailyMeanComparePlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 
 #' compare the values for the same date over previous years. This assumes users pass in the aligned-date data (`dateFixed`). 
 #'
+#' Adds a smoothed line using loess.
+#' 
 #' @param dt the data, assumed to be the aligned data (use alignDates() to do this)
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
@@ -39,12 +41,12 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1, lockDownStart, 
     scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
     labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                          "\n", localParams$gamCap),
+                          "\n", localParams$loessCap),
          x = "Date",
          y = yCap
     ) +
     theme(legend.position = "bottom") + 
-    geom_smooth(aes(shape = NULL)) + # will get a smooth line per year not per day
+    geom_smooth(aes(shape = NULL), method = "loess") + # will get a smooth line per year not per day, force loess not gam
     scale_color_discrete(name = "Period") +
     scale_shape_discrete(name = "Weekday") +
     guides(colour=guide_legend(nrow=2)) +

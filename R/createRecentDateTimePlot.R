@@ -11,6 +11,7 @@
 #' @param lockDownEnd date for end of lockdown rectangle annotation
 #' 
 #' @import lubridate
+#' @import ggplot2
 #' @import data.table
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk}
 #' @export
@@ -38,11 +39,11 @@ createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDow
     scale_x_datetime(date_breaks = "7 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
     labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                          "\n", localParams$gamCap),
+                          "\n", localParams$loessCap),
          x = "Time",
          y = yCap) +
     theme(legend.position = "bottom") + 
-    geom_smooth(aes(colour = NULL)) +
+    geom_smooth(aes(colour = NULL), method = "loess") +
     scale_color_viridis_d(name = "Day of the week") +
     guides(colour=guide_legend(nrow=2))
   

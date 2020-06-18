@@ -29,6 +29,9 @@ localParams <- list()
 
 # > dates ----
 localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
+# up to but not including
+localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
+#localParams$toDate <- lubridate::today() # for latest
 
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
@@ -41,8 +44,12 @@ localParams$gridDataLoc <- paste0(gcParams$ukData,
 localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
 localParams$gridURL <- paste0("https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix")
 localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
-localParams$lockdownCap <- "\nColoured rectangles = UK covid lockdown periods to date"
-localParams$weekendCap <- "\nShaded rectangle = weekends"
+localParams$loessCap <- "Trend line = Locally estimated scatterplot smoothing (loess)"
+localParams$lockdownCap <- "\nColoured rectangle = UK covid lockdown period to date"
+localParams$weekendCap <- "\nShaded rectangles = weekends"
+
+# > rmd
+localParams$pubLoc <- "University of Southampton: Sustainable Energy Research Centre"
 
 # > defn of peak ----
 localParams$amPeakStart <- hms::as_hms("07:00:00")
@@ -61,7 +68,7 @@ makeReport <- function(f){
                     params = list(title = title,
                                   subtitle = subtitle,
                                   authors = authors),
-                    output_file = paste0(here::here("docs/"), f,".html")
+                    output_file = paste0(here::here("docs/"), f,"_upTo_",localParams$toDate,".html")
   )
 }
 
@@ -69,41 +76,41 @@ makeReport <- function(f){
 
 plan <- drake::drake_plan(
   ## >> data stuff ----
-  gridGenData = loadUKESOYearlyGenData(localParams$gridDataLoc, # from where?
-                                       localParams$fromYear, # from what date?
+  gridGenData = loadUKESOYearlyGenData(path = localParams$gridDataLoc, # from where?
+                                       fromYear = localParams$fromYear, # from what date?
+                                       toDate = localParams$toDate, # to when?
                                        update), 
   # nonGridData = loadGenData(localParams$nonGridDataLoc, 
   #                        localParams$fromYear)
-  alignedGridGenData = alignDates(gridGenData, dateTime = "rDateTimeUTC"), # fix the dates so they line up
+  alignedGridGenData = alignDates(gridGenData, 
+                                  dateTime = "rDateTimeUTC",
+                                  toDate = localParams$toDate), # to when? # fix the dates so they line up
   
   ## >> GW stuff ----
-  recentDateTimeGWPlot = createRecentDateTimePlot(gridGenData, 
+  recentDateTimeGWhPlot = createRecentDateTimePlot(gridGenData, 
                                                    dateTime = "rDateTimeUTC",
-                                                        yVar = "GW", 
-                                                        yCap = "Total generation (GW)",
+                                                        yVar = "GWh", 
+                                                        yCap = "Total generation (GWh)",
                                                         yDiv = 1,
                                                   lockDownStart = gcParams$UKlockDownStartDateTime,
                                                   lockDownEnd = gcParams$UKlockDownEndDateTime),
   
-  # recentHalfHourlyProfileGWPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
-  #                                                                    dateTime = "rDateTimeUTC",
-  #                                                                    yVar = "GW", 
-  #                                                                    yCap = "Total generation (GW)",
-  #                                                                    yDiv = 1 ,
-  #                                                                   lockDownStart = gcParams$UKlockDownStartDate,
-  #                                                                   lockDownEnd = gcParams$UKlockDownEndDate
-  #                                                                    ),
+  recentHalfHourlyProfileGWhPlot = createRecentHalfHourlyProfilePlot(gridGenData,
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "GWh",
+                                                                     yCap = "Total generation (GWh)",
+                                                                     yDiv = 1),
   
-  compareDailyGWPlot = createDailyMeanComparePlot(alignedGridGenData, 
-                                                   yVar = "GW", 
-                                                   yCap = "Mean half hourly GW per day",
+  compareDailyGWhPlot = createDailyMeanComparePlot(alignedGridGenData, 
+                                                   yVar = "GWh", 
+                                                   yCap = "Mean half hourly GWh per day",
                                                    yDiv = 1,
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
   
-  compareDailyGWpcPlot = createDailyPcComparePlot(alignedGridGenData, 
-                                                   yVar = "GW", 
+  compareDailyGWhpcPlot = createDailyPcComparePlot(alignedGridGenData, 
+                                                   yVar = "GWh", 
                                                    yCap = "% difference",
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
@@ -118,13 +125,11 @@ plan <- drake::drake_plan(
                                                   lockDownStart = gcParams$UKlockDownStartDateTime,
                                                   lockDownEnd = gcParams$UKlockDownEndDateTime),
   
-  # recentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
-  #                                                                    dateTime = "rDateTimeUTC",
-  #                                                                    yVar = "CARBON_INTENSITY", 
-  #                                                                    yCap = "Carbon intensity",
-  #                                                                    yDiv = 1,
-  #                                                                   lockDownStart = gcParams$UKlockDownStartDate,
-  #                                                                   lockDownEnd = gcParams$UKlockDownEndDate), 
+  recentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(gridGenData,
+                                                                     dateTime = "rDateTimeUTC",
+                                                                     yVar = "CARBON_INTENSITY",
+                                                                     yCap = "Carbon intensity",
+                                                                     yDiv = 1),
   
   compareDailyCIPlot = createDailyMeanComparePlot(alignedGridGenData, 
                                                    yVar = "CARBON_INTENSITY", 
@@ -141,32 +146,30 @@ plan <- drake::drake_plan(
   ## >> CO2e kg stuff ----
   recentDateTimeC02ekgPlot = createRecentDateTimePlot(gridGenData, 
                                                    dateTime = "rDateTimeUTC",
-                                                   yVar = "totalC02e_kg", 
+                                                   yVar = "C02e_T", 
                                                    yCap = "C02e emitted (T)",
-                                                   yDiv = 1000, # totalC02e_kg is in kg
+                                                   yDiv = 1, # totalC02e_kg is in kg
                                                    lockDownStart = gcParams$UKlockDownStartDateTime,
                                                    lockDownEnd = gcParams$UKlockDownEndDateTime), 
   
   
-  # recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
-  #                                                                    dateTime = "rDateTimeUTC",
-  #                                                                    yVar = "totalC02e_kg", 
-  #                                                                    yCap = "C02e emitted (T)",
-  #                                                                    yDiv = 1000, # totalC02e_kg is in kg
-  #                                                                    lockDownStart = gcParams$UKlockDownStartDate,
-  #                                                                    lockDownEnd = gcParams$UKlockDownEndDate), 
-  # 
+  recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
+                                                                   dateTime = "rDateTimeUTC",
+                                                                    yVar = "C02e_T", 
+                                                                    yCap = "C02e emitted (T)",
+                                                                    yDiv = 1 # totalC02e_kg is in kg
+                                                                   ), 
   
   compareDailyCO2ekgPlot = createDailyMeanComparePlot(alignedGridGenData, 
-                                                   yVar = "totalC02e_kg", 
-                                                   yCap = "Mean daily half hourly C02e (T)",
-                                                   yDiv = 1000 , # totalC02e_kg is in kg
+                                                   yVar = "C02e_T", 
+                                                   yCap = "Mean half hourly C02e (T)",
+                                                   yDiv = 1 , # totalC02e_kg is in kg
                                                    lockDownStart = gcParams$UKlockDownStartDate,
                                                    lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
 
   compareDailyC02ekgpcPlot = createDailyPcComparePlot(alignedGridGenData, 
-                                                   yVar = "totalC02e_kg", 
+                                                   yVar = "C02e_T", 
                                                    yCap = "% difference",
                                                    lockDownStart = gcParams$UKlockDownStartDate,
                                                    lockDownEnd = gcParams$UKlockDownEndDate)
@@ -178,9 +181,26 @@ make(plan) # run the plan, re-loading data if needed
 
 gridGenDT <- drake::readd(gridGenData)
 alignedDT <- drake::readd(alignedGridGenData)
+# set lockdown period categories for plots
+dstBreak <- as.Date("2020-03-29") #https://www.timeanddate.com/time/change/uk
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+                                         "A: Pre-lockdown Jan - Mar", NA)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownStartDate &
+                                           dateFixed < dstBreak, 
+                                         "B: Lockdown to DST 31/3", plotPeriodDetailed)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed > dstBreak &
+                                           obsDate < gcParams$UKlockDownRelaxDate_1, 
+                                         "C: Lockdown 31/3 - 11/5", plotPeriodDetailed)] #
+alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownRelaxDate_1, 
+                                         "D: Lockdown since 11/5", plotPeriodDetailed)] #
+
+alignedDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+                                 "A: Pre-lockdown Jan - Mar", NA)] #
+alignedDT[, plotPeriod := ifelse(dateFixed >= gcParams$UKlockDownStartDate , 
+                                 "B: Lockdown", plotPeriod)] 
 
 # test a plot ----
-drake::readd(recentDateTimeGWPlot)
+#drake::readd(recentDateTimeGWPlot)
 
 # code ----
 

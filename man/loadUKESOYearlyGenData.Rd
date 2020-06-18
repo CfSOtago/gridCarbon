@@ -4,12 +4,14 @@
 \alias{loadUKESOYearlyGenData}
 \title{Load the pre-downloaded yearly UK ESO generation files in to a data.table}
 \usage{
-loadUKESOYearlyGenData(path, fromYear, update)
+loadUKESOYearlyGenData(path, fromYear, toDate, update)
 }
 \arguments{
 \item{path}{the folder to look in for the data}
 
 \item{fromYear}{the year to start from (needs to be in the data file names - you did name them sensibly, yes?)}
+
+\item{toDate}{up to but not including this date. e.g. toDate = as.Date("2020-06-01") will be up to and including May 2020}
 }
 \description{
 \code{loadUKESOYearlyGenData} returns a dt with a proper rDateTimeUTC added & set to London tzone.

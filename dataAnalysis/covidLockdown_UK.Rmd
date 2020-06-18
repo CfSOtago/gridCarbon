@@ -104,7 +104,8 @@ Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have
 > NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the [ESO forecast methodology document](https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf) states that it is.
  
 ```{r descData}
-t <- gridGenDT[, .(sC = sum(totalC02e_T)/1000000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+t <- gridGenDT[, .(sC = sum(C02e_T)/1000000, # convert to Mt for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+                   mC = mean(C02e_T), # in T
                    mCI = mean(CARBON_INTENSITY),
                    mGen = mean(GW),
                    sGen = sum(GWh)/1000, # TWh
@@ -125,23 +126,103 @@ dbeisCO2 <- c("DBEIS", "")
 mGen <- paste0("Mean halfhourly generation \n (GWh)")
 sGen <- paste0("Total annual generation \n (TWh)")
 mCI <- paste0("Mean half-hourly carbon intensity \n (" , localParams$ciUnits, ")")
-sC <- paste0("Total annual CO2e (MtCO2e, calculated)")
+mC <- paste0("Mean halfhourly CO2e \n (tCO2e, calculated)")
+sC <- paste0("Total annual CO2e \n(MtCO2e, calculated)")
 maxDate <- paste0("Max date in range")
 
-data.table::setnames(t, c("mGen", "sGen", "mCI", "sC", "maxDate"), # old, must be a better way
-                     c(mGen,sGen, mCI,sC,maxDate) # new
+data.table::setnames(t, c("mGen", "sGen", "mCI", "mC","sC", "maxDate"), # old, must be a better way
+                     c(mGen,sGen, mCI,mC, sC,maxDate) # new
                      ) # easy way to set human-readable col names
 setkey(t, year)
 setkey(dbeisDT, year)
 t <- dbeisDT[t]
 kableExtra::kable(t, digits = 2,
-                  caption = "Mean half hourly power, carbon intensity and total CO2e emissions by year - note that 2020 is incomplete") %>%
+                  caption = "Descriptive stats by year - note that 2020 is incomplete") %>%
   kable_styling()
 
 ```
 
 As we can see mean half-hourly generation has declined over the years but much less spectacularly than the mean carbon intensity which decreased by `r ciDecrease_pc` from 2017 to 2020.
 
+Table of peak periods
+
+```{r peakPeriodsTable}
+gridGenDT[, month := lubridate::month(rDateTimeUTC)]
+t <- gridGenDT[, .(sC = sum(C02e_T)/1000000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
+                   mCI = mean(CARBON_INTENSITY),
+                   mGen = mean(GW),
+                   sGen = sum(GWh)/1000, # TWh
+                   nMonths = uniqueN(month)), keyby = .(year, peakPeriod)]
+t[, monthlyTWh := sGen/nMonths]
+t[, monthlyC02e_T := sC/nMonths]
+
+wt <- dcast(t, year ~ peakPeriod , value.var = "monthlyTWh")
+wt[, Total := `Early morning` + `Morning peak` + `Day time` + `Evening peak` + `Late evening`]
+kableExtra::kable(wt, digits = 2,
+                  caption = "Monthly total TWh generation by year - note that 2020 is incomplete") %>%
+  kable_styling()
+```
+
+Fuel trend plots by peak period
+
+```{r fuelTrendsPeakPeriod}
+
+fuelsDT <- gridGenDT[, c("rDateTimeUTC","peakPeriod","COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")]
+m <- melt(fuelsDT, id.vars = c("rDateTimeUTC", "peakPeriod"), variable.name = "Fuel", value.name = "MW")
+m[, GW := MW/1000]
+m[, year := lubridate::year(rDateTimeUTC)]
+m[, month := lubridate::month(rDateTimeUTC)]
+m[, yearMonth := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
+
+# m[, plotDate := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
+m[, q := quarter(rDateTimeUTC)]
+m[,plotDate := lubridate::ymd(paste(year,"-", q, "-01"))]
+dateLab <- "Quarter"
+plotDT <- m[, .(meanGW = mean(GW)), 
+            keyby = .(plotDate , Fuel , peakPeriod)]
+p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = meanGW, colour = Fuel)) +
+  geom_point() +
+  geom_smooth(method = "loess") +
+  theme(legend.position = "bottom") + 
+  #scale_y_log10() +
+  facet_grid(. ~ peakPeriod) +
+  labs(x = dateLab,
+         y = "Mean half hourly GW")
+
+# yMax <- max(plotDT$meanGW)
+# yMin <- min(plotDT$meanGW)
+# p <- addLockdownRect(p, 
+#                 from = gcParams$UKlockDownStartDate, 
+#                 to = gcParams$UKlockDownEndDate, 
+#                 yMin = yMin, yMax = yMax)
+p
+ggplot2::ggsave(here::here("docs", "plots", "ukGWFuelsTrends.png"), 
+                width = 10, units = "in",
+                p)
+```
+
+Repeat using openair::smoothTrend() for de-seasoning and other benefits. NB: deaseasoning produces -ve values for coal :-)
+
+```{r stFuelTrendsPeakPeriod, fog.cap="Mean half-hourly GW"}
+fuels <- c("COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")
+gridGenDT[, date := obsDate]
+oaGWFuels <- openair::smoothTrend(gridGenDT, pollutant = fuels,
+                     ylab = "GW", deseason = TRUE,
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), 
+                  layout = c(5,1),
+                  key.columns = 3
+                  )
+
+p <- oaGWFuels$plot
+png(filename=here::here("docs/plots/openAir_UK_TheilSenoaGWFuelsPlot.png"), 
+    width = 960, units = "px")
+# dpi = 600, width = 13.333, height = 7.5, units = "in"
+plot(p)
+dev.off()
+```
 
 ## Embedded generation data
 
@@ -161,70 +242,171 @@ Several [articles](https://theconversation.com/we-analysed-electricity-demand-an
 
 ### Overall trends
 
-Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) . 
+Figure \@ref(fig:TheilSenGWhPlot) uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) . 
 
 These plots show that there has been a steady decline of ~ 0.4 - 0.5 GW mean half hourly generation (and thus demand) per year since `r min(gridGenDT$year)` in each time period. The substantial below-trend fall in generation during lockdown in early Spring 2020 is clear, especailly for the morning peak, day-time and, to a lesser extent, evening peak periods. There appears to have been a smaller below-trend reduction at other times as we would expect. We can also see a notable drop in generation in late 2015 which was [unusually warm and wet](https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/weather/learn-about/uk-past-events/state-of-uk-climate/mo-state-of-uk-climate-2015-v3.pdf).
 
-```{r TheilSenGWPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(gridGenDT$rDateTimeUTC))}
+> use mean of half-hourly GWh otherwise the periods with more half-hours tend to visually dominate
+
+```{r TheilSenGWhPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(gridGenDT$rDateTimeUTC))}
 
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
-openair::TheilSen(gridGenDT, "GW", 
-                  ylab = "GW", deseason = TRUE,
-                  type = c("peakPeriod"), layout = c(1,5))
+# plotDT <- gridGenDT[, .(GWh = sum(GWh)), keyby = .(obsDate, peakPeriod)]
+# plotDT[, date := obsDate]
+# use mean of half-hourly GWh otherwise the periods with more half-hours tend to visually dominate
+oaGWh <- openair::TheilSen(gridGenDT, "GWh", 
+                  ylab = "GWh", deseason = TRUE,
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
+p <- oaGWh$plot
+png(filename=here::here("docs/plots/openAir_UK_TheilSenGWhPlot.png"), 
+    width = 960, units = "px")
+# dpi = 600, width = 13.333, height = 7.5, units = "in"
+plot(p)
+dev.off()
 
-t <- gridGenDT[, .("Mean GW" = mean(GW),
-                   "N obs" = .N), keyby = .(year)]
+t <- gridGenDT[, .("Mean GWh" = mean(GWh),
+                   "N obs" = .N), keyby = .(year, peakPeriod)]
 
-kableExtra::kable(t, caption = "Mean half-hourly GW by year", digits = 2) %>%
+t <- dcast(t, year ~ peakPeriod, value.var = "Mean GWh")
+
+kableExtra::kable(t, caption = "Mean half-hourly GWh by year and peak period - 2020 incomplete", digits = 2) %>%
   kable_styling()
+
 ```
 
+Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued.
+
+> need to use the Theil-Sen slope model to estimate what the values would have been
+
+```{r calculateGWhDiffFromTrend}
+getModelTrendTable <- function(oa, fname){
+  # oa is an openAir object created by theilSen
+  # calculates the % below trend using the theil sen slope line parameters
+  # oa <- oaGWh
+  oaData <- as.data.table(oa$data$main.data)
+  rDT <- oaData[, .(peakPeriod, date, conc, a,b,slope)]
+  # https://github.com/davidcarslaw/openair/blob/master/R/TheilSen.R#L192
+  # and
+  # https://github.com/davidcarslaw/openair/blob/master/R/TheilSen.R#L625
+  rDT[, x := time_length(date - as.Date("1970-01-01"), unit="days")] # n days since x = 0
+  rDT[, expectedVal := a + (b * x)] # b = slope / 365
+  
+  # checks
+  p <- ggplot2::ggplot(rDT, aes(x = date, colour = peakPeriod)) + 
+    geom_line(aes(y = conc)) +
+    labs(y = "Value",
+         caption = fname)
+  p <- p + geom_line(aes(y = expectedVal), linetype = "dashed")
+  ggplot2::ggsave(here::here("docs", "plots", paste0("UK_trendModelTestPlot_", fname, ".png")))
+  rDT[, diff := conc - expectedVal]
+  rDT[, pcDiff := (diff/expectedVal)*100]
+  
+  t <- rDT[,.(peakPeriod, date, conc, a,b,slope,expectedVal, diff, pcDiff)]
+  return(t)
+}
+
+t <- getModelTrendTable(oaGWh, "oaGWh")
+
+ft <- dcast(t[date >= as.Date("2020-01-01")], date ~ peakPeriod, value.var = c("diff","pcDiff"))
+ft[, date := format.Date(date, format = "%b %Y")]
+ft[, diffTotal := `diff_Early morning` + `diff_Morning peak` + `diff_Day time` + 
+     `diff_Evening peak` + `diff_Late evening`]
+diffFT <- ft[, .(date, `diff_Early morning`, `diff_Morning peak`, `diff_Day time`, `diff_Evening peak`,
+                 `diff_Late evening`, `diffTotal`)]
+kableExtra::kable(diffFT, caption = "GWh above/below expected mean half-hourly GWh by month", digits = 2) %>%
+  kable_styling()
+pcFT <- ft[, .(date, `pcDiff_Early morning`, `pcDiff_Morning peak`, `pcDiff_Day time`, `pcDiff_Evening peak`,
+                 `pcDiff_Late evening`)]
+kableExtra::kable(pcFT, caption = "% above/below expected mean half-hourly GWh by month", digits = 2) %>%
+  kable_styling()
+
+```
+
+Theil-Sen by weekday (for fun):
+
+```{r theilSenGWhDoWPlot}
+gridGenDT[, dow := lubridate::wday(obsDate, label = TRUE)]
+openair::TheilSen(gridGenDT, "GWh", 
+                  ylab = "GWh", deseason = TRUE,
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("dow"), layout = c(7,1)) 
+```
 
 ### Half hourly patterns
 
-Figure \@ref(fig:recentDateTimeGWPlot) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
+Figure \@ref(fig:recentDateTimeGWhPlot) shows total half-hourly generation since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
-```{r recentDateTimeGWPlot, fig.cap="Half-hourly generation, UK (recent)"}
+```{r recentDateTimeGWhPlot, fig.cap="Half-hourly generation, UK (recent)"}
 # NB: the drake target, the rmd chunk and thus the crossref target are all the same!
-drake::readd(recentDateTimeGWPlot)
+p <- drake::readd(recentDateTimeGWhPlot)
+yMax <- max(p$data$GWh) #RTFM
+yMin <- min(p$data$GWh)
+addVeDayDateTime(p, yMin = yMin, yMax = yMax)
 ```
 
-Figure \@ref(fig:recentHalfHourlyProfileGWPlot) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
+Figure \@ref(fig:recentHalfHourlyProfileGWhPlot) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
 
-```{r recentHalfHourlyProfileGWPlot, fig.cap="Half-hourly generation, UK (recent)"}
-drake::readd(recentHalfHourlyProfileGWPlot)
+```{r recentHalfHourlyProfileGWhPlot, fig.cap="Half-hourly generation, UK (recent)"}
+p <- drake::readd(recentHalfHourlyProfileGWhPlot)
+p
 ```
 
 ```{r setCutYear}
 cutYear <- 2018 # just compare with 2018 & 2019
 compareYearsLabel <- "2018 & 2019"
+alignedDT[, compareYear := ifelse(compareYear == 2020, compareYear,
+                                  compareYearsLabel)]
 gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
 ```
 
-Figure \@ref(fig:timeVariationGWDetailed) shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from `r cutYear` onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWPlot). The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.
+Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.
 
-```{r timeVariationGWDetailed, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
-dstBreak <- as.Date("2020-03-29") #https://www.timeanddate.com/time/change/uk
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
-                            "A: Pre-lockdown Jan - Mar", NA)] #
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownStartDate &
-                                   dateFixed < dstBreak, 
-                            "B: Lockdown to DST 31/3", plotPeriodDetailed)] #
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed > dstBreak &
-                                 obsDate < gcParams$UKlockDownRelaxDate_1, 
-                            "C: Lockdown 31/3 - 11/5", plotPeriodDetailed)] #
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownRelaxDate_1, 
-                            "D: Lockdown since 11/5", plotPeriodDetailed)] #
+```{r makeWeekDayGWhPlot, fig.cap="Half-hourly GWh"}
+dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+                                               dateFixed < localParams$toDate]
+yVar <- "GWh"
+xVar <- "wkdayFixed"
+p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yVar, yDiv = 1)
+
+ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
+
+```
+
+Figure \@ref(fig:makeWeekdayTimeGWhPlot) shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
+
+```{r makeWeekdayTimeGWhPlot, fig.cap="% half-hourly GWh"}
+
+p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+
+ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
+```
+
+
+Figure \@ref(fig:timeVariationGWhDetailed) shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from `r cutYear` onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure \@ref(fig:TheilSenGWhPlot). The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.
+
+```{r timeVariationGWhDetailed, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+
 t <- alignedDT[, .(min = min(rDateTimeUTC),
               max = max(rDateTimeUTC)), keyby = .(plotPeriodDetailed, compareYear)]
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & dateFixed < today(),
-                    .(rDateTimeUTC, GW,compareYear,plotPeriodDetailed)]
+                    .(rDateTimeUTC, GWh,compareYear,plotPeriodDetailed)]
 plotDT[, date := rDateTimeUTC] # need to use original datetime as timeVariation expects unique dates
 
-openair::timeVariation(plotDT, pollutant = "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+openair::timeVariation(plotDT, pollutant = "GWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriodDetailed", 
                        key.columns = 2 # difference = TRUE,  fails: https://github.com/davidcarslaw/openAir/issues/166
                        )
@@ -232,63 +414,100 @@ openair::timeVariation(plotDT, pollutant = "GW", ylab = "GW", # normalise = TRUE
 
 Repeat but less detail.
 
-```{r timeVariationGW, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+```{r timeVariationGWh, fig.cap=paste0("timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to ", localParams$toDate)}
 
-alignedDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
-                            "A: Pre-lockdown Jan - Mar", NA)] #
-alignedDT[, plotPeriod := ifelse(dateFixed >= gcParams$UKlockDownStartDate , 
-                            "B: Lockdown", plotPeriod)] 
 t <- alignedDT[, .(min = min(rDateTimeUTC),
               max = max(rDateTimeUTC)), keyby = .(plotPeriod, compareYear)]
 
 
-plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & dateFixed < today()]
+plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+                      dateFixed < localParams$toDate] # forces the comparison period
 plotDT[, date := rDateTimeUTC]
 
 out <- openair::timeVariation(plotDT, 
-                       "GW", ylab = "GW", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
-                       group = "compareYear", type = "plotPeriod", 
-                       difference = TRUE)
+                       "GWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       group = "compareYear", type = "plotPeriod")
+
+message("Confirming dates plotted: date (as set for openair)")
+summary(plotDT$date)
+message("Confirming dates plotted: dateFixed")
+summary(plotDT$dateFixed)
+message("Confirming months plotted: date")
+plotDT[, month := lubridate::month(date, lab = TRUE)]
+table(plotDT$month)
 ```
 
+```{r extractPlotsGWh}
+# Extract the plots we want...
+# do we get a legend?
+p <- out$plot$day
+png(filename=here::here("docs/plots/openAir_UK_DailyGWh.png"))
+plot(p)
+dev.off()
+p <- out$plot$hour
+png(filename=here::here("docs/plots/openAir_UK_HourlyGWh.png"))
+plot(p)
+dev.off()
+p <- out$plot$day.hour
+png(filename=here::here("docs/plots/openAir_UK_WeekdaysGWh.png"), width = 800, height = 600)
+plot(p)
+dev.off()
+```
 
-Figure \@ref(fig:timeVariationGWnormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGW)).
+Figure \@ref(fig:timeVariationGWhNormalised) is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal _shape_ of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure \@ref(fig:timeVariationGWh)).
 
-```{r timeVariationGWnormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
+```{r timeVariationGWhNormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
 
 openair::timeVariation(plotDT, 
                        "GW", ylab = "GW", normalise = TRUE, # 
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       key.columns = 2)
 ```
+
 
 ### Daily patterns
 
 For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does **not** mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.
 
-Figure \@ref(fig:compareDailyGWPlot) shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure \@ref(fig:timeVariationGW), lockdown clearly reduced demand below the seasonal trend as Figure \@ref(fig:TheilSenGWPlot) suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure \@ref(fig:timeVariationGW)).
+Figure \@ref(fig:compareDailyGWhPlot) shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure \@ref(fig:timeVariationGWh), lockdown clearly reduced demand below the seasonal trend as Figure \@ref(fig:TheilSenGWhPlot) suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure \@ref(fig:timeVariationGWh)).
 
 > Beware temperature differences - need to control for heating degree days as 2020 was a _very_ warm spring
 
-```{r compareDailyGWPlot, fig.cap="Comparative daily mean half-hour generation levels 2020 vs pre-2020"}
-drake::readd(compareDailyGWPlot)
+```{r compareDailyGWhPlot, fig.cap="Comparative daily mean half-hour generation levels 2020 vs pre-2020"}
+p <- drake::readd(compareDailyGWhPlot)
+yMax <- max(p$data$yMean) #RTFM
+yMin <- min(p$data$yMean)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
-Figure \@ref(fig:compareDailyGWpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
+Figure \@ref(fig:compareDailyGWhpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
 
-```{r compareDailyGWpcPlot, fig.cap="Percentage difference in mean generation levels 2020 vs pre 2020"}
+```{r compareDailyGWhpcPlot, fig.cap="Percentage difference in mean generation levels 2020 vs pre 2020"}
 
-drake::readd(compareDailyGWpcPlot)
+p <- drake::readd(compareDailyGWhpcPlot)
+yMax <- max(p$data$pcDiffMean) #RTFM
+yMin <- min(p$data$pcDiffMean)
+addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh_pcCompare.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:peakyTest) shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less 'peaky' than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.
 
 ```{r peakyTest, fig.cap="Ratio of maximum to minimum generation per day"}
 # calculate mean peakiness by relevant comparisons?
-dailyDT <- alignedDT[dateFixed < lubridate::today(), .(maxGW = max(GW),
-                     minGW = min(GW)
+dailyDT <- alignedDT[dateFixed < lubridate::today(), .(maxGWh = max(GWh),
+                     minGWh = min(GWh)
                      ), keyby = .(dateFixed, weekDay, wkdayFixed , compareYear)]
-dailyDT[, peakyNess := maxGW/minGW] # 1 = no peak
+dailyDT[, peakyNess := maxGWh/minGWh] # 1 = no peak
 
 yMax <- max(dailyDT$peakyNess)
 yMin <- min(dailyDT$peakyNess)
@@ -304,10 +523,10 @@ p <- ggplot2::ggplot(dailyDT, aes(x = dateFixed,
     labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
                           "\n", localParams$gamCap),
          x = "Date",
-         y = "Ratio of max/min GW"
+         y = "Ratio of max/min GWh"
     ) +
     theme(legend.position = "bottom") + 
-    geom_smooth(aes(shape = NULL)) + # will get a smooth line per year not per day
+    geom_smooth(aes(shape = NULL), method = "loess") + # will get a smooth line per year not per day
     scale_color_discrete(name = "Period") +
     scale_shape_discrete(name = "Weekday") +
     guides(colour=guide_legend(nrow=2)) +
@@ -316,12 +535,14 @@ p <- ggplot2::ggplot(dailyDT, aes(x = dateFixed,
                            yMin, 
                            yMax
   )
-addLockdownRect(p, 
+p <- addLockdownRect(p, 
                        from = gcParams$UKlockDownStartDate, 
                        to = gcParams$UKlockDownEndDate, 
                        label = "Phase 1", yMin, yMax)
   
-  
+yMax <- max(p$data$peakyNess) #RTFM
+yMin <- min(p$data$peakyNess)
+addVeDayDate(p, yMin = yMin, yMax = yMax)
 ```
 
 
@@ -346,50 +567,132 @@ Figure \@ref(fig:TheilSenCIPlot) agin uses the openair `TheilSen()` function [@o
 ```{r TheilSenCIPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly carbon intensity per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
-openair::TheilSen(gridGenDT, "CARBON_INTENSITY", 
+oaCI <- openair::TheilSen(gridGenDT, "CARBON_INTENSITY", 
                   ylab = "Carbon Intensity (kg CO2e/kWh)", deseason = TRUE,
-                  type = c("peakPeriod"), layout = c(1,5))
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
 
 t <- gridGenDT[, .("Mean CI" = mean(CARBON_INTENSITY),
-                   "N obs" = .N), keyby = .(year)]
+                   "N obs" = .N), keyby = .(year, peakPeriod)]
 
+t <- dcast(t, year ~ peakPeriod, value.var = "Mean CI")
 kableExtra::kable(t, digits = 2,
-                  caption = "Mean half-hourly carbon intensity (kg CO2e/kWh) by year") %>%
+                  caption = "Mean half-hourly carbon intensity (kg CO2e/kWh) by year and peak period - 2020 incomplete") %>%
   kable_styling()
+
+p <- oaCI$plot
+png(filename=here::here("docs/plots/openAir_UK_TheilSenCIPlot.png"), 
+    width = 960, units = "px")
+# dpi = 600, width = 13.333, height = 7.5, units = "in"
+plot(p)
+dev.off()
+
 ```
 
+
+Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. 
+
+```{r calculateCIDiffFromTrend}
+
+t <- getModelTrendTable(oaCI, "oaCI")
+
+ft <- dcast(t[date >= as.Date("2020-01-01")], date ~ peakPeriod, value.var = c("diff","pcDiff"))
+ft[, date := format.Date(date, format = "%b %Y")]
+ft[, diffTotal := `diff_Early morning` + `diff_Morning peak` + `diff_Day time` + 
+     `diff_Evening peak` + `diff_Late evening`]
+diffFT <- ft[, .(date, `diff_Early morning`, `diff_Morning peak`, `diff_Day time`, `diff_Evening peak`,
+                 `diff_Late evening`, `diffTotal`)]
+kableExtra::kable(diffFT, caption = "GWh above/below expected mean half-hourly CI by month", digits = 2) %>%
+  kable_styling()
+pcFT <- ft[, .(date, `pcDiff_Early morning`, `pcDiff_Morning peak`, `pcDiff_Day time`, `pcDiff_Evening peak`,
+                 `pcDiff_Late evening`)]
+kableExtra::kable(pcFT, caption = "% above/below expected mean half-hourly CI by month", digits = 2) %>%
+  kable_styling()
+
+```
+
+Theil-Sen by weekday (for fun):
+
+```{r theilSenCIDoWPlot}
+
+openair::TheilSen(gridGenDT, "CARBON_INTENSITY", 
+                  ylab = "g CO2e/kWh", deseason = TRUE,
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("dow"), layout = c(7,1)) 
+```
 
 ### Half-hourly patterns
 
 Figure \@ref(fig:recentDateTimeCIPlot) shows half-hourly carbon intensity since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
 ```{r recentDateTimeCIPlot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
-drake::readd(recentDateTimeCIPlot)
+p <- drake::readd(recentDateTimeCIPlot)
+yMax <- max(p$data$yVals) #RTFM
+yMin <- min(p$data$yVals)
+addVeDayDateTime(p, yMin = yMin, yMax = yMax)
 ```
 
 Figure \@ref(fig:recentHalfHourlyProfileCIPlot) shows the daily carbon intensity profiles over time for each day of the week.
 
 ```{r recentHalfHourlyProfileCIPlot, fig.cap="Half-hourly generation, UK (recent)"}
-drake::readd(recentHalfHourlyProfileCIPlot)
+p <- drake::readd(recentHalfHourlyProfileCIPlot)
+p
+```
+
+Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
+
+```{r makeWeekDayCIPlot, fig.cap="half-hourly CI"}
+dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+                                               dateFixed < localParams$toDate]
+yVar <- "CARBON_INTENSITY"
+xVar <- "wkdayFixed"
+p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "g C02e/kWh", yDiv = 1)
+
+ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
+```
+
+Figure \@ref(fig:makeWeekdayTimeCIplot) shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
+
+```{r makeWeekdayTimeCIplot, fig.cap="% half-hourly CI"}
+
+p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+
+ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 
 Figure \@ref(fig:timeVariationCI) shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January `r cutYear`. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.
 
-```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
+```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to ", localParams$toDate)}
 
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < today()]
+                                               dateFixed < localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
-message("Plot start date: ", min(plotDT$date))
-message("Plot end date: ", max(plotDT$date))
 
-openair::timeVariation(plotDT, 
+out <- openair::timeVariation(plotDT, 
                        "CARBON_INTENSITY", ylab = "CO2e kg/kWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       key.columns = 2)
+
+message("Confirming dates plotted: date (as set for openair)")
+summary(plotDT$date)
+message("Confirming dates plotted: dateFixed")
+summary(plotDT$dateFixed)
+message("Confirming months plotted: date")
+plotDT[, month := lubridate::month(date, lab = TRUE)]
+table(plotDT$month)
 ```
 
 ```{r extractPlotsCI}
@@ -398,17 +701,12 @@ p <- out$plot$day
 png(filename=here::here("docs/plots/openAir_UK_DailyCI.png"))
 plot(p)
 dev.off()
-#ggplot2::ggsave(here::here("docs/plots/openAir_UK_DailyGW.png"), p)
 p <- out$plot$hour
 png(filename=here::here("docs/plots/openAir_UK_HourlyCI.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
 png(filename=here::here("docs/plots/openAir_UK_WeekdaysCI.png"), width = 800, height = 600)
-plot(p)
-dev.off()
-p <- out$plot$day.hour
-svg(filename=here::here("docs/plots/openAir_UK_WeekdaysCI.svg"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
@@ -418,13 +716,29 @@ dev.off()
 Figure \@ref(fig:compareDailyCIPlot) shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure \@ref(fig:TheilSenCIPlot), 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
 ```{r compareDailyCIPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs pre 2020"}
-drake::readd(compareDailyCIPlot)
+p <- drake::readd(compareDailyCIPlot)
+yMax <- max(p$data$yMean) #RTFM
+yMin <- min(p$data$yMean)
+addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:compareDailyCIpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
 ```{r compareDailyCIpcPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs pre 2020"}
-drake::readd(compareDailyCIpcPlot)
+p <- drake::readd(compareDailyCIpcPlot)
+yMax <- max(p$data$pcDiffMean) #RTFM
+yMin <- min(p$data$pcDiffMean)
+addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI_pcCompare.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 ### Weekly patterns
@@ -437,23 +751,65 @@ In this section we use our calculation of total CO2e emitted per half hour (see 
 
 ### Overall trends
 
-Figure \@ref(fig:TheilSenC02eTPlot) agin uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table \@ref(tab:TheilSenC02eTPlot) indicates the years over which the trend is calculated. 
+Figure \@ref(fig:TheilSenC02eTPlot) again uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table \@ref(tab:TheilSenC02eTPlot) indicates the years over which the trend is calculated. 
 
-This plot shows that total CO2e emissions intensity has fallen by a half-hourly mean of ~600-800 tonnes of CO2e over the time period. However there is some variation around this trend with apparently slightly above trend emissions in the evening peak period during April and May 2020 noticeable despite the almost complete absence of coal generation during this period (see Annex, Figure \@ref(fig:fuelGWByYear)).
+This plot shows that total CO2e emissions intensity has fallen by a half-hourly mean of ~600-800 tonnes of CO2e over the time period. However there is some variation around this trend with apparently slightly above trend emissions in the evening peak period during April and May 2020 noticeable despite the almost complete absence of coal generation during this period (see Annex, Figure \@ref(fig:fuelTrendPlots)).
 
 ```{r TheilSenC02eTPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly kg CO2e emissions per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
-openair::TheilSen(gridGenDT, "totalC02e_T", 
+oaCO2 <- openair::TheilSen(gridGenDT, "C02e_T", 
                   ylab = "Mean half-hourly C02e (T)", deseason = TRUE,
-                  type = c("peakPeriod"), layout = c(1,5))
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
+p <- oaCO2$plot
+png(filename=here::here("docs/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), 
+    width = 960, units = "px")
+# dpi = 600, width = 13.333, height = 7.5, units = "in"
+plot(p)
+dev.off()
 
-t <- gridGenDT[, .("Mean half-hourly C02e (T)" = mean(totalC02e_T),
-                   "N obs" = .N), keyby = .(year)]
+t <- gridGenDT[, .("Mean half-hourly C02e (T)" = mean(C02e_T),
+                   "N obs" = .N), keyby = .(year, peakPeriod)]
 
-kableExtra::kable(t, caption = "Mean half-hourly C02e (T) by year", 
+t <- dcast(t, year ~ peakPeriod, value.var = "Mean half-hourly C02e (T)")
+
+kableExtra::kable(t, caption = "Mean half-hourly C02e (T) by year and peak period - 2020 incomplete", 
                   digits = 2) %>%
   kable_styling()
+```
+
+Now use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued. 
+
+```{r calculateCO2DiffFromTrend}
+
+t <- getModelTrendTable(oaCO2, "oaCO2")
+
+ft <- dcast(t[date >= as.Date("2020-01-01")], date ~ peakPeriod, value.var = c("diff","pcDiff"))
+ft[, date := format.Date(date, format = "%b %Y")]
+ft[, diffTotal := `diff_Early morning` + `diff_Morning peak` + `diff_Day time` + 
+     `diff_Evening peak` + `diff_Late evening`]
+diffFT <- ft[, .(date, `diff_Early morning`, `diff_Morning peak`, `diff_Day time`, `diff_Evening peak`,
+                 `diff_Late evening`, `diffTotal`)]
+kableExtra::kable(diffFT, caption = "GWh above/below expected mean half-hourly CO2e (T) by month", digits = 2) %>%
+  kable_styling()
+pcFT <- ft[, .(date, `pcDiff_Early morning`, `pcDiff_Morning peak`, `pcDiff_Day time`, `pcDiff_Evening peak`,
+                 `pcDiff_Late evening`)]
+kableExtra::kable(pcFT, caption = "% above/below expected mean half-hourly CO2e (T) by month", digits = 2) %>%
+  kable_styling()
+```
+
+Theil-Sen by weekday (for fun):
+
+```{r theilSenCO2eDoWPlot}
+openair::TheilSen(gridGenDT, "C02e_T", 
+                  ylab = "CO2e (T)", deseason = TRUE,
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("dow"), layout = c(7,1)) 
 ```
 
 ### Half-hourly patterns
@@ -461,13 +817,44 @@ kableExtra::kable(t, caption = "Mean half-hourly C02e (T) by year",
 Figure \@ref(fig:recentDateTimeC02ekgPlot) shows total half-hourly CO2e emissions since `r localParams$recentCutDate`. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.
 
 ```{r recentDateTimeC02ekgPlot, fig.cap="Half-hourly total CO2e emissions, UK (recent)"}
-drake::readd(recentDateTimeC02ekgPlot)
+p <- drake::readd(recentDateTimeC02ekgPlot)
+yMax <- max(p$data$yVals) #RTFM
+yMin <- min(p$data$yVals)
+addVeDayDateTime(p, yMin = yMin, yMax = yMax)
 ```
 
 Figure \@ref(fig:recentHalfHourlyProfileC02ekgPlot) shows the daily CO2e emissions profiles over time for each day of the week since `r localParams$recentCutDate`.
 
 ```{r recentHalfHourlyProfileC02ekgPlot, fig.cap="Half-hourly CO2e emissions, UK (recent)"}
-drake::readd(recentHalfHourlyProfileC02ekgPlot)
+p <- drake::readd(recentHalfHourlyProfileC02ekgPlot)
+p
+```
+
+Figure \@ref(fig:makeWeekDayCO2eTPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
+
+```{r makeWeekDayCO2eTPlot, fig.cap="half-hourly CO2e"}
+dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+                                               dateFixed < localParams$toDate]
+yVar <- "C02e_T"
+xVar <- "wkdayFixed"
+p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "C02e (kT)", yDiv = 1000)
+
+ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
+```
+
+Figure \@ref(fig:makeWeekdayTimeCO2eTplot) shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
+
+```{r makeWeekdayTimeCO2eTplot, fig.cap="% half-hourly CO2e"}
+
+p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+
+ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January `r cutYear`. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.
@@ -475,16 +862,22 @@ Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and week
 ```{r timeVariationCO2e, fig.cap=paste0("timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
 
 plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < today()]
+                                               dateFixed < localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
-message("Plot start date: ", min(plotDT$date))
-message("Plot end date: ", max(plotDT$date))
 
-openair::timeVariation(plotDT, 
-                       "totalC02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+out <- openair::timeVariation(plotDT, 
+                       "C02e_T", ylab = "Mean half-hourly C02e (T)", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod", 
-                       key.columns = 2, difference = TRUE)
+                       key.columns = 2)
+
+message("Confirming dates plotted: date (as set for openair)")
+summary(plotDT$date)
+message("Confirming dates plotted: dateFixed")
+summary(plotDT$dateFixed)
+message("Confirming months plotted: date")
+plotDT[, month := lubridate::month(date, lab = TRUE)]
+table(plotDT$month)
 ```
 
 ```{r extractPlotsCO2e_T}
@@ -493,7 +886,6 @@ p <- out$plot$day
 png(filename=here::here("docs/plots/openAir_UK_DailyCO2e_T.png"))
 plot(p)
 dev.off()
-#ggplot2::ggsave(here::here("docs/plots/openAir_UK_DailyGW.png"), p)
 p <- out$plot$hour
 png(filename=here::here("docs/plots/openAir_UK_HourlyCO2e_T.png"))
 plot(p)
@@ -502,24 +894,38 @@ p <- out$plot$day.hour
 png(filename=here::here("docs/plots/openAir_UK_WeekdaysCO2e_T.png"), width = 800, height = 600)
 plot(p)
 dev.off()
-p <- out$plot$day.hour
-svg(filename=here::here("docs/plots/openAir_UK_WeekdaysCO2e_T.svg"), width = 800, height = 600)
-plot(p)
-dev.off()
 ```
 
 ### Daily patterns
 
 Figure \@ref(fig:compareDailyCO2ekgPlot) shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
-```{r compareDailyCO2ekgPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs pre 2020"}
-drake::readd(compareDailyCO2ekgPlot)
+> check y axis
+
+```{r compareDailyCO2ekgPlot, fig.cap="Mean half-hourly total CO2e by day, 2020 vs pre 2020"}
+p <- drake::readd(compareDailyCO2ekgPlot)
+yMax <- max(p$data$yMean) #RTFM
+yMin <- min(p$data$yMean)
+addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 Figure \@ref(fig:compareDailyC02ekgpcPlot) shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.
 
-```{r compareDailyC02ekgpcPlot, fig.cap="Percentage difference in mean carbon intensity levels 2020 vs pre 2020"}
-drake::readd(compareDailyC02ekgpcPlot)
+```{r compareDailyC02ekgpcPlot, fig.cap="Percentage difference in mean half-hourly CO2e 2020 vs pre 2020"}
+p <- drake::readd(compareDailyC02ekgpcPlot)
+yMax <- max(p$data$pcDiffMean) #RTFM
+yMin <- min(p$data$pcDiffMean)
+addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e_pcCompare.png"), 
+                  path = here::here("docs", "plots"), 
+                  plot = p, width = 9, units = "in")
+p
 ```
 
 ### Weekly patterns
@@ -532,7 +938,7 @@ tbc
 
 ## Citation
 
-```{r citation, child=gcParams$citation}
+```{r citation, child=gcParams$citationUoS}
 ```
 
 ## Report circulation
@@ -590,15 +996,15 @@ kableExtra::kable(t, caption = "Mean half-hourly GW by fuel by year", digits = 2
   kable_styling()
 ```
 
-Figure \@ref(fig:TheilSenFuelPlots) shows Theil-Sen plots for each fuel. Note that these are _not_ de-seasoned so that the seasonal patterns can be seen. Theil-Sen trend lines are linear and so may go negative when a steep trends asymptotes to 0 (see e.g. coal). They also tend not to perform well when seasonal patterns are present.
+Figure \@ref(fig:fuelTrendPlots) shows mean half-hourly generation per month by fuel together with a smoothed trend line. Note that these values are _not_ de-seasoned.
 
-```{r TheilSenFuelPlots, fig.cap=paste0("Theil-Sen plots of mean half-hourly fuel use per month since ", min(gridGenDT$rDateTimeUTC))}
+```{r fuelTrendPlots, fig.cap=paste0("Mean half-hourly generation (GW) by fuel use per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
-makeFuelTrends <- function(fuels){
+makeTSFuelTrends <- function(fuels){
   for(f in fuels){
    openair::TheilSen(gridGenDT, eval(f), 
-                  ylab = paste0(eval(f), " (MW)"), # deseason = TRUE can make thjings go < 0
+                  ylab = paste0(eval(f), " (GWh)") # deseason = TRUE can make things go < 0
                   ) 
   }
 }
@@ -606,16 +1012,16 @@ makeFuelTrends <- function(fuels){
 fuels <-c("COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")
 
 # create the fuel trend plots
-makeFuelTrends(fuels)
+#makeTSFuelTrends(fuels)
 
 ```
 
-Clearly some of thse trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to \@ref(fig:compareDailyGWPlot).
+Clearly some of these trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to \@ref(fig:compareDailyGWhPlot).
 
 ```{r smoothTrendPlots, fig.cap=paste0("Trend plots of mean half-hourly fuel use per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
-makeFuelTrends <- function(fuels){
+makeSmoothFuelTrends <- function(fuels){
   for(f in fuels){
    openair::smoothTrend(gridGenDT, eval(f), 
                   ylab = paste0(eval(f), " (MW)") # deseason = TRUE can make thjings go < 0
@@ -626,7 +1032,7 @@ makeFuelTrends <- function(fuels){
 fuels <-c("COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")
 
 # create the fuel trend plots
-makeFuelTrends(fuels)
+makeSmoothFuelTrends(fuels)
 
 ```
 

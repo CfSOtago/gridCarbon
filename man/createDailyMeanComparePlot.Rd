@@ -30,12 +30,17 @@ createDailyMeanComparePlot(
 `createDailyMeanComparePlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 
 compare the values for the same date over previous years. This assumes users pass in the aligned-date data (`dateFixed`).
 }
+\details{
+Adds a smoothed line using loess.
+}
 \seealso{
 Other plot: 
 \code{\link{addLockdownRect}()},
 \code{\link{createDailyPcComparePlot}()},
 \code{\link{createRecentDateTimePlot}()},
-\code{\link{createRecentHalfHourlyProfilePlot}()}
+\code{\link{createRecentHalfHourlyProfilePlot}()},
+\code{\link{makeWeekdayPlot}()},
+\code{\link{makeWeekdayTimePlot}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk}

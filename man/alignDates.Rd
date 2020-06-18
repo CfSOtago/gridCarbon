@@ -4,12 +4,14 @@
 \alias{alignDates}
 \title{Re-align 2017-2019 dates so their weekdays match to 2020}
 \usage{
-alignDates(dt, dateTime)
+alignDates(dt, dateTime, toDate)
 }
 \arguments{
 \item{dt}{the data.table to align}
 
 \item{dateTime}{the dateTime variable to use}
+
+\item{toDate}{return data up to but not including this date}
 }
 \description{
 \code{alignDates} returns a dt with `fixedDate` set to the date needed in 2017-2019 to match the nearest weekday
