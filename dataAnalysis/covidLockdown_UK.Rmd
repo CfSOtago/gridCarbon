@@ -492,7 +492,7 @@ Figure \@ref(fig:compareDailyGWhpcPlot) shows the percentage difference between 
 p <- drake::readd(compareDailyGWhpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh_pcCompare.png"), 
                   path = here::here("docs", "plots"), 
@@ -719,7 +719,7 @@ Figure \@ref(fig:compareDailyCIPlot) shows the mean half-hourly carbon intensity
 p <- drake::readd(compareDailyCIPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI.png"), 
                   path = here::here("docs", "plots"), 
@@ -733,7 +733,7 @@ Figure \@ref(fig:compareDailyCIpcPlot) shows the percentage difference between t
 p <- drake::readd(compareDailyCIpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI_pcCompare.png"), 
                   path = here::here("docs", "plots"), 
@@ -906,7 +906,7 @@ Figure \@ref(fig:compareDailyCO2ekgPlot) shows the mean half-hourly carbon inten
 p <- drake::readd(compareDailyCO2ekgPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e.png"), 
                   path = here::here("docs", "plots"), 
@@ -920,7 +920,7 @@ Figure \@ref(fig:compareDailyC02ekgpcPlot) shows the percentage difference betwe
 p <- drake::readd(compareDailyC02ekgpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e_pcCompare.png"), 
                   path = here::here("docs", "plots"), 
