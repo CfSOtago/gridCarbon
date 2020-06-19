@@ -28,11 +28,17 @@ update <- "yep" # edit to force data re-load - forces everything re-build :-)
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
-# up to but not including
-localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
-#localParams$toDate <- lubridate::today() # for latest
+# editing any one of these will trigger drake to re-load the data
+# and re-build all the plots. In case you were wondering...
 
+#from
+localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
+
+# up to but not including
+#localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
+localParams$toDate <- lubridate::today() # for latest
+
+# plot cut dates
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
