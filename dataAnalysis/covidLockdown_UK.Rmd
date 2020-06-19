@@ -1028,7 +1028,7 @@ yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "allGCIlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "allGCIPlotTile.png", path = here::here("docs", "plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
