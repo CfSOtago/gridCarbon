@@ -974,8 +974,89 @@ All code used to create this report is available from:
 
 ## Grid generation data
 
+Descriptive stats using skimr::skim():
+
 ```{r skimGrid}
 skimr::skim(gridGenDT)
+```
+
+Figure @\ref(fig:tilePlotGW): Tile plot of halfhourly GW over time. We like tile plots.
+
+```{r tilePlotGW, fig.cap="halfhourly GW over time"}
+p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, fill = GW)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c() +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(gridGenDT$hms)
+yMax <- max(gridGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "allGWPlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
+```
+
+Figure @\ref(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots
+
+```{r tilePlotCI, fig.cap="halfhourly CI over time"}
+p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, 
+                         fill = CARBON_INTENSITY)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c(name = "g CO2e/kWh") +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(gridGenDT$hms)
+yMax <- max(gridGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "allGCIlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
+```
+
+Figure @\ref(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots
+
+```{r tilePlotCO2e, fig.cap="halfhourly total CO2e (kT) over time"}
+p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, fill = C02e_T/1000)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c(name="CO2e (kT)") +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(gridGenDT$hms)
+yMax <- max(gridGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "allCO2ePlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
 ```
 
 ## Fuel trends
