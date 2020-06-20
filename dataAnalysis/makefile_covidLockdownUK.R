@@ -28,17 +28,25 @@ update <- "yep" # edit to force data re-load - forces everything re-build :-)
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
-# up to but not including
-localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
-#localParams$toDate <- lubridate::today() # for latest
+# editing any one of these will trigger drake to re-load the data
+# and re-build all the plots. In case you were wondering...
 
+#from
+localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
+
+# up to but not including
+#localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
+localParams$toDate <- lubridate::today() # for latest
+
+# plot cut dates
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
 
 # > data paths ----
 localParams$gridDataLoc <- paste0(gcParams$ukData, 
-                                  "/processed/yearly/")
+                                  "/gridGen/processed/yearly/")
+localParams$embeddedDataLoc <- paste0(gcParams$ukData, 
+                                  "/embeddedGen/processed/")
 
 # > captions ----
 localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
@@ -80,12 +88,14 @@ plan <- drake::drake_plan(
                                        fromYear = localParams$fromYear, # from what date?
                                        toDate = localParams$toDate, # to when?
                                        update), 
-  # nonGridData = loadGenData(localParams$nonGridDataLoc, 
-  #                        localParams$fromYear)
   alignedGridGenData = alignDates(gridGenData, 
                                   dateTime = "rDateTimeUTC",
                                   toDate = localParams$toDate), # to when? # fix the dates so they line up
-  
+  embeddedGenData = loadEmbeddedGenData(localParams$embeddedDataLoc,
+                                        toDate = localParams$toDate,update),
+  alignedEmbeddedGenData = alignDates(embeddedGenData, 
+                                  dateTime = "rDateTimeUTC",
+                                  toDate = localParams$toDate),
   ## >> GW stuff ----
   recentDateTimeGWhPlot = createRecentDateTimePlot(gridGenData, 
                                                    dateTime = "rDateTimeUTC",
@@ -180,33 +190,32 @@ plan # test the plan
 make(plan) # run the plan, re-loading data if needed
 
 gridGenDT <- drake::readd(gridGenData)
-alignedDT <- drake::readd(alignedGridGenData)
+alignedGridGenDT <- drake::readd(alignedGridGenData)
+
+embeddedGenDT <- drake::readd(embeddedGenData)
+
 # set lockdown period categories for plots
 dstBreak <- as.Date("2020-03-29") #https://www.timeanddate.com/time/change/uk
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+alignedGridGenDT[, plotPeriodDetailed := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
                                          "A: Pre-lockdown Jan - Mar", NA)] #
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownStartDate &
+alignedGridGenDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownStartDate &
                                            dateFixed < dstBreak, 
                                          "B: Lockdown to DST 31/3", plotPeriodDetailed)] #
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed > dstBreak &
+alignedGridGenDT[, plotPeriodDetailed := ifelse(dateFixed > dstBreak &
                                            obsDate < gcParams$UKlockDownRelaxDate_1, 
                                          "C: Lockdown 31/3 - 11/5", plotPeriodDetailed)] #
-alignedDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownRelaxDate_1, 
+alignedGridGenDT[, plotPeriodDetailed := ifelse(dateFixed >= gcParams$UKlockDownRelaxDate_1, 
                                          "D: Lockdown since 11/5", plotPeriodDetailed)] #
 
-alignedDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
+alignedGridGenDT[, plotPeriod := ifelse(dateFixed < gcParams$UKlockDownStartDate, 
                                  "A: Pre-lockdown Jan - Mar", NA)] #
-alignedDT[, plotPeriod := ifelse(dateFixed >= gcParams$UKlockDownStartDate , 
+alignedGridGenDT[, plotPeriod := ifelse(dateFixed >= gcParams$UKlockDownStartDate , 
                                  "B: Lockdown", plotPeriod)] 
 
 # test a plot ----
 #drake::readd(recentDateTimeGWPlot)
 
 # code ----
-
-print("Grid gen loaded")
-message("Loaded ", tidyNum(nrow(gridGenDT)), " rows of data")
-
 
 # > Make report ----
 # >> yaml ----
@@ -215,8 +224,11 @@ title <- paste0("UK Electricity Generation and Carbon Itensity")
 subtitle <- paste0("covid 19 lockdown v", version)
 authors <- "Ben Anderson"
 
-# what dates to expect? 
-summary(gridGenDT$rDateTimeUTC)
+# latest dates:
+message("We now have gridGen data from, " , min(gridGenDT$rDateTime), 
+        " to: ", max(gridGenDT$rDateTime))
+message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTime), 
+        " to: ", max(embeddedGenDT$rDateTime))
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path

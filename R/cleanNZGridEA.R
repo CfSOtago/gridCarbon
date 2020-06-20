@@ -5,6 +5,9 @@
 #' Note that rDateTime will be NA for the DST breaks which equate to TP49/50. We really dislike DST breaks.
 #' 
 #' @param dt the data.table to clean up
+#' 
+#' @import data.table
+#' @import lubridate
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #' @family data

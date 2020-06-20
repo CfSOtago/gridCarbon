@@ -19,12 +19,15 @@ Note that rDateTime will be NA for the DST breaks which equate to TP49/50. We re
 Other data: 
 \code{\link{alignDates}()},
 \code{\link{cleanNZEmbEA}()},
+\code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
+\code{\link{loadEmbeddedGenData}()},
 \code{\link{loadNZEAYearlyEmbeddedGenData}()},
 \code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
@@ -33,6 +36,7 @@ Other data:
 \code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
+\code{\link{saveUkEmbeddedESO}()},
 \code{\link{saveUkGridESO}()},
 \code{\link{setEmbeddedGenTimePeriod}()},
 \code{\link{setGridGenTimePeriod}()}
