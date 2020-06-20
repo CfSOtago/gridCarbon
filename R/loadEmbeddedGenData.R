@@ -1,6 +1,6 @@
-#' Load the pre-downloaded yearly UK ESO generation files in to a data.table
+#' Load the pre-downloaded UK ESO embedded generation files in to a data.table
 #'
-#' \code{loadUKESOYearlyGenData} returns a dt with a proper rDateTimeUTC added & set to London tzone.
+#' \code{loadEmbeddedGenData} returns a dt with a proper rDateTimeUTC added & set to London tzone.
 #'
 #' @param path the folder to look in for the data
 #' @param fromYear the year to start from (needs to be in the data file names - you did name them sensibly, yes?)
@@ -11,23 +11,18 @@
 #' @export
 #' @family data
 #'
-loadUKESOYearlyGenData <- function(path, fromYear, toDate, update){
+loadEmbeddedGenData <- function(path, fromYear, toDate, update){
   # update = dummy used to force re-load
-  # lists files within a folder (path) & loads fromYear
-  filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
-  filesToDateDT[, file := V1]
-  filesToDateDT[, c("year", "name") := data.table::tstrsplit(file, split = "_")]
-  filesToDateDT[, year := as.numeric(year)]
-  filesToDateDT[, fullPath := paste0(path, file)]
-  filesToGet <- filesToDateDT[year >= fromYear, # to reduce files loaded
-                              fullPath]
-  message("Loading files >= ", fromYear)
+  # lists files within a folder (path) & loads
+  # should be only 1 file so just load it
+  # path <- localParams$embeddedDataLoc
+  filesToGet <- list.files(path, ".csv.gz", full.names = TRUE) # get list of files already downloaded & converted to long form
   l <- lapply(filesToGet, data.table::fread) # very fast data loading :-)
   dt <- data.table::rbindlist(l, fill = TRUE) # rbind them
   
-  # > fix grid data ----
-  dt[, DATETIME := lubridate::as_datetime(DATETIME)]
-  dt[, rDateTimeUTC := lubridate::force_tz(DATETIME, 
+  # > fix  data ----
+  dt[, DateTime := lubridate::as_datetime(rDateTime)]
+  dt[, rDateTimeUTC := lubridate::force_tz(DateTime, 
                                            tzone = "UTC")] # to be sure to be sure
   
   # check
@@ -49,16 +44,6 @@ loadUKESOYearlyGenData <- function(path, fromYear, toDate, update){
   #nrow(ok)
   dt <- dt[ok] # drops the dates with less than 48 observations
   #uniqueN(dt$obsDate)
-  dt[, GENERATION_MW := GENERATION]
-  dt[, GW := GENERATION_MW/1000]
-  dt[, GENERATION_MWh := GENERATION_MW/2] # total MWh per half hour = power / 2
-  dt[, GWh := GENERATION_MWh/1000]
-  
-  # Total CO2e - original grid gen data
-  # CI = g CO2e/kWh
-  dt[, C02e_g := (1000*GENERATION_MWh) * CARBON_INTENSITY]
-  dt[, C02e_kg := C02e_g/1000]
-  dt[, C02e_T := C02e_kg/1000 ]
   
   return(dt[obsDate < as.Date(toDate)]) # large, possibly very large depending on fromYear & toDate
 }
