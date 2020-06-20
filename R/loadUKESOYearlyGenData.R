@@ -26,9 +26,9 @@ loadUKESOYearlyGenData <- function(path, fromYear, toDate, update){
   dt <- data.table::rbindlist(l, fill = TRUE) # rbind them
   
   # > fix grid data ----
-  dt[, rDateTimeUTC := lubridate::as_datetime(DATETIME)]
-  dt[, rDateTimeUTC := lubridate::force_tz(rDateTimeUTC, 
-                                           tzone = "Europe/London")] # to be sure to be sure
+  dt[, DATETIME := lubridate::as_datetime(DATETIME)]
+  dt[, rDateTimeUTC := lubridate::force_tz(DATETIME, 
+                                           tzone = "UTC")] # to be sure to be sure
   
   # check
   #h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])

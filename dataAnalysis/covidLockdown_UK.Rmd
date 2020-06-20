@@ -360,7 +360,7 @@ p
 ```{r setCutYear}
 cutYear <- 2018 # just compare with 2018 & 2019
 compareYearsLabel <- "2018 & 2019"
-alignedDT[, compareYear := ifelse(compareYear == 2020, compareYear,
+alignedGridGenDT[, compareYear := ifelse(compareYear == 2020, compareYear,
                                   compareYearsLabel)]
 gridGenDT[, month := lubridate::month(date)]
 thisMonth <- lubridate::month(today())
@@ -369,7 +369,7 @@ thisMonth <- lubridate::month(today())
 Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayGWhPlot, fig.cap="Half-hourly GWh"}
-dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 yVar <- "GWh"
 xVar <- "wkdayFixed"
@@ -399,10 +399,10 @@ Figure \@ref(fig:timeVariationGWhDetailed) shows the difference between hourly a
 
 ```{r timeVariationGWhDetailed, fig.cap=paste0("timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
 
-t <- alignedDT[, .(min = min(rDateTimeUTC),
+t <- alignedGridGenDT[, .(min = min(rDateTimeUTC),
               max = max(rDateTimeUTC)), keyby = .(plotPeriodDetailed, compareYear)]
 
-plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & dateFixed < today(),
+plotDT <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & dateFixed < today(),
                     .(rDateTimeUTC, GWh,compareYear,plotPeriodDetailed)]
 plotDT[, date := rDateTimeUTC] # need to use original datetime as timeVariation expects unique dates
 
@@ -416,11 +416,11 @@ Repeat but less detail.
 
 ```{r timeVariationGWh, fig.cap=paste0("timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to ", localParams$toDate)}
 
-t <- alignedDT[, .(min = min(rDateTimeUTC),
+t <- alignedGridGenDT[, .(min = min(rDateTimeUTC),
               max = max(rDateTimeUTC)), keyby = .(plotPeriod, compareYear)]
 
 
-plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+plotDT <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                       dateFixed < localParams$toDate] # forces the comparison period
 plotDT[, date := rDateTimeUTC]
 
@@ -504,7 +504,7 @@ Figure \@ref(fig:peakyTest) shows the trend in the ratio between maximum and min
 
 ```{r peakyTest, fig.cap="Ratio of maximum to minimum generation per day"}
 # calculate mean peakiness by relevant comparisons?
-dailyDT <- alignedDT[dateFixed < lubridate::today(), .(maxGWh = max(GWh),
+dailyDT <- alignedGridGenDT[dateFixed < lubridate::today(), .(maxGWh = max(GWh),
                      minGWh = min(GWh)
                      ), keyby = .(dateFixed, weekDay, wkdayFixed , compareYear)]
 dailyDT[, peakyNess := maxGWh/minGWh] # 1 = no peak
@@ -646,7 +646,7 @@ p
 Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayCIPlot, fig.cap="half-hourly CI"}
-dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 yVar <- "CARBON_INTENSITY"
 xVar <- "wkdayFixed"
@@ -676,7 +676,7 @@ Figure \@ref(fig:timeVariationCI) shows the difference between hourly and weekda
 ```{r timeVariationCI, fig.cap=paste0("timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to ", localParams$toDate)}
 
 
-plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+plotDT <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
@@ -833,7 +833,7 @@ p
 Figure \@ref(fig:makeWeekDayCO2eTPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayCO2eTPlot, fig.cap="half-hourly CO2e"}
-dt <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 yVar <- "C02e_T"
 xVar <- "wkdayFixed"
@@ -861,7 +861,7 @@ Figure \@ref(fig:timeVariationCO2e) shows the difference between hourly and week
 
 ```{r timeVariationCO2e, fig.cap=paste0("timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in ", cutYear)}
 
-plotDT <- alignedDT[dateFixed > as.Date("2020-01-01") & 
+plotDT <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
 
 plotDT[, date := rDateTimeUTC]
@@ -1058,6 +1058,190 @@ ggplot2::ggsave(filename = "allCO2ePlotTile.png", path = here::here("docs", "plo
                 plot = p, width = 9, units = "in")
 p
 ```
+
+
+## Embedded genration data
+
+Descriptive stats using skimr::skim():
+
+```{r skimEmbedded}
+skimr::skim(embeddedGenDT)
+
+message("Forecast or actual or NA?")
+table(embeddedGenDT$FORECAST_ACTUAL_INDICATOR, useNA = "always")
+```
+
+Figure @\ref(fig:tileEmbeddedSolar): Tile plot of halfhourly GW over time. We like tile plots.
+
+```{r tileEmbeddedSolar, fig.cap="halfhourly GW over time"}
+p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, fill = SOLAR/1000)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c(name="Grid solar (GW)") +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(embeddedGenDT$hms)
+yMax <- max(embeddedGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "gridSolarGWPlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
+
+p <- ggplot2::ggplot(embeddedGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, fill = EMBEDDED_SOLAR_GENERATION/1000)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c(name="Embedded solar (GW)") +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(embeddedGenDT$hms)
+yMax <- max(embeddedGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "embeddedSolarGWPlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
+```
+
+Figure @\ref(fig:tileEmbeddedWind): Tile plot of halfhourly GW over time. We like tile plots.
+
+```{r tileEmbeddedWind, fig.cap="halfhourly GW over time"}
+p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, fill = WIND/1000)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c(name="Grid wind (GW)") +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(embeddedGenDT$hms)
+yMax <- max(embeddedGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "gridWindGWPlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
+
+p <- ggplot2::ggplot(embeddedGenDT[obsDate > as.Date("2018-01-01")], 
+                     aes(x = obsDate, y = hms, fill = EMBEDDED_WIND_GENERATION/1000)) +
+  geom_tile() +
+  #scale_fill_continuous(low = "green", high = "red") +
+  scale_fill_viridis_c(name="Embedded wind (GW)") +
+  theme(legend.position="bottom") +
+  #scale_y_time(breaks = 6) +
+               # labels = c("00:00:00", "04:00:00", "08:00:00",
+               #            "12:00:00", "16:00:00", "20:00:00")) +
+  labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+yMin <- min(embeddedGenDT$hms)
+yMax <- max(embeddedGenDT$hms)
+p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
+                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
+ggplot2::ggsave(filename = "embeddedWindGWPlotTile.png", path = here::here("docs", "plots"), 
+                plot = p, width = 9, units = "in")
+p
+```
+
+So there are data holes.
+
+History: https://demandforecast.nationalgrid.com/efs_demand_forecast/faces/DataExplorer <- up to end March
+
+Updates: https://demandforecast.nationalgrid.com/efs_demand_forecast/demandupdatedownload <- since May 1st
+
+And guess which period we're interested in....
+
+## Disentangling the embedded generation data
+
+It is not entirely clear if the embedded wind & solar is already included in the gridGen data.
+
+```{r makeAll}
+setkey(gridGenDT, rDateTimeUTC)
+setkey(embeddedGenDT, rDateTimeUTC)
+allGenDT <- embeddedGenDT[gridGenDT]
+allGenDT[, rDate := as.Date(rDateTimeUTC)]
+allGenDT[, year := lubridate::year(rDateTimeUTC)]
+```
+
+```{r checkSolar, fig.cap="Solar check"}
+gridSolarDT <- allGenDT[!is.na(SOLAR), .(MW = mean(SOLAR)), keyby = .(rDate, year)]
+gridSolarDT[, source:= "Grid Solar"]
+embeddedSolarDT <- allGenDT[!is.na(EMBEDDED_SOLAR_GENERATION), .(MW = mean(EMBEDDED_SOLAR_GENERATION)), keyby = .(rDate, year)]
+embeddedSolarDT[, source:= "Embedded Solar"]
+plotDT <- rbind(gridSolarDT, embeddedSolarDT)
+ggplot2::ggplot(plotDT, aes(x = rDate, y = MW, colour = source)) + 
+  geom_point()
+t <- plotDT[, .(meanMW = mean(MW)), keyby = .(source, year)]
+dcast(t, year ~ source)
+
+ggplot2::ggplot(plotDT, aes(x = as.factor(year), y = MW, 
+                               fill = source)) + 
+  geom_boxplot() + 
+  labs(x = "Year")
+
+allGenDT[, solarDiff := SOLAR - EMBEDDED_SOLAR_GENERATION]
+
+ggplot2::ggplot(allGenDT, aes(x = rDate, y = hms, fill = solarDiff/1000)) + 
+  geom_tile() +
+  theme(legend.position="bottom") +
+  scale_fill_distiller(name="Grid solar - embedded (GW)", 
+                    type = "div", aesthetics = "fill") +
+  labs(y = "Time")
+```
+
+2020 only varies because of the data gap in the embedded data files. There seem to be some weird flips. Do we trust this data?
+
+```{r checkWind, fig.cap="Wind check"}
+gridWindDT <- allGenDT[!is.na(WIND), .(MW = mean(WIND)), keyby = .(rDate, year)]
+gridWindDT[, source:= "Grid wind"]
+embeddedWindDT <- allGenDT[!is.na(EMBEDDED_WIND_GENERATION), .(MW = mean(EMBEDDED_WIND_GENERATION)), keyby = .(rDate, year)]
+embeddedWindDT[, source:= "Embedded wind"]
+plotDT <- rbind(gridWindDT, embeddedWindDT)
+ggplot2::ggplot(plotDT, aes(x = rDate, y = MW, colour = source)) + 
+  geom_point()
+t <- plotDT[, .(meanMW = mean(MW)), keyby = .(source, year)]
+dcast(t, year ~ source)
+
+ggplot2::ggplot(plotDT, aes(x = as.factor(year), y = MW, 
+                               fill = source)) + 
+  geom_boxplot() + 
+  labs(x = "Year")
+
+allGenDT[, solarDiff := WIND - EMBEDDED_WIND_GENERATION]
+
+ggplot2::ggplot(allGenDT, aes(x = rDate, y = hms, fill = solarDiff/1000)) + 
+  geom_tile() +
+  theme(legend.position="bottom") +
+  scale_fill_distiller(name="Grid wind - embedded (GW)", 
+                    type = "div", aesthetics = "fill") +
+  labs(y = "Time")
+```
+
+Looks like the wind data is trustable - but we have a gap...
 
 ## Fuel trends
 
