@@ -15,11 +15,13 @@ gridCarbon::loadLibraries(libs) # should install any that are missing
 # check
 
 # Parameters ----
+
+update <- "yes" # edit this in any way to trigger drake to reload data
+  
 localParams <- list()
 
 # > dates ----
-localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded. Change this value
-# to get drake to refresh the data
+localParams$fromYear <- 2017 # a way to limit the number of years of data files loaded
 localParams$lockDownStart <- as.Date("2020-03-24")
 localParams$lockDownEnd <- lubridate::today()
 
@@ -83,7 +85,7 @@ getGXPFileList <- function(dPath){
   return(dt)
 } # should be in package functions
 
-loadGenData <- function(path, fromYear){
+loadGenData <- function(path, fromYear, update){
   # lists files within a folder (path) & loads
   # edit fromYear to force a new data load
   filesToDateDT <- data.table::as.data.table(list.files(path, ".csv.gz")) # get list of files already downloaded & converted to long form
@@ -113,9 +115,11 @@ loadGenData <- function(path, fromYear){
 # drake plan ----
 plan <- drake::drake_plan(
   gridData = loadGenData(gridDataPath, # from where?
-                      localParams$fromYear), # from what date?
+                      localParams$fromYear,  # from what date?
+                      update),
   nonGridData = loadGenData(nonGridDataPath, 
-                         localParams$fromYear)
+                         localParams$fromYear, 
+                         update)
 )
 # 
 # path <- localParams$gridDataLoc
