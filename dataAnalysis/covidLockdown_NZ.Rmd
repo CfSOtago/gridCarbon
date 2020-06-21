@@ -944,7 +944,9 @@ myPlotTot
 
 ```
 
-```{r fuelcomparison}
+Seems to break
+
+```{r fuelcomparison, eval=FALSE}
                             #2020
 plotDT <- recastDT[date >= "2020-01-08"&
                    date <= "2020-01-28"|
@@ -1118,7 +1120,9 @@ data1 <- data1[, rMonth := selectyearDT$rMonth]
 
 ```
 
-```{r coalplot, fig.cap="Total generation for coal by year and month"}
+This also breaks?
+
+```{r coalplot, eval = FALSE, fig.cap="Total generation for coal by year and month"}
 
 plotDT <- data1[date >= "2020-03-10"&
                    date <= "2020-03-30"]
@@ -1211,7 +1215,7 @@ For example, Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` func
 
 ```{r TheilSenGWPlot, eval=FALSE, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(allGridDT$rDateTimeNZTUTC))}
 
-# currently fails as openair needs latticeExtra which needs R (≥ 3.6.0) 
+# currently fails on Uni Otago RStudio server as openair needs latticeExtra which needs R (≥ 3.6.0) 
 # https://cran.r-project.org/web/packages/latticeExtra/index.html
 
 library(openair)
