@@ -1,0 +1,405 @@
+---
+params:
+  subtitle: ""
+  title: ""
+  authors: ""
+title: '`r params$title`'
+subtitle: '`r params$subtitle`'
+author: '`r params$authors`'
+date: 'Last run at: `r Sys.time()`'
+output:
+  bookdown::html_document2:
+    fig_caption: yes
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    toc_float: TRUE
+  bookdown::pdf_document2:
+    fig_caption: yes
+    number_sections: yes
+  bookdown::word_document2:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    fig_width: 5
+always_allow_html: yes
+bibliography: '`r paste0(here::here(), "/bibliography.bib")`'
+---
+
+```{r knitrSetup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+```
+
+
+```{r codeSetup, include=FALSE}
+# Set start time ----
+startTime <- proc.time()
+# Local parameters ----
+b2Kb <- 1024 #http://whatsabyte.com/P1/byteconverter.htm
+b2Mb <- 1048576
+plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
+
+library(gridCarbon)
+# Packages used in the report ----
+rmdLibs <- c("ggplot2", # plots
+          "kableExtra", # fancy tables
+          "lubridate"
+          )
+gridCarbon::loadLibraries(rmdLibs)
+
+# Local parameters ----
+
+# Local functions ----
+```
+
+\newpage
+
+# About
+
+## Citation
+
+```{r citation, child=gcParams$citation}
+```
+
+## Report circulation
+
+ * Public – this report is intended for publication following EECA approval.
+
+## Code
+
+All code used to create this report is available from:
+
+ * https://github.com/CfSOtago/gridCarbon
+
+## License {#license}
+
+```{r ccby license, child=gcParams$licenseCCBY}
+```
+
+## History
+
+```{r history, child=gcParams$history}
+```
+ * this [report's edit history](https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/)
+ 
+## Support
+
+```{r generic support, child=gcParams$support}
+```
+ * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson);
+ * The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)
+ 
+\newpage
+
+# Introduction
+
+Building on [@khan_analysis_2018], we are interested in GHG emissions from the NZ electricity generation over time.
+
+# Data
+
+## Wholesale generation data
+
+Essentially 'grid' generation from major power stations of various kinds. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/` and pre-processed.
+
+```{r testGrid}
+h <- head(allGridDT)
+
+kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
+  kable_styling()
+```
+
+## Embedded generation data
+
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points (GXP). Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
+
+```{r headEmbedded}
+h <- head(allEmbeddedDT)
+
+kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
+  kable_styling()
+```
+
+
+```{r testEmbedded}
+allEmbeddedDT[, year := lubridate::year(rDate)]
+st <- allEmbeddedDT[, .(sumMWh = sum(kWh/1000, na.rm = TRUE),
+                        nObs = .N), keyby = .(Flow_Direction, year)]
+
+rt <- data.table::dcast(st, year ~ Flow_Direction,  value.var = c("sumMWh", "nObs"))
+rt[, pc_X := 100 * (sumMWh_X/sumMWh_I)]
+kableExtra::kable(rt, digits = 2,
+                  caption = "MWh by flow direction") %>%
+  kable_styling()
+```
+
+Not entirely sure what these codes mean yet. Limited [guidance](https://forum.emi.ea.govt.nz/thread/grid-export-and-embedded-generation-data) available? TBC
+
+> For now embedded generation data is _not_ included in the following analysis.
+
+# General trends over time
+
+We use two different GHG emissions indicators:
+
+ * % of total generation in a halfhour which was 'low emissions' where this is defined as wind + solar + hydro
+ * Calculated CO2e emissions per half hour (not yet implemented)
+
+Available fuels are shown in X by year for the data available.
+
+```{r fuelsTab}
+t <- with(allGridDT, table(year, Fuel_Code))
+
+kableExtra::kable(t, caption = "Count of half hours in which fuel coded per year. Note that data for 2020 is incomplete") %>%
+  kable_styling()
+```
+
+```{r codeData}
+allGridDT <- allGridDT[!is.na(rDateTime) |
+                        is.na(kWh)] # should remove DST break issues etc
+allGridDT[, noEmissions := ifelse(Fuel_Code == "Hydro" |
+                                  Fuel_Code == "Wind", "noEmissions", "Emissions")]
+allGridDT[, rDate := lubridate::as_date(rDateTime)]
+allGridDT <- gridCarbon::addNZSeason(allGridDT, date = "rDate") # add seasons 
+
+# check
+t <- with(allGridDT, table(rMonth, season)) #Does not work based on previous uncomment
+#t
+
+```
+
+## 2019 (4 seasons)
+
+```{r select2019}
+dt2019 <- allGridDT[year == 2019]
+
+# check
+st <- summary(dt2019$rDate)
+```
+
+Figure \@ref(fig:plotGWh) shows the total generation in GWh which is classified as 'no emissions'.
+
+```{r plotGWh, fig.cap="Total gen by month"}
+plotDT <- dt2019[!is.na(kWh), .(sumkWh = sum(kWh)), keyby = .(noEmissions, rMonth)]
+
+ggplot2::ggplot(plotDT, aes(x = rMonth, y = sumkWh/1000000, fill = noEmissions)) +
+  geom_col(position = "stack") +
+  labs(y = "Total GWh",
+       x = "Month",
+       fill = "Emissions gen",
+       caption = "2019")
+```
+
+Figure \@ref(fig:plotProportionByMonth) shows the % of total generation in GWh which is classified as 'no emissions'. As you would expect Spring is higher (snow melt etc).
+
+```{r plotProportionByMonth, fig.cap="% no emissions gen by month"}
+# could dcast but this make it obvious what we are doing:
+
+noE <- plotDT[noEmissions %like% "no"]
+noE[, sumkWhNoE := sumkWh]
+noE$noEmissions <- NULL
+noE$sumkWh <- NULL
+E <- plotDT[!(noEmissions %like% "no")]
+E[, sumkWhE := sumkWh]
+E$noEmissions <- NULL
+E$sumkWh <- NULL
+setkey(noE, rMonth)
+setkey(E, rMonth)
+
+wideDT <- noE[E]
+wideDT[, pcNoE := sumkWhNoE/(sumkWhNoE+sumkWhE)]
+
+ggplot2::ggplot(wideDT, aes(x = rMonth, y = 100*pcNoE)) +
+  geom_col() +
+  labs(y = "'no emissions' GWh as % of total",
+       x = "Month",
+       caption = "2019")
+
+```
+
+Figure \@ref(fig:plotProportionByDate) shows the % of total generation which is classified as 'no emissions' by time of day and date in 2019.
+
+```{r plotProportionByDate, fig.cap="% no emissions gen by time and date"}
+plotDT <- dt2019[!is.na(kWh), .(sumkWh = sum(kWh)),
+                    keyby = .(rTime, rDate, noEmissions)]
+
+# could dcast but this make it obvious what we are doing:
+noE <- plotDT[noEmissions %like% "no"]
+noE[, sumkWhNoE := sumkWh]
+noE$noEmissions <- NULL
+noE$sumkWh <- NULL
+E <- plotDT[!(noEmissions %like% "no")]
+E[, sumkWhE := sumkWh]
+E$noEmissions <- NULL
+E$sumkWh <- NULL
+setkey(noE, rTime, rDate)
+setkey(E, rTime, rDate)
+
+
+wideDT <- noE[E]
+wideDT[, pcNoE := sumkWhNoE/(sumkWhNoE+sumkWhE)]
+
+ggplot2::ggplot(wideDT, aes(x = rDate, y = rTime, fill = pcNoE*100)) +
+  geom_tile() +
+  scale_fill_continuous("%", low = "red", high = "green") +
+  labs(y = "Time of Day",
+       x = "Month",
+       caption = "% generation which is 'no emissions'\n2019")
+
+```
+
+Figure \@ref(fig:plotProportionByHalfHour) shows the % of total generation which is classified as 'no emissions' by half-hour in 2019.
+
+```{r plotProportionByHalfHour, fig.cap="% no emissions gen by half hour"}
+plotDT <- dt2019[!is.na(kWh), .(sumkWh = sum(kWh)),
+                    keyby = .(rDateTime, noEmissions)]
+
+# could dcast but this make it obvious what we are doing:
+noE <- plotDT[noEmissions %like% "no"]
+noE[, sumkWhNoE := sumkWh]
+noE$noEmissions <- NULL
+noE$sumkWh <- NULL
+E <- plotDT[!(noEmissions %like% "no")]
+E[, sumkWhE := sumkWh]
+E$noEmissions <- NULL
+E$sumkWh <- NULL
+setkey(noE, rDateTime)
+setkey(E, rDateTime)
+
+
+wideDT <- noE[E]
+wideDT[, pcNoE := sumkWhNoE/(sumkWhNoE+sumkWhE)]
+
+ggplot2::ggplot(wideDT, aes(x = rDateTime, y = pcNoE*100)) +
+  geom_line() +
+  labs(y = "%",
+       x = "Half hour",
+       caption = "% generation which is 'no emissions'\n2019")
+
+```
+
+## 2009 - 2019
+
+```{r getDecade}
+decadeDT <- allGridDT[year > 2008 & year < 2020]
+table(decadeDT$year)
+```
+
+```{r noEmissionsByYear, fig.cap="% no emissions gen by year"}
+dt <- decadeDT[!is.na(kWh) & !is.na(rMonth), .(sumkWh = sum(kWh)),
+                   keyby = .(noEmissions, 
+                             year)]
+recastDT <- data.table::dcast(dt, year ~ noEmissions,
+                              value.var = "sumkWh",
+                              fun = mean)
+recastDT[, pcNoE := 100*(noEmissions/(noEmissions + Emissions))]
+
+kableExtra::kable(recastDT[, .(year, "%" = pcNoE)], 
+                  digits = 2,
+                  caption = "'No emissions' gen as % of total gen by year") %>%
+  kable_styling()
+
+ggplot2::ggplot(recastDT, aes(x = year, y = pcNoE )) +
+  geom_line() +
+  ylim(0, NA) +
+  labs(y = "% 'no emissions'")
+
+```
+
+Figure \@ref(fig:noEmissionsByYear) suggests a very slight increasing trend for no emissions.
+
+Figure \@ref(fig:noEmissionsByYearMonth) indicates the extent to which this might be seasonal. Figure \@ref(fig:noEmissionsByYearMonthTile) makes the trends slightly more legible. Note it is important to consider seasonal and season-before climate patterns when interpreting these plots. For example [Autumn 2013](https://niwa.co.nz/climate/summaries/seasonal/autumn-2013) was unusually dry in some key hydro areas.
+
+```{r noEmissionsByYearMonth, fig.cap="% no emissions by year"}
+plotDT <- decadeDT[!is.na(kWh) & !is.na(rMonth), .(sumkWh = sum(kWh)),
+                   keyby = .(noEmissions, 
+                             year , # to force all on legend
+                             rMonth)]
+
+recastDT <- data.table::dcast(plotDT,
+                              rMonth + year ~ noEmissions,
+                              value.var = "sumkWh",
+                              fun = mean) # no change
+recastDT[, pcNoE := noEmissions/(noEmissions + Emissions)]
+ggplot2::ggplot(recastDT, aes(x = rMonth, colour = year,
+                            group = year, 
+                            y = 100 * pcNoE)
+                ) +
+  geom_line() +
+  labs(x = "Month", y = "% no emissions")
+```
+
+```{r noEmissionsByYearMonthTile, fig.cap="% no emissions by year"}
+plotDT <- decadeDT[!is.na(kWh) & !is.na(rMonth), .(sumkWh = sum(kWh)),
+                   keyby = .(noEmissions, 
+                             year = as.factor(year), # to force all on legend
+                             rMonth)]
+
+recastDT <- data.table::dcast(plotDT,
+                              rMonth + year ~ noEmissions,
+                              value.var = "sumkWh",
+                              fun = mean) # no change
+recastDT[, pcNoE := noEmissions/(noEmissions + Emissions)]
+
+ggplot2::ggplot(recastDT, aes(x = rMonth, y = year,
+                            fill = 100 * pcNoE)
+                ) +
+  geom_tile() +
+  scale_fill_continuous(low = "red", high = "green") +
+  theme(legend.position="bottom") +
+  labs(x = "Month", y = "Year", fill = "% no emissions")
+```
+
+# Conclusions
+
+Doesn't seem to be much evidence of substantial change based on this indicator alone. But:
+
+ * embedded wind & solar excluded
+ * this is not CO2e, it is just an indicator of generation in GWh being, in theory, free of emissions as definied by fuel type.
+
+# Annexes
+
+## Wholesale generation data ('grid')
+
+```{r skimGrid}
+skimr::skim(allGridDT)
+```
+
+## Embedded generation data ('nongrid')
+
+```{r skimNonGrid}
+skimr::skim(allEmbeddedDT)
+```
+
+## Conversion factors
+
+
+# Runtime
+
+```{r check runtime, include=FALSE}
+t <- proc.time() - startTime
+elapsed <- t[[3]]
+```
+
+Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` minutes) using [knitr](https://cran.r-project.org/package=knitr) in [RStudio](http://www.rstudio.com) with `r R.version.string` running on `r R.version$platform`.
+
+# R environment
+
+## R packages used
+
+ * base R [@baseR]
+ * bookdown [@bookdown]
+ * data.table [@data.table]
+ * ggplot2 [@ggplot2]
+ * kableExtra [@kableExtra]
+ * knitr [@knitr]
+ * lubridate [@lubridate]
+ * rmarkdown [@rmarkdown]
+
+## Session info
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+
+# References
