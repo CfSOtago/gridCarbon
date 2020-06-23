@@ -14,9 +14,12 @@ Reports and results best viewed at https://cfsotago.github.io/gridCarbon/
 
 ## Code
 
-The repo is intentionally structured as an R package. To install it do:
+The repo is intentionally structured as an R package. To install it:
 
-`devtools::install_github("CfSOtago/gridCarbon")`
+* [fork it](https://git.soton.ac.uk/SERG/workflow/-/blob/master/CONTRIBUTING.md)
+* build it
+* make a branch & do some edits
+* commit & send a pull request
 
 Re-use terms: [License](LICENSE)
 
