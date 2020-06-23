@@ -37,6 +37,7 @@ Other plot:
 
 Other utils: 
 \code{\link{addNZSeason}()},
+\code{\link{addSeason}()},
 \code{\link{alignDates}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
