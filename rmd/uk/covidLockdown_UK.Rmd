@@ -196,7 +196,7 @@ p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = meanGW, colour = Fuel)) +
 #                 to = gcParams$UKlockDownEndDate, 
 #                 yMin = yMin, yMax = yMax)
 p
-ggplot2::ggsave(here::here("docs", "plots", "UK_GWFuelsTrends.png"), 
+ggplot2::ggsave(here::here("docs", "uk", "plots", "UK_GWFuelsTrends.png"), 
                 width = 10, units = "in",
                 p)
 ```
@@ -461,7 +461,7 @@ getModelTrendTable <- function(oa, fname){
     labs(y = "Value",
          caption = fname)
   p <- p + geom_line(aes(y = expectedVal), linetype = "dashed")
-  ggplot2::ggsave(here::here("docs", "plots", paste0("UK_trendModelTestPlot_", fname, ".png")))
+  ggplot2::ggsave(here::here("docs", "uk", "plots", paste0("UK_trendModelTestPlot_", fname, ".png")))
   rDT[, diff := conc - expectedVal]
   rDT[, pcDiff := (diff/expectedVal)*100]
   
