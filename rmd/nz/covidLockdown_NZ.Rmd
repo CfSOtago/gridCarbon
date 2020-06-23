@@ -1312,7 +1312,7 @@ hpsRenter <- 0.25 * nRenter
 
 
 baselineDT[, hpCurrentMeanMW := ((meankW * hpsOwner) + (meankW * hpsRenter))/1000]
-baselineDT[, hpCurrentMeanMWh := hpCurrentTotalMW/2]
+baselineDT[, hpCurrentMeanMWh := hpCurrentMeanMW/2]
 
 # model to 100%
 newHPsOwner <- nOwned * (1-0.4) # 40% already have them
