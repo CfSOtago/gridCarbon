@@ -225,10 +225,10 @@ subtitle <- paste0("covid 19 lockdown v", version)
 authors <- "Ben Anderson"
 
 # latest dates:
-message("We now have gridGen data from, " , min(gridGenDT$rDateTime), 
-        " to: ", max(gridGenDT$rDateTime))
-message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTime), 
-        " to: ", max(embeddedGenDT$rDateTime))
+message("We now have gridGen data from, " , min(gridGenDT$rDateTimeUTC), 
+        " to: ", max(gridGenDT$rDateTimeUTC))
+message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
+        " to: ", max(embeddedGenDT$rDateTimeUTC))
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
