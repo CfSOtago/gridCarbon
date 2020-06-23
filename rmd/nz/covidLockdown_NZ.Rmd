@@ -1315,8 +1315,8 @@ baselineDT[, hpCurrentMeanMW := ((meankW * hpsOwner) + (meankW * hpsRenter))/100
 baselineDT[, hpCurrentMeanMWh := hpCurrentMeanMW/2]
 
 # model to 100%
-newHPsOwner <- nOwned * (1-0.4) # 40% already have them
-newHPsRenter <- nRented * (1-0.25) # 40% already have them
+newHPsOwner <- nOwner * (1-0.4) # 40% already have them
+newHPsRenter <- nRenter * (1-0.25) # 40% already have them
 
 baselineDT[, hpFutureMeanMW := ((meankW * nOwner) + (meankW * nRenter))/1000]
 baselineDT[, hpFutureMeanMWh := hpFutureMeanMW/2]
@@ -1448,20 +1448,20 @@ dt <- plotDT[model %like% "gen"]
 p1 <- drawPlot(dt)
 p1
 ggplot2::ggsave(filename = "flattenTheCurve_1.png", 
-                     path = here::here("docs", "plots"))
+                     path = here::here("docs", "nz", "plots"))
 
 p2 <- drawPlot(plotDT[model %like% "gen" | 
                                model %like% "100%"])
 p2
 ggplot2::ggsave(filename = "flattenTheCurve_2.png", 
-                     path = here::here("docs", "plots"))
+                     path = here::here("docs", "nz", "plots"))
 
 p3 <- drawPlot(plotDT[model %like% "gen" | 
                                model %like% "100%" | 
                                model %like% "20%"])
 p3
 ggplot2::ggsave(filename = "flattenTheCurve_3.png", 
-                     path = here::here("docs", "plots"))
+                     path = here::here("docs", "nz", "plots"))
 
 p4 <- drawPlot(plotDT[model %like% "gen" | 
                                model %like% "100%" | 
@@ -1469,7 +1469,7 @@ p4 <- drawPlot(plotDT[model %like% "gen" |
                                model %like% "40%"])
 p4
 ggplot2::ggsave(filename = "flattenTheCurve_4.png", 
-                     path = here::here("docs", "plots"))
+                     path = here::here("docs", "nz", "plots"))
 
 p5 <- drawPlot(plotDT[model %like% "gen" | 
                                model %like% "100%" | 
@@ -1478,7 +1478,7 @@ p5 <- drawPlot(plotDT[model %like% "gen" |
                                model %like% "60%" ])
 p5
 ggplot2::ggsave(filename = "flattenTheCurve_5.png", 
-                     path = here::here("docs", "plots"))
+                     path = here::here("docs", "nz", "plots"))
 
 p6 <- drawPlot(plotDT[model %like% "gen" | 
                                model %like% "100%" | 
@@ -1488,7 +1488,7 @@ p6 <- drawPlot(plotDT[model %like% "gen" |
                                model %like% "80%"])
 p6
 ggplot2::ggsave(filename = "flattenTheCurve_6.png", 
-                     path = here::here("docs", "plots"))
+                     path = here::here("docs", "nz", "plots"))
 ```
 
 
