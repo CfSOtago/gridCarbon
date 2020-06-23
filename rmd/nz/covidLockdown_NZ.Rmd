@@ -262,7 +262,7 @@ p <- ggplot2::ggplot(plotDT, aes(x = rTime, y = meanMWh/1000, colour = season)) 
 
 ggplot2::ggsave(filename = "NZ_GWhBySeason_2019.png",
                 plot = p,
-                path = here::here("docs", "plots"))
+                path = here::here("docs", "nz","plots"))
 p
 ```
 
@@ -277,7 +277,7 @@ oaMWh <- openair::TheilSen(MWhDT, "MWh",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
 p <- oaMWh$plot
-png(filename=here::here("docs/plots/openAir_NZ_TheilSenMWhPlot.png"), 
+png(filename=here::here("docs/nz/plots/openAir_NZ_TheilSenMWhPlot.png"), 
     width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
@@ -462,7 +462,7 @@ myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT )) +
   #facet_grid(rMonth ~ .)
 myPlotTot
 
-of <- paste0(here::here("docs", "plots", "NZ_TotalElectricityGeneration.jpeg"))
+of <- paste0(here::here("docs","nz", "plots", "NZ_TotalElectricityGeneration.jpeg"))
 ggplot2::ggsave(of, myPlotTot, 
                 dpi = 600, width = 13.333, height = 7.5, units = "in")
 ```

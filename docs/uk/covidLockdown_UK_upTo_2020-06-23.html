@@ -269,7 +269,7 @@ div.tocify {
 <h1 class="title toc-ignore">UK Electricity Generation and Carbon Itensity</h1>
 <h3 class="subtitle">covid 19 lockdown v1.0</h3>
 <h4 class="author">Ben Anderson</h4>
-<h4 class="date">Last run at: 2020-06-23 11:56:18</h4>
+<h4 class="date">Last run at: 2020-06-23 15:02:38</h4>
 
 </div>
 
@@ -1371,8 +1371,10 @@ Figure 3.7: timeVariation plots for half-hourly GWh generation comparing pre/loc
 </p>
 </div>
 <pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
-<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu.                  Max. 
-## &quot;2017-01-05 00:00:00&quot; &quot;2017-06-25 23:52:30&quot; &quot;2018-06-23 23:45:00&quot; &quot;2018-09-25 19:46:23&quot; &quot;2019-06-21 23:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu. 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-06-25 23:52:30&quot; &quot;2018-06-23 23:45:00&quot; &quot;2018-09-25 19:46:23&quot; &quot;2019-06-21 23:37:30&quot; 
+##                  Max. 
+## &quot;2020-06-18 23:30:00&quot;</code></pre>
 <pre><code>## Confirming dates plotted: dateFixed</code></pre>
 <pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 ## &quot;2020-01-02&quot; &quot;2020-02-13&quot; &quot;2020-03-27&quot; &quot;2020-03-27&quot; &quot;2020-05-09&quot; &quot;2020-06-22&quot;</code></pre>
@@ -1960,8 +1962,10 @@ Figure 3.17: timeVariation plots for half-hourly carbon intensity comparing lock
 </p>
 </div>
 <pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
-<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu.                  Max. 
-## &quot;2017-01-05 00:00:00&quot; &quot;2017-06-25 23:52:30&quot; &quot;2018-06-23 23:45:00&quot; &quot;2018-09-25 19:46:23&quot; &quot;2019-06-21 23:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu. 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-06-25 23:52:30&quot; &quot;2018-06-23 23:45:00&quot; &quot;2018-09-25 19:46:23&quot; &quot;2019-06-21 23:37:30&quot; 
+##                  Max. 
+## &quot;2020-06-18 23:30:00&quot;</code></pre>
 <pre><code>## Confirming dates plotted: dateFixed</code></pre>
 <pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 ## &quot;2020-01-02&quot; &quot;2020-02-13&quot; &quot;2020-03-27&quot; &quot;2020-03-27&quot; &quot;2020-05-09&quot; &quot;2020-06-22&quot;</code></pre>
@@ -2525,8 +2529,10 @@ Figure 3.25: timeVariation plots for half-hourly CO2e comparing lockdown 2020 wi
 </p>
 </div>
 <pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
-<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu.                  Max. 
-## &quot;2017-01-05 00:00:00&quot; &quot;2017-06-25 23:52:30&quot; &quot;2018-06-23 23:45:00&quot; &quot;2018-09-25 19:46:23&quot; &quot;2019-06-21 23:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu. 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-06-25 23:52:30&quot; &quot;2018-06-23 23:45:00&quot; &quot;2018-09-25 19:46:23&quot; &quot;2019-06-21 23:37:30&quot; 
+##                  Max. 
+## &quot;2020-06-18 23:30:00&quot;</code></pre>
 <pre><code>## Confirming dates plotted: dateFixed</code></pre>
 <pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 ## &quot;2020-01-02&quot; &quot;2020-02-13&quot; &quot;2020-03-27&quot; &quot;2020-03-27&quot; &quot;2020-05-09&quot; &quot;2020-06-22&quot;</code></pre>
@@ -5728,13 +5734,22 @@ Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generatio
 </p>
 </div>
 <p>The openair package <span class="citation">(Carslaw and Ropkins 2012)</span> contains a number of novel plotting methods.</p>
+<pre><code>## Warning: `as_data_frame()` is deprecated as of tibble 2.0.0.
+## Please use `as_tibble()` instead.
+## The signature and semantics have changed, see `?as_tibble`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<pre><code>## Warning: `data_frame()` is deprecated as of tibble 1.1.0.
+## Please use `tibble()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
 <p><img src="covidLockdown_UK_upTo_2020-06-23_files/figure-html/carbonRose-1.png" width="672" /></p>
 <p><img src="covidLockdown_UK_upTo_2020-06-23_files/figure-html/carbonScatter-1.png" width="672" /></p>
 </div>
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">7</span> Runtime</h1>
-<p>Analysis completed in 343.18 seconds ( 5.72 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
+<p>Analysis completed in 304.76 seconds ( 5.08 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">8</span> R environment</h1>
@@ -5771,9 +5786,9 @@ Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generatio
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] gtools_3.8.1      openair_2.7-2     gapminder_0.3.0   gganimate_1.0.5   zoo_1.8-4         hms_0.5.3         curl_3.3         
-##  [8] lubridate_1.7.9   kableExtra_1.1.0  ggplot2_3.3.1     skimr_2.1.1       drake_7.12.2      data.table_1.12.0 gridCarbon_0.1.0 
-## [15] here_0.1         
+##  [1] gtools_3.8.1      openair_2.7-2     gapminder_0.3.0   gganimate_1.0.5   zoo_1.8-4         hms_0.5.3        
+##  [7] curl_3.3          lubridate_1.7.9   kableExtra_1.1.0  ggplot2_3.3.1     skimr_2.1.1       drake_7.12.2     
+## [13] data.table_1.12.0 gridCarbon_0.1.0  here_0.1         
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] httr_1.4.1          maps_3.3.0          tidyr_1.1.0         jsonlite_1.6        viridisLite_0.3.0   splines_3.6.0      

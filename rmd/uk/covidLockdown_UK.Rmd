@@ -48,7 +48,7 @@ gridCarbon::loadLibraries(rmdLibs)
 # Local parameters for .Rmd ----
 localParams$genUnits <- "MW"
 localParams$ciUnits <- "gCO2e/kWh"
-localParams$plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
+localParams$plotLoc <- paste0(gcParams$repoLoc, "/docs/uk/plots/") # where to put the plots
 
 # Local functions for .Rmd ----
 
@@ -217,7 +217,7 @@ oaGWFuels <- openair::smoothTrend(gridGenDT, pollutant = fuels,
                   )
 
 p <- oaGWFuels$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenoaMWFuelsPlot.png"), 
+png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenoaMWFuelsPlot.png"), 
     width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
@@ -246,7 +246,7 @@ yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_allGWPlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_allGWPlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -279,7 +279,7 @@ p <- ggplot2::ggplot(plotDT,
                         "\n2020 data up to ", max(gridGenDT$obsDate))
        )
 
-ggplot2::ggsave(filename = "allGWlineBySeason.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "allGWlineBySeason.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 
@@ -300,7 +300,7 @@ p <- ggplot2::ggplot(plotDT,
                         "\n2020 data up to ", max(gridGenDT$obsDate))
        )
 
-ggplot2::ggsave(filename = "UK_allGWhlineBySeason.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_allGWhlineBySeason.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -328,7 +328,7 @@ yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_allCIPlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_allCIPlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -354,7 +354,7 @@ yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_allCO2ePlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_allCO2ePlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -379,7 +379,7 @@ p <- ggplot2::ggplot(plotDT,
        caption = "Plot by @dataknut @energySoton"
        )
 
-ggplot2::ggsave(filename = "UK_meanGWhBySeason_2019.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_meanGWhBySeason_2019.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -422,7 +422,7 @@ oaGWh <- openair::TheilSen(gridGenDT, "GWh",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
 p <- oaGWh$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenGWhPlot.png"), 
+png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenGWhPlot.png"), 
     width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
@@ -536,7 +536,7 @@ xVar <- "wkdayFixed"
 p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yVar, yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs", "uk", "plots"), 
                   plot = p, width = 9, units = "in")
 p
 
@@ -549,7 +549,7 @@ Figure \@ref(fig:makeWeekdayTimeGWhPlot) shows the mean half-hourly CO2e per hal
 p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -601,15 +601,15 @@ table(plotDT$month)
 # Extract the plots we want...
 # do we get a legend?
 p <- out$plot$day
-png(filename=here::here("docs/plots/openAir_UK_DailyGWh.png"))
+png(filename=here::here("docs/uk/plots/openAir_UK_DailyGWh.png"))
 plot(p)
 dev.off()
 p <- out$plot$hour
-png(filename=here::here("docs/plots/openAir_UK_HourlyGWh.png"))
+png(filename=here::here("docs/uk/plots/openAir_UK_HourlyGWh.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAir_UK_WeekdaysGWh.png"), width = 800, height = 600)
+png(filename=here::here("docs/uk/plots/openAir_UK_WeekdaysGWh.png"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
@@ -640,7 +640,7 @@ yMin <- min(p$data$yMean)
 p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh.png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -655,7 +655,7 @@ yMin <- min(p$data$pcDiffMean)
 p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh_pcCompare.png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -743,7 +743,7 @@ kableExtra::kable(t, digits = 2,
   kable_styling()
 
 p <- oaCI$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenCIPlot.png"), 
+png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenCIPlot.png"), 
     width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
@@ -813,7 +813,7 @@ xVar <- "wkdayFixed"
 p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "g C02e/kWh", yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -825,7 +825,7 @@ Figure \@ref(fig:makeWeekdayTimeCIplot) shows the mean half-hourly CO2e per half
 p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -858,15 +858,15 @@ table(plotDT$month)
 ```{r extractPlotsCI}
 # Extract the plots we want...
 p <- out$plot$day
-png(filename=here::here("docs/plots/openAir_UK_DailyCI.png"))
+png(filename=here::here("docs/uk/plots/openAir_UK_DailyCI.png"))
 plot(p)
 dev.off()
 p <- out$plot$hour
-png(filename=here::here("docs/plots/openAir_UK_HourlyCI.png"))
+png(filename=here::here("docs/uk/plots/openAir_UK_HourlyCI.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAir_UK_WeekdaysCI.png"), width = 800, height = 600)
+png(filename=here::here("docs/uk/plots/openAir_UK_WeekdaysCI.png"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
@@ -882,7 +882,7 @@ yMin <- min(p$data$yMean)
 p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI.png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -896,7 +896,7 @@ yMin <- min(p$data$pcDiffMean)
 p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI_pcCompare.png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -925,7 +925,7 @@ oaCO2 <- openair::TheilSen(gridGenDT, "C02e_T",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
 p <- oaCO2$plot
-png(filename=here::here("docs/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), 
+png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), 
     width = 960, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
@@ -1000,7 +1000,7 @@ xVar <- "wkdayFixed"
 p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "C02e (kT)", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -1012,7 +1012,7 @@ Figure \@ref(fig:makeWeekdayTimeCO2eTplot) shows the mean half-hourly CO2e per h
 p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -1043,15 +1043,15 @@ table(plotDT$month)
 ```{r extractPlotsCO2e_T}
 # Extract the plots we want...
 p <- out$plot$day
-png(filename=here::here("docs/plots/openAir_UK_DailyCO2e_T.png"))
+png(filename=here::here("docs/uk/plots/openAir_UK_DailyCO2e_T.png"))
 plot(p)
 dev.off()
 p <- out$plot$hour
-png(filename=here::here("docs/plots/openAir_UK_HourlyCO2e_T.png"))
+png(filename=here::here("docs/uk/plots/openAir_UK_HourlyCO2e_T.png"))
 plot(p)
 dev.off()
 p <- out$plot$day.hour
-png(filename=here::here("docs/plots/openAir_UK_WeekdaysCO2e_T.png"), width = 800, height = 600)
+png(filename=here::here("docs/uk/plots/openAir_UK_WeekdaysCO2e_T.png"), width = 800, height = 600)
 plot(p)
 dev.off()
 ```
@@ -1069,7 +1069,7 @@ yMin <- min(p$data$yMean)
 p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e.png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -1083,7 +1083,7 @@ yMin <- min(p$data$pcDiffMean)
 p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e_pcCompare.png"), 
-                  path = here::here("docs", "plots"), 
+                  path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -1173,7 +1173,7 @@ yMin <- min(embeddedGenDT$hms)
 yMax <- max(embeddedGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "gridSolarGWPlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "gridSolarGWPlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 
@@ -1195,7 +1195,7 @@ yMin <- min(embeddedGenDT$hms)
 yMax <- max(embeddedGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_embeddedSolarGWPlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_embeddedSolarGWPlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -1221,7 +1221,7 @@ yMin <- min(embeddedGenDT$hms)
 yMax <- max(embeddedGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_gridWindGWPlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_gridWindGWPlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 
@@ -1243,7 +1243,7 @@ yMin <- min(embeddedGenDT$hms)
 yMax <- max(embeddedGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_embeddedWindGWPlotTile.png", path = here::here("docs", "plots"), 
+ggplot2::ggsave(filename = "UK_embeddedWindGWPlotTile.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```

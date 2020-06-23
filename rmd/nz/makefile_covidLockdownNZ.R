@@ -187,7 +187,7 @@ authors <- "Ben Anderson, Carsten Dortans and Marilette Lotte"
 
 
 # >> run report ----
-rmdFile <- paste0(gcParams$repoLoc, "/dataAnalysis/covidLockdown_NZ.Rmd")
+rmdFile <- paste0(gcParams$repoLoc, "/rmd/nz/covidLockdown_NZ.Rmd")
 
 makeReport(rmdFile)
 

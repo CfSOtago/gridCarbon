@@ -72,7 +72,7 @@ localParams$pmPeakEnd <- hms::as_hms("21:00:00") # source?
 
 makeReport <- function(f){
   # default = html
-  rmarkdown::render(input = paste0(here::here("rmd", "uk"), f, ".Rmd"),
+  rmarkdown::render(input = paste0(here::here("rmd", "uk/"), f, ".Rmd"),
                     params = list(title = title,
                                   subtitle = subtitle,
                                   authors = authors),
