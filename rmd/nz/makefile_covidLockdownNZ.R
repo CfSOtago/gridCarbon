@@ -70,7 +70,7 @@ makeReport <- function(f){
                     params = list(title = title,
                                   subtitle = subtitle,
                                   authors = authors),
-                    output_file = paste0(gcParams$repoLoc,"/docs/", title,"_",
+                    output_file = paste0(gcParams$repoLoc,"/docs/nz/", title,"_",
                                          subtitle,".html")
   )
 }
