@@ -236,12 +236,14 @@ plotDT <- fuelsDT[, .(meanMWh = mean(MWh),
                       sumMWh = sum(MWh)), 
                   keyby = .(obsDate, Fuel_Code, peakPeriod)]
 plotDT[, dow := lubridate::wday(obsDate, label = TRUE)]
+
 # s.d
 plotDT[, .(sd = sd(meanMWh)), keyby = .(Fuel_Code)]
 plotDT[, Fuel_Code := factor(Fuel_Code,
                              levels = c("Hydro", "Gas","Coal", "Wind", "Wood",
                                            "Diesel", "Geo")
                                 )] # re-order factors so 'baseload' is at the bottom
+
 plotDT[, wday := ifelse(dow == "Sat" | dow == "Sun", "Weekend", "Weekday")]
 
 p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
@@ -302,6 +304,7 @@ p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")],
 #                 to = gcParams$UKlockDownEndDate, 
 #                 yMin = yMin, yMax = yMax)
 p
+
 ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhFuelsTrendsNonStacked.png"), 
                 height = 10, width = 10, units = "in",
                 p)
