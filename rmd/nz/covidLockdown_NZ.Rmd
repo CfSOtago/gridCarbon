@@ -215,6 +215,98 @@ kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
   kable_styling()
 ```
 
+```{r testFuels}
+peakDefs <- "Morning: 07:00 - 08:30; Evening: 16:00 - 20:00"
+
+fuelsDT <- allGridDT[, .(MWh = sum(kWh)/1000),keyby = .(rDateTimeNZT, rDate, Fuel_Code)]
+
+fuelsDT[, year := lubridate::year(rDateTimeNZT)]
+fuelsDT[, month := lubridate::month(rDateTimeNZT)]
+fuelsDT[, yearMonth := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
+
+# m[, plotDate := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
+fuelsDT[, q := quarter(rDateTimeNZT)]
+fuelsDT[, quarter := lubridate::ymd(paste(year,"-", q, "-01"))]
+fuelsDT[, obsDate := as.Date(rDateTimeNZT)]
+
+fuelsDT <- gridCarbon::setPeakPeriod(fuelsDT, dateTime = "rDateTimeNZT")
+
+dateLab <- "Date"
+plotDT <- fuelsDT[, .(meanMWh = mean(MWh),
+                      sumMWh = sum(MWh)), 
+                  keyby = .(obsDate, Fuel_Code, peakPeriod)]
+plotDT[, dow := lubridate::wday(obsDate, label = TRUE)]
+# s.d
+plotDT[, .(sd = sd(meanMWh)), keyby = .(Fuel_Code)]
+plotDT[, Fuel_Code := factor(Fuel_Code,
+                             levels = c("Hydro", "Gas","Coal", "Wind", "Wood",
+                                           "Diesel", "Geo")
+                                )] # re-order factors so 'baseload' is at the bottom
+plotDT[, wday := ifelse(dow == "Sat" | dow == "Sun", "Weekend", "Weekday")]
+
+p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
+                     aes(x = obsDate, y = meanMWh/1000, 
+                         colour = Fuel_Code, shape = wday)) +
+  geom_point(position="stack") +
+  geom_line(aes(shape = NULL), position="stack") + # 1 line not 2 per fuel
+  scale_shape_discrete(name="Day") +
+  scale_color_viridis_d("Fuel") +
+  theme(legend.position = "bottom") + 
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  #scale_y_log10() +
+  facet_grid(peakPeriod ~ .) +
+  geom_vline(xintercept = gcParams$NZLevel4StartDate) +
+  labs(x = dateLab,
+         y = "Mean half hourly GWh",
+       caption = paste0("Ref line = NZ Level 4 lockdown start",
+                        "\nPeak definitions: ", peakDefs,
+                        "\nData source: NZ Electricity Authority, plot by @dataknut @energyOtago @energySoton")
+       )
+
+# yMax <- max(plotDT$meanGW)
+# yMin <- min(plotDT$meanGW)
+# p <- addLockdownRect(p, 
+#                 from = gcParams$UKlockDownStartDate, 
+#                 to = gcParams$UKlockDownEndDate, 
+#                 yMin = yMin, yMax = yMax)
+p
+ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhFuelsTrendsStacked.png"), 
+                height = 10, width = 10, units = "in",
+                p)
+
+p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
+                     aes(x = obsDate, y = meanMWh/1000, 
+                         colour = Fuel_Code, shape = wday)) +
+  geom_point() +
+  geom_line(aes(shape = NULL)) + # 1 line not 2 per fuel
+  scale_shape_discrete(name="Day") +
+  scale_color_viridis_d("Fuel") +
+  theme(legend.position = "bottom") + 
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  #scale_y_log10() +
+  facet_grid(peakPeriod ~ .) +
+  geom_vline(xintercept = gcParams$NZLevel4StartDate) +
+  labs(x = dateLab,
+         y = "Mean half hourly GWh",
+       caption = paste0("Ref line = NZ Level 4 lockdown start",
+                        "\nPeak definitions: ", peakDefs,
+                        "\nData source: NZ Electricity Authority, plot by @dataknut @energyOtago @energySoton")
+       )
+
+# yMax <- max(plotDT$meanGW)
+# yMin <- min(plotDT$meanGW)
+# p <- addLockdownRect(p, 
+#                 from = gcParams$UKlockDownStartDate, 
+#                 to = gcParams$UKlockDownEndDate, 
+#                 yMin = yMin, yMax = yMax)
+p
+ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhFuelsTrendsNonStacked.png"), 
+                height = 10, width = 10, units = "in",
+                p)
+```
+
 ## Embedded generation data
 
 Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points (GXP). Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
