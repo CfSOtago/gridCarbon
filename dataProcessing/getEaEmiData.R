@@ -15,6 +15,7 @@ gridCarbon::setup()
 
 # Packages needed in this .Rmd file ----
 reqLibs <- c("data.table", # data munching
+             "drake", # yep
              "curl",  #for data download
              "skimr" # for skim
 )
@@ -24,13 +25,14 @@ gridCarbon::loadLibraries(reqLibs)
 # Parameters ----
 localParams <- list() # repo level params are in gcParams
 
-years <- seq(2020, 2020, 1) # change these to restrict or extend the file search
+years <- seq(2015, 2020, 1) # change these to restrict or extend the file search
 months <- seq(1,12,1) # change these to restrict or extend the file search
 
 refresh <- 0 # set to 1 to try to download all files even if we already have them
 
 localParams$embDataURL <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation/"
 localParams$gridDataURL <- "https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/"
+localParams$gxpDataURL <-"https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Grid_export/"
 
 # Local functions ----
 # should all be in R/ now
@@ -44,22 +46,37 @@ startTime <- proc.time()
 # well, we could but...
 message("Getting ", years[1], " to ", years[length(years)])
 
-gridMetaDataDT <- gridCarbon::getNZGridEA(years = years, 
-                                          months = months, 
-                                          path = gcParams$nzGridDataLoc) # returns metadata
+plan <- drake::drake_plan(
+  # grid
+  gridMetaData = gridCarbon::getNZGridEA(years = years,
+                                         months = months,
+                                         path = gcParams$nzGridDataLoc), # returns metadata
+  gridCarbon::makeNZYearlyData(genType = "gridGen", # <- what the files get called
+                               years = years,
+                               path = gcParams$nzGridDataLoc),
+  # embedded
+  embMetaData = gridCarbon::getNZEmbData(years = years,
+                                         months = months,
+                                         path = gcParams$nzNonGridDataLoc), # returns metadata
+  gridCarbon::makeNZYearlyData(genType = "embeddedGen", # <- what the files get called
+                               years = years,
+                               path = gcParams$nzNonGridDataLoc),
+  # gxp
+  gxpMetaData = gridCarbon::getNZGxpEA(years = years,
+                                         months = months,
+                                         path = gcParams$nzGxpDataLoc,
+                                         url = localParams$gxpDataURL), # returns metadata
+  gridCarbon::makeNZYearlyData(genType = "gxpGridExport", # <- what the files get called
+                                years = years,
+                                path = gcParams$nzGxpDataLoc)
+)
 
-embMetaDataDT <- gridCarbon::getNZEmbData(years = years, 
-                                          months = months,
-                                          path = gcParams$nzNonGridDataLoc) # returns metadata
-
-gridCarbon::makeNZYearlyData(genType = "gridGen", 
-                                                   years = years,
-                                                   path = gcParams$nzGridDataLoc)
-gridCarbon::makeNZYearlyData(genType = "embeddedGen", 
-                                                   years = years,
-                                                   path = gcParams$nzNonGridDataLoc)
+plan # test the plan
+make(plan) # run the plan, re-loading data if needed
 
 # tests
+gridMetaDataDT <- drake::readd(gridMetaData)
+embMetaDataDT <- drake::readd(embMetaData)
 skimr::skim(embMetaDataDT)
 skimr::skim(gridMetaDataDT)
 
