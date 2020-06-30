@@ -64,6 +64,7 @@ if(gcParams$user == "ba1e12" & gcParams$sysname == "Linux" & gcParams$nodename =
   gcParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
   gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Generation_Data/"))
   gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Embedded_Generation_Data/"))
+  gcParams$nzGxpDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_GXP_Data/"))
 }
 
 # > Misc data ----
