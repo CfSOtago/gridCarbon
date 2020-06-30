@@ -1,6 +1,6 @@
-#' \code{getNZGridEA} gets the file from the NZ EA data website 
+#' \code{getNZGridEA} gets the grid generation data files from the NZ EA data website 
 #' 
-#' These are not in pretty form so we cleaen them up and save them as monthly and yearly files.
+#' These are not in pretty form so we clean them up and save them as monthly and yearly files.
 #' The code attempts to be clever about not downloading files it already has.
 #'
 #' @param path the path we may have saved files in before as `path/raw`, `path/processed/monthly` etc
@@ -73,8 +73,7 @@ getNZGridEA <- function(path, years, months){
           testDT <- testDT[, source := rawfName]
           metaDT <- rbind(metaDT, testDT)
           print("Converted to long form, saving it")
-          processedfName <- paste0(y,"_",m,"_gridGen.csv")
-          lf <- paste0(path, "/processed/monthly/", processedfName)
+          lf <- paste0(path, "/processed/monthly/", rawfName)
           data.table::fwrite(dt, lf)
           cmd <- paste0("gzip -f ", "'", path.expand(lf), "'") # gzip it - use quotes in case of spaces in file name, expand path if needed
           message("Running: ", cmd)

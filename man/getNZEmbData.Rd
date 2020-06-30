@@ -22,11 +22,14 @@ Other data:
 \code{\link{alignDates}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadEmbeddedGenData}()},
@@ -45,17 +48,23 @@ Other data:
 
 Other grid: 
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 }
 \author{

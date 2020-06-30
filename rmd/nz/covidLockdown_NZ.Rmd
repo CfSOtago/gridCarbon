@@ -165,7 +165,7 @@ addWeekendsDateTime <- function(p){
 
 ## Report circulation
 
- * Public – this report is intended for publication following EECA approval.
+ * Public – this report is intended for publication
 
 ## Code
 
@@ -260,7 +260,7 @@ p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")],
   facet_grid(peakPeriod ~ .) +
   geom_vline(xintercept = gcParams$NZLevel4StartDate) +
   labs(x = dateLab,
-         y = "Mean half hourly GWh (stacked)",
+         y = "Mean half hourly GWh (stacked) via",
        caption = paste0("Ref line = NZ Level 4 lockdown start",
                         "\nPeak definitions: ", peakDefs,
                         "\nData source: NZ Electricity Authority, plot by @dataknut @energyOtago @energySoton")

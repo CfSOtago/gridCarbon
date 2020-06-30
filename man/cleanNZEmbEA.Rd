@@ -19,12 +19,15 @@ NB: rDateTime will be NA for TP49/50 which correspond to the DST breaks.
 Other data: 
 \code{\link{alignDates}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadEmbeddedGenData}()},
@@ -48,10 +51,13 @@ Other embedded:
 Other NZ: 
 \code{\link{addNZSeason}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 }
 \author{

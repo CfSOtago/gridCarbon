@@ -2,7 +2,7 @@
 % Please edit documentation in R/getNZGridEA.R
 \name{getNZGridEA}
 \alias{getNZGridEA}
-\title{\code{getNZGridEA} gets the file from the NZ EA data website}
+\title{\code{getNZGridEA} gets the grid generation data files from the NZ EA data website}
 \usage{
 getNZGridEA(path, years, months)
 }
@@ -14,7 +14,7 @@ getNZGridEA(path, years, months)
 \item{months}{themonths to get}
 }
 \description{
-These are not in pretty form so we cleaen them up and save them as monthly and yearly files.
+These are not in pretty form so we clean them up and save them as monthly and yearly files.
 The code attempts to be clever about not downloading files it already has.
 }
 \seealso{
@@ -22,11 +22,14 @@ Other data:
 \code{\link{alignDates}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadEmbeddedGenData}()},
@@ -45,17 +48,23 @@ Other data:
 
 Other grid: 
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 }
 \author{

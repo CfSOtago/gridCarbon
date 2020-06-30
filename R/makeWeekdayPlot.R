@@ -21,8 +21,8 @@ makeWeekdayPlot <- function(dt, xVar, yVar, yLab, yDiv){
   # not proportions - absolute
   # wkdayFixed = obs (they are the same - that was the whole idea!)
   dt[, xVar := get(xVar)]
-  pDT <- dt[, .(yVals = mean(get(yVar))/yDiv), keyby = .(plotPeriod, compareYear, xVar)]
-  p <- ggplot2::ggplot(dt, aes(x = xVar, y = GWh, 
+  #pDT <- dt[, .(yVal = mean(get(yVar))/yDiv), keyby = .(plotPeriod, compareYear, xVar)]
+  p <- ggplot2::ggplot(dt, aes(x = xVar, y = get(yVar), 
                                colour = compareYear)) + 
     geom_boxplot() +
     theme(legend.position="bottom") +
