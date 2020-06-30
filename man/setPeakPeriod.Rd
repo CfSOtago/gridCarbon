@@ -8,7 +8,7 @@ setPeakPeriod(
   dt,
   dateTime = rDateTimeUTC,
   t1 = "07:00",
-  t2 = "08:30",
+  t2 = "09:00",
   t3 = "16:00",
   t4 = "20:00"
 )
