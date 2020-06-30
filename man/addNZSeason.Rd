@@ -30,10 +30,13 @@ Other utils:
 Other NZ: 
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 }
 \author{

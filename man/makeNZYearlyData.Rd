@@ -21,12 +21,15 @@ Other data:
 \code{\link{alignDates}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadEmbeddedGenData}()},
@@ -46,20 +49,29 @@ Other embedded:
 \code{\link{cleanNZEmbEA}()},
 \code{\link{getNZEmbMeta}()}
 
+Other gxp: 
+\code{\link{getNZGxpMeta}()}
+
 Other grid: 
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZGridEA}()},
-\code{\link{getNZGridMeta}()}
+\code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
-\code{\link{getNZGridMeta}()}
+\code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
@@ -68,3 +80,4 @@ Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 \concept{data}
 \concept{embedded}
 \concept{grid}
+\concept{gxp}

@@ -19,12 +19,15 @@ Note that rDateTime will be NA for the DST breaks which equate to TP49/50. We re
 Other data: 
 \code{\link{alignDates}()},
 \code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadEmbeddedGenData}()},
@@ -42,18 +45,24 @@ Other data:
 \code{\link{setGridGenTimePeriod}()}
 
 Other grid: 
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},
 \code{\link{cleanNZEmbEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 }
 \author{

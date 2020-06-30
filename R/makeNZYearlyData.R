@@ -7,6 +7,7 @@
 #' @export
 #' @family data
 #' @family embedded 
+#' @family gxp
 #' @family grid 
 #' @family NZ
 #' 
@@ -16,6 +17,7 @@ makeNZYearlyData <- function(genType, years, path){
                                                                "processed/monthly/")
                                                         )
                                              ) # get list of files already downloaded
+  message("We have ", nrow(filesToDateDT), " files to process")
   filesToDateDT[, year := tstrsplit(V1, split = "_", keep = 1)] #
   filesToDateDT[, fullPath := paste0(path, "processed/monthly/",V1)]
   #years <- unique(filesToDateDT[year != "metaDT.csv",]$year) # avoid the metadata file
