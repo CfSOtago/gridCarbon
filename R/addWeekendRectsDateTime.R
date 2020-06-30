@@ -66,6 +66,18 @@ addWeekendRectsDateTime <- function(p, yMin, yMax){
     annotate("rect", xmin = lubridate::as_datetime("2020-06-06 00:00:00"),
              xmax = lubridate::as_datetime("2020-06-07 23:59:59"),
              ymin = yMin, ymax = yMax,
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
+    annotate("rect", xmin = lubridate::as_datetime("2020-06-13 00:00:00"),
+             xmax = lubridate::as_datetime("2020-06-14 23:59:59"),
+             ymin = yMin, ymax = yMax,
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
+    annotate("rect", xmin = lubridate::as_datetime("2020-06-20 00:00:00"),
+             xmax = lubridate::as_datetime("2020-06-21 23:59:59"),
+             ymin = yMin, ymax = yMax,
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) + 
+    annotate("rect", xmin = lubridate::as_datetime("2020-06-27 00:00:00"),
+             xmax = lubridate::as_datetime("2020-06-28 23:59:59"),
+             ymin = yMin, ymax = yMax,
              alpha = gcParams$weAlpha, fill = gcParams$weFill)
   return(p)
 }
