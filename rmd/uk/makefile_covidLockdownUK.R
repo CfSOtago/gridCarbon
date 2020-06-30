@@ -23,7 +23,7 @@ drake::expose_imports(gridCarbon) # should track our functions
 # check
 
 # Parameters ----
-update <- "yep" # edit to force data re-load - forces everything re-build :-)
+update <- "please" # edit to force data re-load - forces everything re-build :-)
 
 localParams <- list()
 
@@ -68,7 +68,20 @@ localParams$pmPeakEnd <- hms::as_hms("21:00:00") # source?
 # Functions ----
 
 # should mostly be in R/
-
+makeOutcomes <- function(dt){
+  dt[, rGENERATION := GENERATION * 0.92] # 8% losses (Staffel, 2017)
+  dt[, consumption_MW := rGENERATION]
+  dt[, consGW := consumption_MW/1000]
+  dt[, consumption_MWh := consumption_MW/2] # total MWh per half hour = power / 2
+  dt[, consGWh := consumption_MWh/1000]
+  
+  # Total CO2e - original grid gen data
+  # CI = g CO2e/kWh
+  dt[, C02e_g := (1000*consumption_MWh) * CARBON_INTENSITY]
+  dt[, C02e_kg := C02e_g/1000]
+  dt[, C02e_T := C02e_kg/1000 ]
+  return(dt)
+}
 
 makeReport <- function(f){
   # default = html
@@ -88,7 +101,8 @@ plan <- drake::drake_plan(
                                        fromYear = localParams$fromYear, # from what date?
                                        toDate = localParams$toDate, # to when?
                                        update), 
-  alignedGridGenData = alignDates(gridGenData, 
+  derivedGridGenData = makeOutcomes(gridGenData), # correct for transmission losses etc
+  alignedGridGenData = alignDates(derivedGridGenData, 
                                   dateTime = "rDateTimeUTC",
                                   toDate = localParams$toDate), # to when? # fix the dates so they line up
   embeddedGenData = loadEmbeddedGenData(localParams$embeddedDataLoc,
@@ -97,37 +111,37 @@ plan <- drake::drake_plan(
                                   dateTime = "rDateTimeUTC",
                                   toDate = localParams$toDate),
   ## >> GW stuff ----
-  recentDateTimeGWhPlot = createRecentDateTimePlot(gridGenData, 
+  recentDateTimeGWhPlot = createRecentDateTimePlot(derivedGridGenData, 
                                                    dateTime = "rDateTimeUTC",
-                                                        yVar = "GWh", 
-                                                        yCap = "Total generation (GWh)",
+                                                        yVar = "consGWh", 
+                                                        yCap = "GWh",
                                                         yDiv = 1,
                                                   lockDownStart = gcParams$UKlockDownStartDateTime,
                                                   lockDownEnd = gcParams$UKlockDownEndDateTime),
   
-  recentHalfHourlyProfileGWhPlot = createRecentHalfHourlyProfilePlot(gridGenData,
+  recentHalfHourlyProfileGWhPlot = createRecentHalfHourlyProfilePlot(derivedGridGenData,
                                                                      dateTime = "rDateTimeUTC",
-                                                                     yVar = "GWh",
-                                                                     yCap = "Total generation (GWh)",
+                                                                     yVar = "consGWh",
+                                                                     yCap = "GWh",
                                                                      yDiv = 1),
   
   compareDailyGWhPlot = createDailyMeanComparePlot(alignedGridGenData, 
-                                                   yVar = "GWh", 
-                                                   yCap = "Mean half hourly GWh per day",
+                                                   yVar = "consGWh", 
+                                                   yCap = "GWh",
                                                    yDiv = 1,
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
   
   compareDailyGWhpcPlot = createDailyPcComparePlot(alignedGridGenData, 
-                                                   yVar = "GWh", 
+                                                   yVar = "consGWh", 
                                                    yCap = "% difference",
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
   
   ## >> CI stuff ----
-  recentDateTimeCIPlot = createRecentDateTimePlot(gridGenData, 
+  recentDateTimeCIPlot = createRecentDateTimePlot(derivedGridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                    yVar = "CARBON_INTENSITY", 
                                                    yCap = "Carbon intensity",
@@ -135,7 +149,7 @@ plan <- drake::drake_plan(
                                                   lockDownStart = gcParams$UKlockDownStartDateTime,
                                                   lockDownEnd = gcParams$UKlockDownEndDateTime),
   
-  recentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(gridGenData,
+  recentHalfHourlyProfileCIPlot = createRecentHalfHourlyProfilePlot(derivedGridGenData,
                                                                      dateTime = "rDateTimeUTC",
                                                                      yVar = "CARBON_INTENSITY",
                                                                      yCap = "Carbon intensity",
@@ -154,7 +168,7 @@ plan <- drake::drake_plan(
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate),
   ## >> CO2e kg stuff ----
-  recentDateTimeC02ekgPlot = createRecentDateTimePlot(gridGenData, 
+  recentDateTimeC02ekgPlot = createRecentDateTimePlot(derivedGridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                    yVar = "C02e_T", 
                                                    yCap = "C02e emitted (T)",
@@ -163,7 +177,7 @@ plan <- drake::drake_plan(
                                                    lockDownEnd = gcParams$UKlockDownEndDateTime), 
   
   
-  recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(gridGenData, 
+  recentHalfHourlyProfileC02ekgPlot = createRecentHalfHourlyProfilePlot(derivedGridGenData, 
                                                                    dateTime = "rDateTimeUTC",
                                                                     yVar = "C02e_T", 
                                                                     yCap = "C02e emitted (T)",
@@ -189,7 +203,7 @@ plan <- drake::drake_plan(
 plan # test the plan
 make(plan) # run the plan, re-loading data if needed
 
-gridGenDT <- drake::readd(gridGenData)
+gridGenDT <- drake::readd(derivedGridGenData)
 alignedGridGenDT <- drake::readd(alignedGridGenData)
 
 embeddedGenDT <- drake::readd(embeddedGenData)
@@ -227,6 +241,10 @@ authors <- "Ben Anderson"
 # latest dates:
 message("We now have gridGen data from, " , min(gridGenDT$rDateTimeUTC), 
         " to: ", max(gridGenDT$rDateTimeUTC))
+
+message("Variables:")
+names(gridGenDT)
+
 message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
         " to: ", max(embeddedGenDT$rDateTimeUTC))
 

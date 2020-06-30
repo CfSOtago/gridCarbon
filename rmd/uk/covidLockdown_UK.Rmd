@@ -59,7 +59,7 @@ localParams$plotLoc <- paste0(gcParams$repoLoc, "/docs/uk/plots/") # where to pu
 
 Building on [@staffell_measuring_2017] and [@khan_analysis_2018], we are interested in GHG emissions from UK electricity generation over time. We are especially interested in how this might change during the UK covid-19 [lockdown period](https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid) (from `r localParams$lockDownStart`).
 
-Several articles by ythe UK ESO and others have already explored this topic:
+Several articles by the UK ESO and others have already explored this topic:
 
  * https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid
  * https://www.nationalgrideso.com/news/planning-easter-during-coronavirus-outbreak
@@ -81,9 +81,9 @@ Fortunately the UK Electricity System Operator publishes [half-hourly generation
 This is 'grid' generation from major power stations of various kinds. Data downloaded from ` https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix` and pre-processed.
 
 ```{r testGrid}
-h <- head(gridGenDT[, .(DATETIME, year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
+s <- summary(gridGenDT[, .(year, rDateTimeUTC, GENERATION, CARBON_INTENSITY)])
 
-kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
+kableExtra::kable(s, caption = "Grid gen summary") %>%
   kable_styling()
 ```
 
@@ -93,7 +93,8 @@ Note that according to the dataset [source](https://data.nationalgrideso.com/car
  * carbon intensity is helpfully described as _"The carbon intensity of electricity is a measure of how much Carbon dioxide emissions are produced per kilowatt hour of electricity consumed."_. However we assume it is gCO2e/kWh - based on https://carbonintensity.org.uk/ 
  
 Table \@ref(tab:descData) shows the mean half hourly generation (MW) and mean carbon intensity over the years covered by the data. It also shows the implied mean half-hourly total kg CO2e per half hour which we have calculated as follows:
-{#kgcalc}
+
+ * reduce `GENERATION` by 8% to account for dist & trans losses - see [@staffell_measuring_2017]
  * convert `GENERATION` (`r localParams$genUnits`) to MWh per half hour by `GENERATION/2` (1 MW for half an hour = 1/2 MWh)
  * convert the result to kWh (`* 10000`)
  * multiply by the `CARBON_INTENSITY` which is in `r localParams$ciUnits`
@@ -101,19 +102,35 @@ Table \@ref(tab:descData) shows the mean half hourly generation (MW) and mean ca
  
 Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have kept all the steps.
 
+```{r checkCars}
+# test
+h <- head(gridGenDT[, .(rDateTimeUTC, GENERATION, consumption_MW, consGW,
+                   consumption_MWh, consGWh)
+               ]
+     )
+kableExtra::kable(h, caption = "Grid gen derived vars (example rows)") %>%
+  kable_styling()
+
+s <- summary(gridGenDT[, .(rDateTimeUTC, GENERATION, consumption_MW, consGW,
+                   consumption_MWh, consGWh)
+               ])
+kableExtra::kable(s, caption = "Grid gen derived vars (summary)") %>%
+  kable_styling()
+```
+
 > NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the [ESO forecast methodology document](https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf) states that it is.
  
 ```{r descData}
 t <- gridGenDT[, .(sC = sum(C02e_T)/1000000, # convert to Mt for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
                    mC = mean(C02e_T), # in T
                    mCI = mean(CARBON_INTENSITY),
-                   mGen = mean(GW),
-                   sGen = sum(GWh)/1000, # TWh
-                 maxDate = max(obsDate),
-                 nObs = .N), keyby = .(year)]
+                   mConsGWh = mean(consGWh),
+                   sConsGWh = sum(consGWh)/1000, # TWh
+                 maxDate = max(obsDate)
+                 ), keyby = .(year)]
 # gen decrease
-ci2017 <- t[year == 2017, sGen]
-ci2020 <- t[year == 2020, sGen]
+ci2017 <- t[year == 2017, sConsGWh]
+ci2020 <- t[year == 2020, sConsGWh]
 ciDecrease_pc <- round(100*((ci2017 - ci2020)/ci2017))
 #ciDecrease_pc
 c2017 <- t[year == 2017, sC]
@@ -123,15 +140,15 @@ cDecrease_pc <- round(100*((c2017 - c2020)/c2017))
 # from https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
 dbeisDT <- data.table::fread(here::here("publicData", "dbeisDataTo2018.csv"))
 dbeisCO2 <- c("DBEIS", "")
-mGen <- paste0("Mean halfhourly generation \n (GWh)")
-sGen <- paste0("Total annual generation \n (TWh)")
+mConsGWh <- paste0("Mean halfhourly consumption \n (GWh)")
+sConsGWh <- paste0("Total annual generation \n (TWh)")
 mCI <- paste0("Mean half-hourly carbon intensity \n (" , localParams$ciUnits, ")")
 mC <- paste0("Mean halfhourly CO2e \n (tCO2e, calculated)")
 sC <- paste0("Total annual CO2e \n(MtCO2e, calculated)")
 maxDate <- paste0("Max date in range")
 
-data.table::setnames(t, c("mGen", "sGen", "mCI", "mC","sC", "maxDate"), # old, must be a better way
-                     c(mGen,sGen, mCI,mC, sC,maxDate) # new
+data.table::setnames(t, c("mConsGWh", "sConsGWh", "mCI", "mC","sC", "maxDate"), # old, must be a better way
+                     c(mConsGWh,sConsGWh, mCI,mC, sC,maxDate) # new
                      ) # easy way to set human-readable col names
 setkey(t, year)
 setkey(dbeisDT, year)
@@ -140,6 +157,11 @@ kableExtra::kable(t, digits = 2,
                   caption = "Descriptive stats by year - note that 2020 is incomplete") %>%
   kable_styling()
 
+t[, pcDiff := 100*(1-`Total annual CO2e (MtCO2e, DBEIS)`/`Total annual CO2e 
+(MtCO2e, calculated)`)]
+
+message("% diff from BEIS")
+t[,.(year, pc = round(pcDiff,2))]
 ```
 
 As we can see mean half-hourly generation has declined over the years but much less spectacularly than the mean carbon intensity which decreased by `r ciDecrease_pc` from 2017 to 2020.
@@ -148,46 +170,44 @@ Table of peak periods
 
 ```{r peakPeriodsTable}
 gridGenDT[, month := lubridate::month(rDateTimeUTC)]
-t <- gridGenDT[, .(sC = sum(C02e_T)/1000000, # for comparison with https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/875508/final-greenhouse-gas-emissions-tables-2018.xlsx
-                   mCI = mean(CARBON_INTENSITY),
-                   mGen = mean(GW),
-                   sGen = sum(GWh)/1000, # TWh
+# check
+gridGenDT[, hour := lubridate::hour(hms)]
+table(gridGenDT$hour, gridGenDT$peakPeriod)
+t <- gridGenDT[, .(mCI = mean(CARBON_INTENSITY),
+                   yvar = mean(consGWh),
                    nMonths = uniqueN(month)), keyby = .(year, peakPeriod)]
-t[, monthlyTWh := sGen/nMonths]
-t[, monthlyC02e_T := sC/nMonths]
-
-wt <- dcast(t, year ~ peakPeriod , value.var = "monthlyTWh")
-wt[, Total := `Early morning` + `Morning peak` + `Day time` + `Evening peak` + `Late evening`]
+wt <- dcast(t, year ~ peakPeriod , value.var = "yvar")
 kableExtra::kable(wt, digits = 2,
-                  caption = "Monthly total TWh generation by year - note that 2020 is incomplete") %>%
+                  caption = "Mean half-hourly consumption by year - note that 2020 is incomplete") %>%
   kable_styling()
 ```
 
-Fuel trend plots by peak period
+figure \@ref(fig:fuelTrendsByPeakPeriod): Fuel trend plots by peak period (power)
 
-```{r fuelTrendsPeakPeriod}
+```{r fuelTrendsByPeakPeriod, fig.cap="Fuel trend plots by peak period"}
 
 fuelsDT <- gridGenDT[, c("rDateTimeUTC","peakPeriod","COAL","GAS","NUCLEAR","WIND","HYDRO","BIOMASS","SOLAR","STORAGE","IMPORTS","OTHER")]
 m <- melt(fuelsDT, id.vars = c("rDateTimeUTC", "peakPeriod"), variable.name = "Fuel", value.name = "MW")
-m[, GW := MW/1000]
+
 m[, year := lubridate::year(rDateTimeUTC)]
 m[, month := lubridate::month(rDateTimeUTC)]
 m[, yearMonth := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
 
 # m[, plotDate := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
 m[, q := quarter(rDateTimeUTC)]
-m[,plotDate := lubridate::ymd(paste(year,"-", q, "-01"))]
+m[,plotDate := lubridate::ymd(paste(year,"-", q*3, "-01"))]
+#m[,plotDate := month]
 dateLab <- "Quarter"
-plotDT <- m[, .(meanGW = mean(GW)), 
+plotDT <- m[, .(yVal = mean(MW)), 
             keyby = .(plotDate , Fuel , peakPeriod)]
-p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = meanGW, colour = Fuel)) +
+p <- ggplot2::ggplot(plotDT, aes(x = plotDate, y = yVal/1000, colour = Fuel)) +
   geom_point() +
   geom_smooth(method = "loess") +
   theme(legend.position = "bottom") + 
   #scale_y_log10() +
-  facet_grid(. ~ peakPeriod) +
+  facet_grid(. ~ peakPeriod ) +
   labs(x = dateLab,
-         y = "Mean half hourly GW")
+         y = "GW")
 
 # yMax <- max(plotDT$meanGW)
 # yMin <- min(plotDT$meanGW)
@@ -225,66 +245,51 @@ dev.off()
 ```
 
 
-Figure @\ref(fig:tilePlotGW): Tile plot of halfhourly GW over time. We like tile plots.
+Figure @\ref(fig:tilePlotGWh): Tile plot of halfhourly GWh over time. We like tile plots.
 
-```{r tilePlotGW, fig.cap="halfhourly GW over time"}
+```{r tilePlotGWh, fig.cap="halfhourly consumption GWh over time"}
 p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, fill = GW)) +
+                     aes(x = obsDate, y = hms, fill = consGWh)) +
   geom_tile() +
   #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c() +
+  scale_fill_viridis_c(name="GWh") +
   theme(legend.position="bottom") +
   #scale_y_time(breaks = 6) +
                # labels = c("00:00:00", "04:00:00", "08:00:00",
                #            "12:00:00", "16:00:00", "20:00:00")) +
   labs(x = "Date",
        y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
        )
 yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_allGWPlotTile.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
+
 p
+
+p <- p + labs(x = "Date",
+              y = "Half-hour",
+              caption = paste0(localParams$gridCaption, localParams$lockdownCap),
+                        "\nPlot by @dataknut @energySoton")
+
+ggplot2::ggsave(filename = "UK_allGWhPlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 9, units = "in")
+
 ```
 
 
-Figure @\ref(fig:profilePlotGW): line plot of halfhourly GW by season.
+Figure @\ref(fig:profilePlotGWh): line plot of halfhourly GWh by season.
 
-```{r profilePlotGW, fig.cap="mean halfhourly GW"}
+```{r profilePlotGWh, fig.cap="mean halfhourly GWh"}
 gridGenDT <- addSeason(gridGenDT, dateVar = "obsDate", h = "N" )
 
 plotDT <- gridGenDT[obsDate > as.Date("2018-01-01"),
-                    .(meanGW = mean(GW),
-                      meanGWh = mean(GWh)),
+                    .(yvar = mean(consGWh)),
                     keyby = .(hms, year, season)]
 
 p <- ggplot2::ggplot(plotDT, 
-                     aes(x = hms, y = meanGW, colour = season)) +
-  geom_line() +
-  facet_grid(. ~ year) +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c() +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Half-hour",
-       y = "GW",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton",
-                        "\n2020 data up to ", max(gridGenDT$obsDate))
-       )
-
-ggplot2::ggsave(filename = "allGWlineBySeason.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
-p
-
-p <- ggplot2::ggplot(plotDT, 
-                     aes(x = hms, y = meanGWh, colour = season)) +
+                     aes(x = hms, y = yvar, colour = season)) +
   geom_line() +
   facet_grid(. ~ year) +
   #scale_fill_continuous(low = "green", high = "red") +
@@ -300,7 +305,7 @@ p <- ggplot2::ggplot(plotDT,
                         "\n2020 data up to ", max(gridGenDT$obsDate))
        )
 
-ggplot2::ggsave(filename = "UK_allGWhlineBySeason.png", path = here::here("docs","uk","plots"), 
+ggplot2::ggsave(filename = "UK_allGWhlineBySeasonForTwitter.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 p
 ```
@@ -321,16 +326,23 @@ p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")],
                #            "12:00:00", "16:00:00", "20:00:00")) +
   labs(x = "Date",
        y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
        )
 yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_allCIPlotTile.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
+
 p
+
+p <- p + labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+ggplot2::ggsave(filename = "UK_allCIPlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 9, units = "in")
+
 ```
 
 Figure @\ref(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots
@@ -347,28 +359,34 @@ p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")],
                #            "12:00:00", "16:00:00", "20:00:00")) +
   labs(x = "Date",
        y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
        )
 yMin <- min(gridGenDT$hms)
 yMax <- max(gridGenDT$hms)
 p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
                 from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-ggplot2::ggsave(filename = "UK_allCO2ePlotTile.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
 p
+
+p <- p + labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+ggplot2::ggsave(filename = "UK_allCO2ePlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 9, units = "in")
+
 ```
 
-Figure @\ref(fig:GWhBySeason2019): halfhourly mean GWh by season. We like tile plots
+Figure @\ref(fig:GWhBySeason2019): halfhourly mean GWh by season in 2019. We like tile plots
 
-```{r GWhBySeason2019, fig.cap="halfhourly mean GWh by season"}
+```{r GWhBySeason2019, fig.cap="halfhourly mean GWh by season in 2019"}
 gridGenDT <- gridCarbon::addSeason(gridGenDT, date = "obsDate", h = "N")
-plotDT <- gridGenDT[year == 2019, .(meanGWh = mean(GWh)), keyby = .(hms, season)]
+plotDT <- gridGenDT[year == 2019, .(meanGWh = mean(consGWh)), keyby = .(hms, season)]
 p <- ggplot2::ggplot(plotDT, 
                      aes(x = hms, y = meanGWh, colour = season)) +
   geom_line() +
   #scale_fill_continuous(low = "green", high = "red") +
-  scale_color_discrete(name="Season") +
+  scale_color_discrete(name="Season (2019)") +
   #scale_colour_viridis_d(name="Season") +
   theme(legend.position="bottom") +
   #scale_y_time(breaks = 6) +
@@ -415,7 +433,7 @@ gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 # plotDT <- gridGenDT[, .(GWh = sum(GWh)), keyby = .(obsDate, peakPeriod)]
 # plotDT[, date := obsDate]
 # use mean of half-hourly GWh otherwise the periods with more half-hours tend to visually dominate
-oaGWh <- openair::TheilSen(gridGenDT, "GWh", 
+oaGWh <- openair::TheilSen(gridGenDT, "consGWh", 
                   ylab = "GWh", deseason = TRUE,
                   xlab = "Year",
                   date.format = "%Y",
@@ -428,7 +446,7 @@ png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenGWhPlot.png"),
 plot(p)
 dev.off()
 
-t <- gridGenDT[, .("Mean GWh" = mean(GWh),
+t <- gridGenDT[, .("Mean GWh" = mean(consGWh),
                    "N obs" = .N), keyby = .(year, peakPeriod)]
 
 t <- dcast(t, year ~ peakPeriod, value.var = "Mean GWh")
@@ -490,8 +508,8 @@ Theil-Sen by weekday (for fun):
 
 ```{r theilSenGWhDoWPlot}
 gridGenDT[, dow := lubridate::wday(obsDate, label = TRUE)]
-openair::TheilSen(gridGenDT, "GWh", 
-                  ylab = "GWh", deseason = TRUE,
+openair::TheilSen(gridGenDT, "consGWh", 
+                  ylab = "consGWh", deseason = TRUE,
                   xlab = "Year",
                   date.format = "%Y",
                   date.breaks = 4,
@@ -505,8 +523,8 @@ Figure \@ref(fig:recentDateTimeGWhPlot) shows total half-hourly generation since
 ```{r recentDateTimeGWhPlot, fig.cap="Half-hourly generation, UK (recent)"}
 # NB: the drake target, the rmd chunk and thus the crossref target are all the same!
 p <- drake::readd(recentDateTimeGWhPlot)
-yMax <- max(p$data$GWh) #RTFM
-yMin <- min(p$data$GWh)
+yMax <- max(p$data$consGWh) #RTFM
+yMin <- min(p$data$consGWh)
 addVeDayDateTime(p, yMin = yMin, yMax = yMax)
 ```
 
@@ -531,9 +549,10 @@ Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly GWh per day. Nee
 ```{r makeWeekDayGWhPlot, fig.cap="Half-hourly GWh"}
 dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
                                                dateFixed < localParams$toDate]
-yVar <- "GWh"
+yVar <- "consGWh"
+yLab <- "GWh"
 xVar <- "wkdayFixed"
-p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yVar, yDiv = 1)
+p <- gridCarbon::makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yLab, yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
                   path = here::here("docs", "uk", "plots"), 
@@ -563,10 +582,10 @@ t <- alignedGridGenDT[, .(min = min(rDateTimeUTC),
               max = max(rDateTimeUTC)), keyby = .(plotPeriodDetailed, compareYear)]
 
 plotDT <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & dateFixed < today(),
-                    .(rDateTimeUTC, GWh,compareYear,plotPeriodDetailed)]
+                    .(rDateTimeUTC, consGWh,compareYear,plotPeriodDetailed)]
 plotDT[, date := rDateTimeUTC] # need to use original datetime as timeVariation expects unique dates
 
-openair::timeVariation(plotDT, pollutant = "GWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+openair::timeVariation(plotDT, pollutant = "consGWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriodDetailed", 
                        key.columns = 2 # difference = TRUE,  fails: https://github.com/davidcarslaw/openAir/issues/166
                        )
@@ -585,7 +604,7 @@ plotDT <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") &
 plotDT[, date := rDateTimeUTC]
 
 out <- openair::timeVariation(plotDT, 
-                       "GWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
+                       "consGWh", ylab = "GWh", # normalise = TRUE, not useful as divides by lockdown period mean so difference vanishes
                        group = "compareYear", type = "plotPeriod")
 
 message("Confirming dates plotted: date (as set for openair)")
@@ -619,7 +638,7 @@ Figure \@ref(fig:timeVariationGWhNormalised) is a similar plot but in this case 
 ```{r timeVariationGWhNormalised, fig.cap=paste0("timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in ", cutYear)}
 
 openair::timeVariation(plotDT, 
-                       "GW", ylab = "GW", normalise = TRUE, # 
+                       "consGWh", ylab = "GWh", normalise = TRUE, # 
                        group = "compareYear", type = "plotPeriod", 
                        key.columns = 2)
 ```
@@ -664,8 +683,8 @@ Figure \@ref(fig:peakyTest) shows the trend in the ratio between maximum and min
 
 ```{r peakyTest, fig.cap="Ratio of maximum to minimum generation per day"}
 # calculate mean peakiness by relevant comparisons?
-dailyDT <- alignedGridGenDT[dateFixed < lubridate::today(), .(maxGWh = max(GWh),
-                     minGWh = min(GWh)
+dailyDT <- alignedGridGenDT[dateFixed < lubridate::today(), .(maxGWh = max(consGWh),
+                     minGWh = min(consGWh)
                      ), keyby = .(dateFixed, weekDay, wkdayFixed , compareYear)]
 dailyDT[, peakyNess := maxGWh/minGWh] # 1 = no peak
 
