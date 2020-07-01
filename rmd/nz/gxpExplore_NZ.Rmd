@@ -97,61 +97,7 @@ addLockdownDateTime <- function(p){
 # only makes sense to use these for x axis covering March onwards
 localParams$weAlpha <- 0.3
 localParams$weFill <- "grey50"
-addWeekendsDate <- function(p){
-  p <- p + annotate("rect", xmin = as.Date("2020-03-07"),
-                    xmax = as.Date("2020-03-08"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-03-14"),
-                    xmax = as.Date("2020-03-15"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-03-21"),
-                    xmax = as.Date("2020-03-22"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-03-28"),
-                    xmax = as.Date("2020-03-29"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-04-04"),
-                    xmax = as.Date("2020-04-05"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = as.Date("2020-04-10"),
-                    xmax = as.Date("2020-04-13"), # Easter
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  return(p)
-}
 
-addWeekendsDateTime <- function(p){
-   p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-07 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-08 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-14 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-15 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-21 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-22 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-28 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-03-29 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-04 00:00:00"),
-                    xmax = lubridate::as_datetime("2020-04-05 23:59:59"),
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill) 
-  p <- p + annotate("rect", xmin = as_datetime("2020-04-10 00:00:00"),
-                    xmax = as_datetime("2020-04-13 23:59:59"), # Easter
-                    ymin = yMin, ymax = yMax,
-                    alpha = localParams$weAlpha, fill = localParams$weFill)
-  return(p)
-}
 ```
 
 \newpage
@@ -201,7 +147,7 @@ As in other countried COVID19 lockdown in NZ has reportedly lead to changes in e
 
 The data is grid supply point export data in MWh per half hour obtained from the New Zealand `r localParams$dataSource` (`r localParams$dataSourceURL`).
 
-Table \@ref(tab:testMWh) shows the POCs with the highest mean half hourly flows. As we would expect TWI2201 (Tiwai) is substantially higher than all others. The next highest (ISL0661, Islington) which is in eastern Christchurch (airport?).
+Table \@ref(tab:testMWh) shows the POCs with the highest mean half hourly flows. As we would expect TWI2201 (Tiwai) is substantially higher than all others. The next highest (ISL0661, Islington) which is in eastern Christchurch but appears to have a 'normal' demand profile (see \@ref(ISL0661)).
 
 ```{r testMWh, fig.cap="Grid export over time"}
 t <- cleanGxpDT[!is.na(kWh), .(meanMWh = mean(kWh/1000),
@@ -223,15 +169,14 @@ POCfilter <- 'POC == "TWI2201" | POC = "ISL0661"'
 
 ```{r tilePlot, fig.cap="Flow trends by POC"}
 dateLab <- "Date"
-aggGxpDT[, obsDate := as.Date(rDateTimeNZT)]
-plotDT <- aggGxpDT[, .(meanMWh = mean(MWh),
-                      sumMWh = sum(MWh),
-                      sdMWh = sd(MWh)), 
-                  keyby = .(obsDate, POC)]
-plotDT[, dow := lubridate::wday(obsDate, label = TRUE)]
+plotDT <- cleanGxpDT[, .(meanMWh = mean(kWh/1000),
+                      sumMWh = sum(kWh/1000),
+                      sdMWh = sd(kWh/1000)), 
+                  keyby = .(rDate, POC)]
+plotDT[, dow := lubridate::wday(rDate, label = TRUE)]
 
-p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
-                     aes(x = obsDate, y = POC, fill = meanMWh)) +
+p <- ggplot2::ggplot(plotDT[rDate > as.Date("2020-01-01")], 
+                     aes(x = rDate, y = POC, fill = meanMWh)) +
   geom_tile() +
   scale_fill_viridis_c("MWh") +
   theme(legend.position = "bottom") + 
@@ -264,8 +209,8 @@ ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhGxpTrends.png"),
 Quite tricky to make anything of that. Still dominated by a few POCs. Try log()
 
 ```{r logTile}
-p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
-                     aes(x = obsDate, y = POC, fill = log(meanMWh))) +
+p <- ggplot2::ggplot(plotDT[rDate > as.Date("2020-01-01")], 
+                     aes(x = rDate, y = POC, fill = log(meanMWh))) +
   geom_tile() +
   scale_fill_viridis_c("MWh") +
   theme(legend.position = "bottom") + 
@@ -301,23 +246,63 @@ geoPOC <- gxpLutDT[, .(easting = mean(easting),
                        northing = mean(northing), 
                        nPOCEntries = .N), keyby = .(POC)]
 setkey(geoPOC, POC)
-setkey(aggGxpDT, POC)
+setkey(cleanGxpDT, POC)
 
-mDT <- geoPOC[, .(POC, easting, northing)][aggGxpDT]
+mDT <- geoPOC[, .(POC, easting, northing)][cleanGxpDT]
 
-plotDT <- mDT[!is.na(MWh), .(meanMWh = mean(MWh)), keyby = .(POC, easting, northing)]
+plotDT <- mDT[!is.na(kWh), .(meanMWh = mean(kWh/1000)), keyby = .(POC, easting, northing)]
 
 ggplot2::ggplot(plotDT, aes(x = easting, y = northing, colour = meanMWh)) +
   geom_point() +
   scale_colour_viridis_c()
 ```
 
-Try again but exclude ISL0661 (Christchurch)
+Try again but exclude TWI2201 (Tiwai)
 
 ```{r restrictedMap}
-ggplot2::ggplot(plotDT[POC != "ISL0661"], aes(x = easting, y = northing, colour = meanMWh)) +
+ggplot2::ggplot(plotDT[POC != "TWI2201"], aes(x = easting, 
+                                              y = northing, 
+                                              colour = meanMWh, 
+                                              size = meanMWh/1000), 
+                alpha = 0.5) +
+  geom_point() +
+  scale_colour_viridis_c(name = "MWh") +
+  scale_size(name = "GWh")
+```
+
+Try again excluding TWI2201 (Tiwai) and rolling an animation.
+
+```{r restrictedMapAnim}
+plotDT <- mDT[!is.na(kWh), .(meanMWh = mean(kWh/1000)), keyby = .(POC, rDate, easting, northing)]
+
+p <- ggplot2::ggplot(plotDT[POC != "TWI2201"], aes(x = easting, 
+                                                   y = northing, 
+                                                   colour = meanMWh,
+                                                   size = meanMWh/1000)) +
   geom_point() +
   scale_colour_viridis_c()
+
+library(gganimate)
+p1 <- p  + transition_states(states = rDate, 
+                                  transition_length = 4, 
+                                  state_length = 1) +
+  labs(title = "GWh per day : {closest_state}")
+
+p2 <- p + transition_reveal(rDate) + 
+    ease_aes('cubic-in-out')
+
+# all of these fail on UoS RStudio server
+
+#rendering the animation for gif
+final_p1 <- gganimate::animate(p1,fps = 20)
+final_p2 <- gganimate::animate(p2,fps = 20)
+
+#rendering the animation for mp4
+gganimate::animate(p2,fps = 20, renderer = ffmpeg_renderer())
+
+#saving the animation
+anim_save("gxpAnimation",animation=final_p2)
+
 ```
 
 # Annex
@@ -348,8 +333,9 @@ ggplot2::ggplot(plotDT, aes(x = hms, y = meanMWh, colour = season)) +
 
 ```
 
-## Islington profile
+## Islington profile {#ISL0661}
 
+This looks like a nomral shape so we should probably keep it.
 
 ```{r tiwai2019BySeason}
 plotDT <- cleanGxpDT[POC == "ISL0661" & year == 2019, .(meanMWh = mean(kWh/1000)), 
