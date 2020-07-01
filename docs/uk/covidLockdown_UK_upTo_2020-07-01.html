@@ -1,0 +1,6325 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ben Anderson" />
+
+
+<title>UK Electricity Generation and Carbon Itensity</title>
+
+<script src="covidLockdown_UK_upTo_2020-07-01_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="covidLockdown_UK_upTo_2020-07-01_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="covidLockdown_UK_upTo_2020-07-01_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="covidLockdown_UK_upTo_2020-07-01_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="covidLockdown_UK_upTo_2020-07-01_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="covidLockdown_UK_upTo_2020-07-01_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="covidLockdown_UK_upTo_2020-07-01_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="covidLockdown_UK_upTo_2020-07-01_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="covidLockdown_UK_upTo_2020-07-01_files/navigation-1.1/tabsets.js"></script>
+<script src="covidLockdown_UK_upTo_2020-07-01_files/navigation-1.1/codefolding.js"></script>
+<link href="covidLockdown_UK_upTo_2020-07-01_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="covidLockdown_UK_upTo_2020-07-01_files/highlightjs-9.12.0/highlight.js"></script>
+<script src="covidLockdown_UK_upTo_2020-07-01_files/kePrint-0.0.1/kePrint.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">UK Electricity Generation and Carbon Itensity</h1>
+<h3 class="subtitle">covid 19 lockdown v1.0</h3>
+<h4 class="author">Ben Anderson</h4>
+<h4 class="date">Last run at: 2020-07-01 13:32:59</h4>
+
+</div>
+
+
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Building on <span class="citation">(Staffell 2017)</span> and <span class="citation">(Khan, Jack, and Stephenson 2018)</span>, we are interested in GHG emissions from UK electricity generation over time. We are especially interested in how this might change during the UK covid-19 <a href="https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid">lockdown period</a> (from ).</p>
+<p>Several articles by the UK ESO and others have already explored this topic:</p>
+<ul>
+<li><a href="https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid" class="uri">https://www.nationalgrideso.com/news/lockdown-effect-tv-viewing-habits-and-electricity-grid</a></li>
+<li><a href="https://www.nationalgrideso.com/news/planning-easter-during-coronavirus-outbreak" class="uri">https://www.nationalgrideso.com/news/planning-easter-during-coronavirus-outbreak</a></li>
+<li><a href="https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606" class="uri">https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606</a></li>
+</ul>
+<p>Fortunately the UK Electricity System Operator publishes <a href="https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix">half-hourly generation data</a> which includes both power generation (and thus 'demand') by fuels and also includes a per-kWh <a href="https://carbonintensity.org.uk/">carbon intensity</a> for the electricity produced per half-hour. We use this data to explore the following research questions:</p>
+<ul>
+<li><p>To what extent has electricty demand shown deviation from 'normal' demand patterns during the lockdown period?</p></li>
+<li><p>Has the composition of fuel sources supplying electriicty changed during this period?</p></li>
+<li><p>Has the lockdown changed greenhouse-gas emissions associated with electriicty generation?</p></li>
+</ul>
+</div>
+<div id="data" class="section level1">
+<h1><span class="header-section-number">2</span> Data</h1>
+<div id="genData" class="section level2">
+<h2><span class="header-section-number">2.1</span> Grid generation data</h2>
+<p>This is 'grid' generation from major power stations of various kinds. Data downloaded from <code>https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix</code> and pre-processed.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:testGrid">Table 2.1: </span>Grid gen summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+<pre><code>  year &lt;/th&gt;</code></pre>
+<th style="text-align:left;">
+rDateTimeUTC
+</th>
+<th style="text-align:left;">
+GENERATION
+</th>
+<th style="text-align:left;">
+CARBON_INTENSITY
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Min. :2016
+</td>
+<td style="text-align:left;">
+Min. :2016-01-01 00:00:00
+</td>
+<td style="text-align:left;">
+Min. :18287
+</td>
+<td style="text-align:left;">
+Min. : 54.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1st Qu.:2017
+</td>
+<td style="text-align:left;">
+1st Qu.:2017-02-11 17:52:30
+</td>
+<td style="text-align:left;">
+1st Qu.:28186
+</td>
+<td style="text-align:left;">
+1st Qu.:195.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Median :2018
+</td>
+<td style="text-align:left;">
+Median :2018-03-26 11:45:00
+</td>
+<td style="text-align:left;">
+Median :33314
+</td>
+<td style="text-align:left;">
+Median :241.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Mean :2018
+</td>
+<td style="text-align:left;">
+Mean :2018-03-26 11:45:00
+</td>
+<td style="text-align:left;">
+Mean :33583
+</td>
+<td style="text-align:left;">
+Mean :245.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+3rd Qu.:2019
+</td>
+<td style="text-align:left;">
+3rd Qu.:2019-05-08 05:37:30
+</td>
+<td style="text-align:left;">
+3rd Qu.:38492
+</td>
+<td style="text-align:left;">
+3rd Qu.:291.0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Max. :2020
+</td>
+<td style="text-align:left;">
+Max. :2020-06-18 23:30:00
+</td>
+<td style="text-align:left;">
+Max. :53427
+</td>
+<td style="text-align:left;">
+Max. :511.0
+</td>
+</tr>
+</tbody>
+</table>
+<p>Note that according to the dataset <a href="https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix">source</a>:</p>
+<ul>
+<li>&quot;Data points are either MW or %&quot;. This may be <code>mean MW</code> over the half hour or it may mean <code>MWh per half-hour</code>. It is unclear. The % refers to the fuel mix. Which one could easily calculate from the MW values. But anyway...</li>
+<li>carbon intensity is helpfully described as <em>&quot;The carbon intensity of electricity is a measure of how much Carbon dioxide emissions are produced per kilowatt hour of electricity consumed.&quot;</em>. However we assume it is gCO2e/kWh - based on <a href="https://carbonintensity.org.uk/" class="uri">https://carbonintensity.org.uk/</a></li>
+</ul>
+<p>Table <a href="#tab:descData">2.3</a> shows the mean half hourly generation (MW) and mean carbon intensity over the years covered by the data. It also shows the implied mean half-hourly total kg CO2e per half hour which we have calculated as follows:</p>
+<ul>
+<li>reduce <code>GENERATION</code> by 8% to account for dist &amp; trans losses - see <span class="citation">(Staffell 2017)</span></li>
+<li>convert <code>GENERATION</code> (MW) to MWh per half hour by <code>GENERATION/2</code> (1 MW for half an hour = 1/2 MWh)</li>
+<li>convert the result to kWh (<code>* 10000</code>)</li>
+<li>multiply by the <code>CARBON_INTENSITY</code> which is in gCO2e/kWh</li>
+<li>divide by 1000 to get Kg</li>
+</ul>
+<p>Yes, we have *1000 and then /1000 which is 1 but for the sake of clarity we have kept all the steps.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:checkCars">Table 2.2: </span>Grid gen derived vars (example rows)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+rDateTimeUTC
+</th>
+<th style="text-align:right;">
+GENERATION
+</th>
+<th style="text-align:right;">
+consumption_MW
+</th>
+<th style="text-align:right;">
+consGW
+</th>
+<th style="text-align:right;">
+consumption_MWh
+</th>
+<th style="text-align:right;">
+consGWh
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2016-01-01 00:00:00
+</td>
+<td style="text-align:right;">
+28789
+</td>
+<td style="text-align:right;">
+26485.88
+</td>
+<td style="text-align:right;">
+26.48588
+</td>
+<td style="text-align:right;">
+13242.94
+</td>
+<td style="text-align:right;">
+13.24294
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016-01-01 00:30:00
+</td>
+<td style="text-align:right;">
+29372
+</td>
+<td style="text-align:right;">
+27022.24
+</td>
+<td style="text-align:right;">
+27.02224
+</td>
+<td style="text-align:right;">
+13511.12
+</td>
+<td style="text-align:right;">
+13.51112
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016-01-01 01:00:00
+</td>
+<td style="text-align:right;">
+29468
+</td>
+<td style="text-align:right;">
+27110.56
+</td>
+<td style="text-align:right;">
+27.11056
+</td>
+<td style="text-align:right;">
+13555.28
+</td>
+<td style="text-align:right;">
+13.55528
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016-01-01 01:30:00
+</td>
+<td style="text-align:right;">
+28783
+</td>
+<td style="text-align:right;">
+26480.36
+</td>
+<td style="text-align:right;">
+26.48036
+</td>
+<td style="text-align:right;">
+13240.18
+</td>
+<td style="text-align:right;">
+13.24018
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016-01-01 02:00:00
+</td>
+<td style="text-align:right;">
+27736
+</td>
+<td style="text-align:right;">
+25517.12
+</td>
+<td style="text-align:right;">
+25.51712
+</td>
+<td style="text-align:right;">
+12758.56
+</td>
+<td style="text-align:right;">
+12.75856
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2016-01-01 02:30:00
+</td>
+<td style="text-align:right;">
+27045
+</td>
+<td style="text-align:right;">
+24881.40
+</td>
+<td style="text-align:right;">
+24.88140
+</td>
+<td style="text-align:right;">
+12440.70
+</td>
+<td style="text-align:right;">
+12.44070
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:checkCars">Table 2.2: </span>Grid gen derived vars (summary)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+rDateTimeUTC
+</th>
+<th style="text-align:left;">
+GENERATION
+</th>
+<th style="text-align:left;">
+consumption_MW
+</th>
+<th style="text-align:left;">
+<pre><code> consGW &lt;/th&gt;</code></pre>
+<th style="text-align:left;">
+consumption_MWh
+</th>
+<th style="text-align:left;">
+<pre><code>consGWh &lt;/th&gt;</code></pre>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Min. :2016-01-01 00:00:00
+</td>
+<td style="text-align:left;">
+Min. :18287
+</td>
+<td style="text-align:left;">
+Min. :16824
+</td>
+<td style="text-align:left;">
+Min. :16.82
+</td>
+<td style="text-align:left;">
+Min. : 8412
+</td>
+<td style="text-align:left;">
+Min. : 8.412
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+1st Qu.:2017-02-11 17:52:30
+</td>
+<td style="text-align:left;">
+1st Qu.:28186
+</td>
+<td style="text-align:left;">
+1st Qu.:25931
+</td>
+<td style="text-align:left;">
+1st Qu.:25.93
+</td>
+<td style="text-align:left;">
+1st Qu.:12966
+</td>
+<td style="text-align:left;">
+1st Qu.:12.966
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Median :2018-03-26 11:45:00
+</td>
+<td style="text-align:left;">
+Median :33314
+</td>
+<td style="text-align:left;">
+Median :30649
+</td>
+<td style="text-align:left;">
+Median :30.65
+</td>
+<td style="text-align:left;">
+Median :15324
+</td>
+<td style="text-align:left;">
+Median :15.324
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Mean :2018-03-26 11:45:00
+</td>
+<td style="text-align:left;">
+Mean :33583
+</td>
+<td style="text-align:left;">
+Mean :30896
+</td>
+<td style="text-align:left;">
+Mean :30.90
+</td>
+<td style="text-align:left;">
+Mean :15448
+</td>
+<td style="text-align:left;">
+Mean :15.448
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+3rd Qu.:2019-05-08 05:37:30
+</td>
+<td style="text-align:left;">
+3rd Qu.:38492
+</td>
+<td style="text-align:left;">
+3rd Qu.:35413
+</td>
+<td style="text-align:left;">
+3rd Qu.:35.41
+</td>
+<td style="text-align:left;">
+3rd Qu.:17707
+</td>
+<td style="text-align:left;">
+3rd Qu.:17.707
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+Max. :2020-06-18 23:30:00
+</td>
+<td style="text-align:left;">
+Max. :53427
+</td>
+<td style="text-align:left;">
+Max. :49153
+</td>
+<td style="text-align:left;">
+Max. :49.15
+</td>
+<td style="text-align:left;">
+Max. :24576
+</td>
+<td style="text-align:left;">
+Max. :24.576
+</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>NB: we are unclear how generation via interconnect is included in the original carbon intensity calculation but note that the <a href="https://github.com/carbon-intensity/methodology/raw/master/Carbon%20Intensity%20Forecast%20Methodology.pdf">ESO forecast methodology document</a> states that it is.</p>
+</blockquote>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:descData">Table 2.3: </span>Descriptive stats by year - note that 2020 is incomplete
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Total annual CO2e (MtCO2e, DBEIS)
+</th>
+<th style="text-align:right;">
+Total annual CO2e (MtCO2e, calculated)
+</th>
+<th style="text-align:right;">
+Mean halfhourly CO2e (tCO2e, calculated)
+</th>
+<th style="text-align:right;">
+Mean half-hourly carbon intensity (gCO2e/kWh)
+</th>
+<th style="text-align:right;">
+Mean halfhourly consumption (GWh)
+</th>
+<th style="text-align:right;">
+Total annual generation (TWh)
+</th>
+<th style="text-align:left;">
+Max date in range
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+83.0
+</td>
+<td style="text-align:right;">
+85.00
+</td>
+<td style="text-align:right;">
+4838.51
+</td>
+<td style="text-align:right;">
+299.11
+</td>
+<td style="text-align:right;">
+15.69
+</td>
+<td style="text-align:right;">
+275.72
+</td>
+<td style="text-align:left;">
+2016-12-31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+73.1
+</td>
+<td style="text-align:right;">
+74.70
+</td>
+<td style="text-align:right;">
+4263.46
+</td>
+<td style="text-align:right;">
+262.77
+</td>
+<td style="text-align:right;">
+15.62
+</td>
+<td style="text-align:right;">
+273.58
+</td>
+<td style="text-align:left;">
+2017-12-31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+66.8
+</td>
+<td style="text-align:right;">
+66.36
+</td>
+<td style="text-align:right;">
+3787.66
+</td>
+<td style="text-align:right;">
+234.98
+</td>
+<td style="text-align:right;">
+15.58
+</td>
+<td style="text-align:right;">
+273.04
+</td>
+<td style="text-align:left;">
+2018-12-31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+59.04
+</td>
+<td style="text-align:right;">
+3369.61
+</td>
+<td style="text-align:right;">
+214.09
+</td>
+<td style="text-align:right;">
+15.30
+</td>
+<td style="text-align:right;">
+268.13
+</td>
+<td style="text-align:left;">
+2019-12-31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+22.67
+</td>
+<td style="text-align:right;">
+2777.66
+</td>
+<td style="text-align:right;">
+185.73
+</td>
+<td style="text-align:right;">
+14.58
+</td>
+<td style="text-align:right;">
+118.94
+</td>
+<td style="text-align:left;">
+2020-06-18
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## % diff from BEIS</code></pre>
+<pre><code>##    year    pc
+## 1: 2016  2.36
+## 2: 2017  2.14
+## 3: 2018 -0.66
+## 4: 2019    NA
+## 5: 2020    NA</code></pre>
+<p>As we can see mean half-hourly generation has declined over the years but much less spectacularly than the mean carbon intensity which decreased by 57 from 2017 to 2020.</p>
+<p>Table of peak periods</p>
+<pre><code>##     
+##      Early morning Morning peak Day time Evening peak Late evening
+##   0           3262            0        0            0            0
+##   1           3262            0        0            0            0
+##   2           3262            0        0            0            0
+##   3           3262            0        0            0            0
+##   4           3262            0        0            0            0
+##   5           3262            0        0            0            0
+##   6           3262            0        0            0            0
+##   7              0         3262        0            0            0
+##   8              0         3262        0            0            0
+##   9              0            0     3262            0            0
+##   10             0            0     3262            0            0
+##   11             0            0     3262            0            0
+##   12             0            0     3262            0            0
+##   13             0            0     3262            0            0
+##   14             0            0     3262            0            0
+##   15             0            0     3262            0            0
+##   16             0            0        0         3262            0
+##   17             0            0        0         3262            0
+##   18             0            0        0         3262            0
+##   19             0            0        0         3262            0
+##   20             0            0        0            0         3262
+##   21             0            0        0            0         3262
+##   22             0            0        0            0         3262
+##   23             0            0        0            0         3262</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:peakPeriodsTable">Table 2.4: </span>Mean half-hourly consumption by year - note that 2020 is incomplete
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Early morning
+</th>
+<th style="text-align:right;">
+Morning peak
+</th>
+<th style="text-align:right;">
+Day time
+</th>
+<th style="text-align:right;">
+Evening peak
+</th>
+<th style="text-align:right;">
+Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+12.59
+</td>
+<td style="text-align:right;">
+16.48
+</td>
+<td style="text-align:right;">
+17.75
+</td>
+<td style="text-align:right;">
+18.20
+</td>
+<td style="text-align:right;">
+14.62
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+12.49
+</td>
+<td style="text-align:right;">
+16.37
+</td>
+<td style="text-align:right;">
+17.68
+</td>
+<td style="text-align:right;">
+18.14
+</td>
+<td style="text-align:right;">
+14.56
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+12.50
+</td>
+<td style="text-align:right;">
+16.39
+</td>
+<td style="text-align:right;">
+17.70
+</td>
+<td style="text-align:right;">
+18.02
+</td>
+<td style="text-align:right;">
+14.45
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+12.29
+</td>
+<td style="text-align:right;">
+16.11
+</td>
+<td style="text-align:right;">
+17.36
+</td>
+<td style="text-align:right;">
+17.62
+</td>
+<td style="text-align:right;">
+14.27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+11.78
+</td>
+<td style="text-align:right;">
+14.89
+</td>
+<td style="text-align:right;">
+16.42
+</td>
+<td style="text-align:right;">
+16.90
+</td>
+<td style="text-align:right;">
+13.76
+</td>
+</tr>
+</tbody>
+</table>
+<p>figure <a href="#fig:fuelTrendsByPeakPeriod">2.1</a>: Fuel trend plots by peak period (power)</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:fuelTrendsByPeakPeriod"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/fuelTrendsByPeakPeriod-1.png" alt="Fuel trend plots by peak period" width="672" />
+<p class="caption">
+Figure 2.1: Fuel trend plots by peak period
+</p>
+</div>
+<pre><code>## Saving 10 x 5 in image
+## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p>Repeat using openair::smoothTrend() for de-seasoning and other benefits. NB: deaseasoning produces -ve values for coal :-)</p>
+<p><img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/stFuelTrendsPeakPeriod-1.png" width="672" /></p>
+<pre><code>## png 
+##   2</code></pre>
+</div>
+<div id="embedded-generation-data" class="section level2">
+<h2><span class="header-section-number">2.2</span> Embedded generation data</h2>
+<p>Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.</p>
+<blockquote>
+<p>We have not yet found a source of this data (if we even need it).</p>
+</blockquote>
+<blockquote>
+<p>For now embedded generation data is probably <em>not</em> included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).</p>
+</blockquote>
+</div>
+</div>
+<div id="analysis" class="section level1">
+<h1><span class="header-section-number">3</span> Analysis</h1>
+<p>In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data.</p>
+<div id="general-patterns" class="section level2">
+<h2><span class="header-section-number">3.1</span> General patterns</h2>
+<p>Figure @(fig:tilePlotGWh): Tile plot of halfhourly GWh over time. We like tile plots.</p>
+<div class="figure"><span id="fig:tilePlotGWh"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tilePlotGWh-1.png" alt="halfhourly consumption GWh over time" width="672" />
+<p class="caption">
+Figure 3.1: halfhourly consumption GWh over time
+</p>
+</div>
+<pre><code>## Saving 10 x 5 in image</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure @(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots.</p>
+<pre><code>## Saving 10 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tilePlotCI"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tilePlotCI-1.png" alt="halfhourly CI over time" width="672" />
+<p class="caption">
+Figure 3.2: halfhourly CI over time
+</p>
+</div>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure @(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots</p>
+<pre><code>## Saving 10 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tilePlotCO2e"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tilePlotCO2e-1.png" alt="halfhourly total CO2e (kT) over time" width="672" />
+<p class="caption">
+Figure 3.3: halfhourly total CO2e (kT) over time
+</p>
+</div>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure @(fig:profilePlotGWh): line plot of halfhourly GWh by season.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:profilePlotGWh"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/profilePlotGWh-1.png" alt="mean halfhourly GWh" width="672" />
+<p class="caption">
+Figure 3.4: mean halfhourly GWh
+</p>
+</div>
+<p>Figure @(fig:profilePlotGWhBySeason2019): halfhourly mean GWh by season in 2019.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:profilePlotGWhBySeason2019"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/profilePlotGWhBySeason2019-1.png" alt="halfhourly mean GWh by season in 2019" width="672" />
+<p class="caption">
+Figure 3.5: halfhourly mean GWh by season in 2019
+</p>
+</div>
+</div>
+<div id="consumption-analysing-deviation-from-normal" class="section level2">
+<h2><span class="header-section-number">3.2</span> Consumption: Analysing deviation from 'normal'</h2>
+<p>Several <a href="https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606">articles</a> and <a href="https://twitter.com/DrIAGWilson/status/1255100828781883394">analyses</a> have suggested that demand (and thus generation) patterns have shifted so that <a href="http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html">weekdays have become more like weekends</a>.</p>
+<div id="overall-trends" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Overall trends</h3>
+<p>Figure <a href="#fig:TheilSenGWhPlot">3.6</a> uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) .</p>
+<p>These plots show that there has been a steady decline of ~ 0.4 - 0.5 GW mean half hourly generation (and thus demand) per year since 2016 in each time period. The substantial below-trend fall in generation during lockdown in early Spring 2020 is clear, especailly for the morning peak, day-time and, to a lesser extent, evening peak periods. There appears to have been a smaller below-trend reduction at other times as we would expect. We can also see a notable drop in generation in late 2015 which was <a href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/weather/learn-about/uk-past-events/state-of-uk-climate/mo-state-of-uk-climate-2015-v3.pdf">unusually warm and wet</a>.</p>
+<blockquote>
+<p>use mean of half-hourly GWh otherwise the periods with more half-hours tend to visually dominate</p>
+</blockquote>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<div class="figure"><span id="fig:TheilSenGWhPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/TheilSenGWhPlot-1.png" alt="Theil-Sen plot of mean half-hourly generation per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 3.6: Theil-Sen plot of mean half-hourly generation per month since 2016-01-01
+</p>
+</div>
+<pre><code>## png 
+##   2</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:TheilSenGWhPlot">Table 3.1: </span>Mean half-hourly GWh by year and peak period - 2020 incomplete
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Early morning
+</th>
+<th style="text-align:right;">
+Morning peak
+</th>
+<th style="text-align:right;">
+Day time
+</th>
+<th style="text-align:right;">
+Evening peak
+</th>
+<th style="text-align:right;">
+Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+12.59
+</td>
+<td style="text-align:right;">
+16.48
+</td>
+<td style="text-align:right;">
+17.75
+</td>
+<td style="text-align:right;">
+18.20
+</td>
+<td style="text-align:right;">
+14.62
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+12.49
+</td>
+<td style="text-align:right;">
+16.37
+</td>
+<td style="text-align:right;">
+17.68
+</td>
+<td style="text-align:right;">
+18.14
+</td>
+<td style="text-align:right;">
+14.56
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+12.50
+</td>
+<td style="text-align:right;">
+16.39
+</td>
+<td style="text-align:right;">
+17.70
+</td>
+<td style="text-align:right;">
+18.02
+</td>
+<td style="text-align:right;">
+14.45
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+12.29
+</td>
+<td style="text-align:right;">
+16.11
+</td>
+<td style="text-align:right;">
+17.36
+</td>
+<td style="text-align:right;">
+17.62
+</td>
+<td style="text-align:right;">
+14.27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+11.78
+</td>
+<td style="text-align:right;">
+14.89
+</td>
+<td style="text-align:right;">
+16.42
+</td>
+<td style="text-align:right;">
+16.90
+</td>
+<td style="text-align:right;">
+13.76
+</td>
+</tr>
+</tbody>
+</table>
+<p>Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued.</p>
+<blockquote>
+<p>need to use the Theil-Sen slope model to estimate what the values would have been</p>
+</blockquote>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:calculateGWhDiffFromTrend">Table 3.2: </span>GWh above/below expected mean half-hourly GWh by month
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+diff_Early morning
+</th>
+<th style="text-align:right;">
+diff_Morning peak
+</th>
+<th style="text-align:right;">
+diff_Day time
+</th>
+<th style="text-align:right;">
+diff_Evening peak
+</th>
+<th style="text-align:right;">
+diff_Late evening
+</th>
+<th style="text-align:right;">
+diffTotal
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jan 2020
+</td>
+<td style="text-align:right;">
+-0.10
+</td>
+<td style="text-align:right;">
+-0.17
+</td>
+<td style="text-align:right;">
+-0.11
+</td>
+<td style="text-align:right;">
+-0.51
+</td>
+<td style="text-align:right;">
+-0.32
+</td>
+<td style="text-align:right;">
+-1.20
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feb 2020
+</td>
+<td style="text-align:right;">
+-0.16
+</td>
+<td style="text-align:right;">
+-0.31
+</td>
+<td style="text-align:right;">
+-0.15
+</td>
+<td style="text-align:right;">
+-0.60
+</td>
+<td style="text-align:right;">
+-0.28
+</td>
+<td style="text-align:right;">
+-1.51
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mar 2020
+</td>
+<td style="text-align:right;">
+-0.18
+</td>
+<td style="text-align:right;">
+-0.43
+</td>
+<td style="text-align:right;">
+-0.21
+</td>
+<td style="text-align:right;">
+-0.28
+</td>
+<td style="text-align:right;">
+-0.24
+</td>
+<td style="text-align:right;">
+-1.35
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Apr 2020
+</td>
+<td style="text-align:right;">
+-1.79
+</td>
+<td style="text-align:right;">
+-3.30
+</td>
+<td style="text-align:right;">
+-2.60
+</td>
+<td style="text-align:right;">
+-1.91
+</td>
+<td style="text-align:right;">
+-1.45
+</td>
+<td style="text-align:right;">
+-11.06
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+May 2020
+</td>
+<td style="text-align:right;">
+-1.17
+</td>
+<td style="text-align:right;">
+-2.41
+</td>
+<td style="text-align:right;">
+-1.99
+</td>
+<td style="text-align:right;">
+-1.55
+</td>
+<td style="text-align:right;">
+-1.02
+</td>
+<td style="text-align:right;">
+-8.14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jun 2020
+</td>
+<td style="text-align:right;">
+-0.60
+</td>
+<td style="text-align:right;">
+-1.29
+</td>
+<td style="text-align:right;">
+-1.22
+</td>
+<td style="text-align:right;">
+-0.89
+</td>
+<td style="text-align:right;">
+-0.61
+</td>
+<td style="text-align:right;">
+-4.60
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:calculateGWhDiffFromTrend">Table 3.2: </span>% above/below expected mean half-hourly GWh by month
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+pcDiff_Early morning
+</th>
+<th style="text-align:right;">
+pcDiff_Morning peak
+</th>
+<th style="text-align:right;">
+pcDiff_Day time
+</th>
+<th style="text-align:right;">
+pcDiff_Evening peak
+</th>
+<th style="text-align:right;">
+pcDiff_Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jan 2020
+</td>
+<td style="text-align:right;">
+-0.80
+</td>
+<td style="text-align:right;">
+-1.07
+</td>
+<td style="text-align:right;">
+-0.62
+</td>
+<td style="text-align:right;">
+-2.89
+</td>
+<td style="text-align:right;">
+-2.31
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feb 2020
+</td>
+<td style="text-align:right;">
+-1.35
+</td>
+<td style="text-align:right;">
+-1.97
+</td>
+<td style="text-align:right;">
+-0.90
+</td>
+<td style="text-align:right;">
+-3.43
+</td>
+<td style="text-align:right;">
+-1.99
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mar 2020
+</td>
+<td style="text-align:right;">
+-1.47
+</td>
+<td style="text-align:right;">
+-2.73
+</td>
+<td style="text-align:right;">
+-1.22
+</td>
+<td style="text-align:right;">
+-1.63
+</td>
+<td style="text-align:right;">
+-1.74
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Apr 2020
+</td>
+<td style="text-align:right;">
+-14.89
+</td>
+<td style="text-align:right;">
+-20.82
+</td>
+<td style="text-align:right;">
+-15.17
+</td>
+<td style="text-align:right;">
+-10.99
+</td>
+<td style="text-align:right;">
+-10.38
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+May 2020
+</td>
+<td style="text-align:right;">
+-9.70
+</td>
+<td style="text-align:right;">
+-15.24
+</td>
+<td style="text-align:right;">
+-11.62
+</td>
+<td style="text-align:right;">
+-8.90
+</td>
+<td style="text-align:right;">
+-7.33
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jun 2020
+</td>
+<td style="text-align:right;">
+-4.99
+</td>
+<td style="text-align:right;">
+-8.15
+</td>
+<td style="text-align:right;">
+-7.14
+</td>
+<td style="text-align:right;">
+-5.11
+</td>
+<td style="text-align:right;">
+-4.35
+</td>
+</tr>
+</tbody>
+</table>
+<p>Theil-Sen by weekday (for fun):</p>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<p><img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/theilSenGWhDoWPlot-1.png" width="672" /></p>
+</div>
+<div id="half-hourly-patterns" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Half hourly patterns</h3>
+<p>Figure <a href="#fig:recentDateTimeGWhPlot">3.7</a> shows total half-hourly generation since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:recentDateTimeGWhPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/recentDateTimeGWhPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
+<p class="caption">
+Figure 3.7: Half-hourly generation, UK (recent)
+</p>
+</div>
+<p>Figure <a href="#fig:recentHalfHourlyProfileGWhPlot">3.8</a> shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.</p>
+<div class="figure"><span id="fig:recentHalfHourlyProfileGWhPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/recentHalfHourlyProfileGWhPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
+<p class="caption">
+Figure 3.8: Half-hourly generation, UK (recent)
+</p>
+</div>
+<p>Figure <a href="#fig:makeWeekDayGWhPlot">3.9</a> shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:makeWeekDayGWhPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/makeWeekDayGWhPlot-1.png" alt="Half-hourly GWh" width="672" />
+<p class="caption">
+Figure 3.9: Half-hourly GWh
+</p>
+</div>
+<p>Figure <a href="#fig:makeWeekdayTimeGWhPlot">3.10</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:makeWeekdayTimeGWhPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/makeWeekdayTimeGWhPlot-1.png" alt="% half-hourly GWh" width="672" />
+<p class="caption">
+Figure 3.10: % half-hourly GWh
+</p>
+</div>
+<p>Figure <a href="#fig:timeVariationGWhDetailed">3.11</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from 2018 onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure <a href="#fig:TheilSenGWhPlot">3.6</a>. The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.</p>
+<pre><code>## Warning: removing 192 missing rows due to plotPeriodDetailed</code></pre>
+<div class="figure"><span id="fig:timeVariationGWhDetailed"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/timeVariationGWhDetailed-1.png" alt="timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
+<p class="caption">
+Figure 3.11: timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
+</p>
+</div>
+<p>Repeat but less detail.</p>
+<div class="figure"><span id="fig:timeVariationGWh"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/timeVariationGWh-1.png" alt="timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to 2020-07-01" width="672" />
+<p class="caption">
+Figure 3.12: timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to 2020-07-01
+</p>
+</div>
+<pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 23:52:30&quot; &quot;2018-06-27 23:45:00&quot; &quot;2018-09-22 20:42:58&quot; 
+##               3rd Qu.                  Max. 
+## &quot;2019-06-23 23:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>## Confirming dates plotted: dateFixed</code></pre>
+<pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
+## &quot;2020-01-02&quot; &quot;2020-02-15&quot; &quot;2020-03-30&quot; &quot;2020-03-30&quot; &quot;2020-05-14&quot; &quot;2020-06-30&quot;</code></pre>
+<pre><code>## Confirming months plotted: date</code></pre>
+<pre><code>## 
+##  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec 
+## 5472 5424 5952 5760 5952 5184  432    0    0    0    0    0</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<p>Figure <a href="#fig:timeVariationGWhNormalised">3.13</a> is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal <em>shape</em> of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure <a href="#fig:timeVariationGWh">3.12</a>).</p>
+<div class="figure"><span id="fig:timeVariationGWhNormalised"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/timeVariationGWhNormalised-1.png" alt="timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
+<p class="caption">
+Figure 3.13: timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
+</p>
+</div>
+</div>
+<div id="daily-patterns" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Daily patterns</h3>
+<p>For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does <strong>not</strong> mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.</p>
+<p>Figure <a href="#fig:compareDailyGWhPlot">3.14</a> shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure <a href="#fig:timeVariationGWh">3.12</a>, lockdown clearly reduced demand below the seasonal trend as Figure <a href="#fig:TheilSenGWhPlot">3.6</a> suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure <a href="#fig:timeVariationGWh">3.12</a>).</p>
+<blockquote>
+<p>Beware temperature differences - need to control for heating degree days as 2020 was a <em>very</em> warm spring</p>
+</blockquote>
+<pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;
+## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:compareDailyGWhPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/compareDailyGWhPlot-1.png" alt="Comparative daily mean half-hour generation levels 2020 vs pre-2020" width="672" />
+<p class="caption">
+Figure 3.14: Comparative daily mean half-hour generation levels 2020 vs pre-2020
+</p>
+</div>
+<p>Figure <a href="#fig:compareDailyGWhpcPlot">3.15</a> shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.</p>
+<pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:compareDailyGWhpcPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/compareDailyGWhpcPlot-1.png" alt="Percentage difference in mean generation levels 2020 vs pre 2020" width="672" />
+<p class="caption">
+Figure 3.15: Percentage difference in mean generation levels 2020 vs pre 2020
+</p>
+</div>
+<p>Figure <a href="#fig:peakyTest">3.16</a> shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less 'peaky' than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:peakyTest"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/peakyTest-1.png" alt="Ratio of maximum to minimum generation per day" width="672" />
+<p class="caption">
+Figure 3.16: Ratio of maximum to minimum generation per day
+</p>
+</div>
+</div>
+<div id="weekly-patterns" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> Weekly patterns</h3>
+<p>tbc</p>
+</div>
+</div>
+<div id="carbon-intensity-analysing-deviation-from-normal" class="section level2">
+<h2><span class="header-section-number">3.3</span> Carbon Intensity: Analysing deviation from 'normal'</h2>
+<p>There are two aspects to this. The first is <code>carbon intensity</code> which is driven by the mix of fuels being used to generate electricity at any given time. The second is the total greenhouse gasses emitted which is, obviously, the intensity * the volume. Given the slight uncertainty over units (see Section <a href="#data">2</a>) we assume this is <code>GENERATION</code> * <code>CARBON_INTENSITY</code>.</p>
+<p>Clearly the first of these is driven by the mix of fuels and in the UK this reflects a complex dynamic system of availability of renewables, price, interconnect and demand. To some extent we would expect that lower overall demand should (but not <a href="https://www.nationalgrideso.com/news/our-electricity-greener-lockdown">always</a>) increase the share of renewables. However other factors are also at play:</p>
+<ul>
+<li>some electricity-usage practices may have shifted to (or indeed away from) periods which are likely to have high renewable availability;</li>
+<li>some electricity-usage practices may have shifted away from the 'usual' morning and evening peak periods which are traditionally thought to require carbon intense peaking generation if sufficient pumped hydro is not available;</li>
+<li>low periods of demand might <a href="https://www.nationalgrideso.com/news/our-electricity-greener-lockdown">require system services</a> from higher carbon generation</li>
+</ul>
+<div id="overall-trends-1" class="section level3">
+<h3><span class="header-section-number">3.3.1</span> Overall trends</h3>
+<p>Figure <a href="#fig:TheilSenCIPlot">3.17</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demand period. Again Table <a href="#tab:TheilSenCIPlot">3.3</a> indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period in all time periods. However it is also noticeable that mean carbon intensity has marginally increased above trend in the months of lockdown.</p>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<div class="figure"><span id="fig:TheilSenCIPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/TheilSenCIPlot-1.png" alt="Theil-Sen plot of mean half-hourly carbon intensity per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 3.17: Theil-Sen plot of mean half-hourly carbon intensity per month since 2016-01-01
+</p>
+</div>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:TheilSenCIPlot">Table 3.3: </span>Mean half-hourly carbon intensity (kg CO2e/kWh) by year and peak period - 2020 incomplete
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Early morning
+</th>
+<th style="text-align:right;">
+Morning peak
+</th>
+<th style="text-align:right;">
+Day time
+</th>
+<th style="text-align:right;">
+Evening peak
+</th>
+<th style="text-align:right;">
+Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+278.36
+</td>
+<td style="text-align:right;">
+312.00
+</td>
+<td style="text-align:right;">
+297.11
+</td>
+<td style="text-align:right;">
+329.20
+</td>
+<td style="text-align:right;">
+302.41
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+243.26
+</td>
+<td style="text-align:right;">
+273.72
+</td>
+<td style="text-align:right;">
+261.17
+</td>
+<td style="text-align:right;">
+290.35
+</td>
+<td style="text-align:right;">
+266.69
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+210.10
+</td>
+<td style="text-align:right;">
+247.65
+</td>
+<td style="text-align:right;">
+236.78
+</td>
+<td style="text-align:right;">
+269.08
+</td>
+<td style="text-align:right;">
+234.98
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+190.84
+</td>
+<td style="text-align:right;">
+227.00
+</td>
+<td style="text-align:right;">
+216.96
+</td>
+<td style="text-align:right;">
+241.80
+</td>
+<td style="text-align:right;">
+215.58
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+168.52
+</td>
+<td style="text-align:right;">
+192.87
+</td>
+<td style="text-align:right;">
+180.90
+</td>
+<td style="text-align:right;">
+213.96
+</td>
+<td style="text-align:right;">
+192.48
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## png 
+##   2</code></pre>
+<p>Use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued.</p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:calculateCIDiffFromTrend">Table 3.4: </span>GWh above/below expected mean half-hourly CI by month
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+diff_Early morning
+</th>
+<th style="text-align:right;">
+diff_Morning peak
+</th>
+<th style="text-align:right;">
+diff_Day time
+</th>
+<th style="text-align:right;">
+diff_Evening peak
+</th>
+<th style="text-align:right;">
+diff_Late evening
+</th>
+<th style="text-align:right;">
+diffTotal
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jan 2020
+</td>
+<td style="text-align:right;">
+4.10
+</td>
+<td style="text-align:right;">
+2.64
+</td>
+<td style="text-align:right;">
+-1.93
+</td>
+<td style="text-align:right;">
+-14.87
+</td>
+<td style="text-align:right;">
+-0.47
+</td>
+<td style="text-align:right;">
+-10.53
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feb 2020
+</td>
+<td style="text-align:right;">
+-27.51
+</td>
+<td style="text-align:right;">
+-40.12
+</td>
+<td style="text-align:right;">
+-50.06
+</td>
+<td style="text-align:right;">
+-39.92
+</td>
+<td style="text-align:right;">
+-31.87
+</td>
+<td style="text-align:right;">
+-189.48
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mar 2020
+</td>
+<td style="text-align:right;">
+3.53
+</td>
+<td style="text-align:right;">
+11.14
+</td>
+<td style="text-align:right;">
+7.73
+</td>
+<td style="text-align:right;">
+-3.51
+</td>
+<td style="text-align:right;">
+0.08
+</td>
+<td style="text-align:right;">
+18.97
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Apr 2020
+</td>
+<td style="text-align:right;">
+18.98
+</td>
+<td style="text-align:right;">
+4.76
+</td>
+<td style="text-align:right;">
+-1.42
+</td>
+<td style="text-align:right;">
+9.95
+</td>
+<td style="text-align:right;">
+17.19
+</td>
+<td style="text-align:right;">
+49.46
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+May 2020
+</td>
+<td style="text-align:right;">
+16.76
+</td>
+<td style="text-align:right;">
+4.13
+</td>
+<td style="text-align:right;">
+1.65
+</td>
+<td style="text-align:right;">
+13.11
+</td>
+<td style="text-align:right;">
+18.37
+</td>
+<td style="text-align:right;">
+54.00
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jun 2020
+</td>
+<td style="text-align:right;">
+37.88
+</td>
+<td style="text-align:right;">
+24.35
+</td>
+<td style="text-align:right;">
+37.47
+</td>
+<td style="text-align:right;">
+43.59
+</td>
+<td style="text-align:right;">
+41.70
+</td>
+<td style="text-align:right;">
+184.98
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:calculateCIDiffFromTrend">Table 3.4: </span>% above/below expected mean half-hourly CI by month
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+pcDiff_Early morning
+</th>
+<th style="text-align:right;">
+pcDiff_Morning peak
+</th>
+<th style="text-align:right;">
+pcDiff_Day time
+</th>
+<th style="text-align:right;">
+pcDiff_Evening peak
+</th>
+<th style="text-align:right;">
+pcDiff_Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jan 2020
+</td>
+<td style="text-align:right;">
+2.50
+</td>
+<td style="text-align:right;">
+1.33
+</td>
+<td style="text-align:right;">
+-1.01
+</td>
+<td style="text-align:right;">
+-6.76
+</td>
+<td style="text-align:right;">
+-0.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feb 2020
+</td>
+<td style="text-align:right;">
+-17.04
+</td>
+<td style="text-align:right;">
+-20.44
+</td>
+<td style="text-align:right;">
+-26.59
+</td>
+<td style="text-align:right;">
+-18.35
+</td>
+<td style="text-align:right;">
+-16.93
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mar 2020
+</td>
+<td style="text-align:right;">
+2.22
+</td>
+<td style="text-align:right;">
+5.75
+</td>
+<td style="text-align:right;">
+4.15
+</td>
+<td style="text-align:right;">
+-1.63
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Apr 2020
+</td>
+<td style="text-align:right;">
+12.11
+</td>
+<td style="text-align:right;">
+2.49
+</td>
+<td style="text-align:right;">
+-0.77
+</td>
+<td style="text-align:right;">
+4.67
+</td>
+<td style="text-align:right;">
+9.37
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+May 2020
+</td>
+<td style="text-align:right;">
+10.86
+</td>
+<td style="text-align:right;">
+2.18
+</td>
+<td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:right;">
+6.23
+</td>
+<td style="text-align:right;">
+10.14
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jun 2020
+</td>
+<td style="text-align:right;">
+24.95
+</td>
+<td style="text-align:right;">
+13.05
+</td>
+<td style="text-align:right;">
+20.93
+</td>
+<td style="text-align:right;">
+20.96
+</td>
+<td style="text-align:right;">
+23.34
+</td>
+</tr>
+</tbody>
+</table>
+<p>Theil-Sen by weekday (for fun):</p>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<p><img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/theilSenCIDoWPlot-1.png" width="672" /></p>
+</div>
+<div id="half-hourly-patterns-1" class="section level3">
+<h3><span class="header-section-number">3.3.2</span> Half-hourly patterns</h3>
+<p>Figure <a href="#fig:recentDateTimeCIPlot">3.18</a> shows half-hourly carbon intensity since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:recentDateTimeCIPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/recentDateTimeCIPlot-1.png" alt="Half-hourly CO2e emissions, UK (recent)" width="672" />
+<p class="caption">
+Figure 3.18: Half-hourly CO2e emissions, UK (recent)
+</p>
+</div>
+<p>Figure <a href="#fig:recentHalfHourlyProfileCIPlot">3.19</a> shows the daily carbon intensity profiles over time for each day of the week.</p>
+<div class="figure"><span id="fig:recentHalfHourlyProfileCIPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/recentHalfHourlyProfileCIPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
+<p class="caption">
+Figure 3.19: Half-hourly generation, UK (recent)
+</p>
+</div>
+<p>Figure <a href="#fig:makeWeekDayCIPlot">3.20</a> shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:makeWeekDayCIPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/makeWeekDayCIPlot-1.png" alt="half-hourly CI" width="672" />
+<p class="caption">
+Figure 3.20: half-hourly CI
+</p>
+</div>
+<p>Figure <a href="#fig:makeWeekdayTimeCIplot">3.21</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:makeWeekdayTimeCIplot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/makeWeekdayTimeCIplot-1.png" alt="% half-hourly CI" width="672" />
+<p class="caption">
+Figure 3.21: % half-hourly CI
+</p>
+</div>
+<p>Figure <a href="#fig:timeVariationCI">3.22</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.</p>
+<div class="figure"><span id="fig:timeVariationCI"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/timeVariationCI-1.png" alt="timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to 2020-07-01" width="672" />
+<p class="caption">
+Figure 3.22: timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to 2020-07-01
+</p>
+</div>
+<pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 23:52:30&quot; &quot;2018-06-27 23:45:00&quot; &quot;2018-09-22 20:42:58&quot; 
+##               3rd Qu.                  Max. 
+## &quot;2019-06-23 23:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>## Confirming dates plotted: dateFixed</code></pre>
+<pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
+## &quot;2020-01-02&quot; &quot;2020-02-15&quot; &quot;2020-03-30&quot; &quot;2020-03-30&quot; &quot;2020-05-14&quot; &quot;2020-06-30&quot;</code></pre>
+<pre><code>## Confirming months plotted: date</code></pre>
+<pre><code>## 
+##  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec 
+## 5472 5424 5952 5760 5952 5184  432    0    0    0    0    0</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+</div>
+<div id="daily-patterns-1" class="section level3">
+<h3><span class="header-section-number">3.3.3</span> Daily patterns</h3>
+<p>Figure <a href="#fig:compareDailyCIPlot">3.23</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure <a href="#fig:TheilSenCIPlot">3.17</a>, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;
+## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:compareDailyCIPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/compareDailyCIPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
+<p class="caption">
+Figure 3.23: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+</p>
+</div>
+<p>Figure <a href="#fig:compareDailyCIpcPlot">3.24</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:compareDailyCIpcPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/compareDailyCIpcPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
+<p class="caption">
+Figure 3.24: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+</p>
+</div>
+</div>
+<div id="weekly-patterns-1" class="section level3">
+<h3><span class="header-section-number">3.3.4</span> Weekly patterns</h3>
+<p>tbc</p>
+</div>
+</div>
+<div id="carbon-emissions-total-analysing-deviation-from-normal" class="section level2">
+<h2><span class="header-section-number">3.4</span> Carbon emissions (total): Analysing deviation from 'normal'</h2>
+<p>In this section we use our calculation of total CO2e emitted per half hour (see Section <a href="#genData">2.1</a>) to analyse the changes in total CO2e emitted which is, after all, what we are mostly interested in from a climate change point of view. Remember that this value is driven <em>both</em> by total generation (demand) <em>and</em> carbon intensity. As we saw above, these are not always tightly correlated.</p>
+<div id="overall-trends-2" class="section level3">
+<h3><span class="header-section-number">3.4.1</span> Overall trends</h3>
+<p>Figure <a href="#fig:TheilSenC02eTPlot">3.25</a> again uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table <a href="#tab:TheilSenC02eTPlot">3.5</a> indicates the years over which the trend is calculated.</p>
+<p>This plot shows that total CO2e emissions intensity has fallen by a half-hourly mean of ~600-800 tonnes of CO2e over the time period. However there is some variation around this trend with apparently slightly above trend emissions in the evening peak period during April and May 2020 noticeable despite the almost complete absence of coal generation during this period (see Annex, Figure <a href="#fig:fuelTrendPlots"><strong>??</strong></a>).</p>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<div class="figure"><span id="fig:TheilSenC02eTPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/TheilSenC02eTPlot-1.png" alt="Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 3.25: Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2016-01-01
+</p>
+</div>
+<pre><code>## png 
+##   2</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:TheilSenC02eTPlot">Table 3.5: </span>Mean half-hourly C02e (T) by year and peak period - 2020 incomplete
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Early morning
+</th>
+<th style="text-align:right;">
+Morning peak
+</th>
+<th style="text-align:right;">
+Day time
+</th>
+<th style="text-align:right;">
+Evening peak
+</th>
+<th style="text-align:right;">
+Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+3583.28
+</td>
+<td style="text-align:right;">
+5263.54
+</td>
+<td style="text-align:right;">
+5394.18
+</td>
+<td style="text-align:right;">
+6141.04
+</td>
+<td style="text-align:right;">
+4547.66
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+3125.13
+</td>
+<td style="text-align:right;">
+4620.72
+</td>
+<td style="text-align:right;">
+4771.29
+</td>
+<td style="text-align:right;">
+5429.05
+</td>
+<td style="text-align:right;">
+4022.59
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+2678.88
+</td>
+<td style="text-align:right;">
+4158.16
+</td>
+<td style="text-align:right;">
+4291.68
+</td>
+<td style="text-align:right;">
+4956.08
+</td>
+<td style="text-align:right;">
+3492.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+2373.46
+</td>
+<td style="text-align:right;">
+3737.67
+</td>
+<td style="text-align:right;">
+3846.41
+</td>
+<td style="text-align:right;">
+4326.07
+</td>
+<td style="text-align:right;">
+3137.99
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+1991.98
+</td>
+<td style="text-align:right;">
+2956.44
+</td>
+<td style="text-align:right;">
+3050.62
+</td>
+<td style="text-align:right;">
+3673.00
+</td>
+<td style="text-align:right;">
+2690.19
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now use the openair results object to estimate what the 2020 values would have been if the deaseasoned trend slope had continued.</p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:calculateCO2DiffFromTrend">Table 3.6: </span>GWh above/below expected mean half-hourly CO2e (T) by month
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+diff_Early morning
+</th>
+<th style="text-align:right;">
+diff_Morning peak
+</th>
+<th style="text-align:right;">
+diff_Day time
+</th>
+<th style="text-align:right;">
+diff_Evening peak
+</th>
+<th style="text-align:right;">
+diff_Late evening
+</th>
+<th style="text-align:right;">
+diffTotal
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jan 2020
+</td>
+<td style="text-align:right;">
+38.40
+</td>
+<td style="text-align:right;">
+-94.32
+</td>
+<td style="text-align:right;">
+-297.42
+</td>
+<td style="text-align:right;">
+-598.74
+</td>
+<td style="text-align:right;">
+-154.75
+</td>
+<td style="text-align:right;">
+-1106.84
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feb 2020
+</td>
+<td style="text-align:right;">
+-489.19
+</td>
+<td style="text-align:right;">
+-741.88
+</td>
+<td style="text-align:right;">
+-1367.88
+</td>
+<td style="text-align:right;">
+-963.41
+</td>
+<td style="text-align:right;">
+-693.30
+</td>
+<td style="text-align:right;">
+-4255.66
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mar 2020
+</td>
+<td style="text-align:right;">
+54.86
+</td>
+<td style="text-align:right;">
+-55.89
+</td>
+<td style="text-align:right;">
+126.07
+</td>
+<td style="text-align:right;">
+-234.76
+</td>
+<td style="text-align:right;">
+-142.04
+</td>
+<td style="text-align:right;">
+-251.77
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Apr 2020
+</td>
+<td style="text-align:right;">
+24.96
+</td>
+<td style="text-align:right;">
+-364.50
+</td>
+<td style="text-align:right;">
+-310.24
+</td>
+<td style="text-align:right;">
+39.02
+</td>
+<td style="text-align:right;">
+101.46
+</td>
+<td style="text-align:right;">
+-509.30
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+May 2020
+</td>
+<td style="text-align:right;">
+140.74
+</td>
+<td style="text-align:right;">
+-192.82
+</td>
+<td style="text-align:right;">
+-128.40
+</td>
+<td style="text-align:right;">
+218.20
+</td>
+<td style="text-align:right;">
+216.70
+</td>
+<td style="text-align:right;">
+254.42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jun 2020
+</td>
+<td style="text-align:right;">
+455.16
+</td>
+<td style="text-align:right;">
+303.26
+</td>
+<td style="text-align:right;">
+454.21
+</td>
+<td style="text-align:right;">
+743.02
+</td>
+<td style="text-align:right;">
+568.19
+</td>
+<td style="text-align:right;">
+2523.84
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:calculateCO2DiffFromTrend">Table 3.6: </span>% above/below expected mean half-hourly CO2e (T) by month
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+date
+</th>
+<th style="text-align:right;">
+pcDiff_Early morning
+</th>
+<th style="text-align:right;">
+pcDiff_Morning peak
+</th>
+<th style="text-align:right;">
+pcDiff_Day time
+</th>
+<th style="text-align:right;">
+pcDiff_Evening peak
+</th>
+<th style="text-align:right;">
+pcDiff_Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Jan 2020
+</td>
+<td style="text-align:right;">
+1.97
+</td>
+<td style="text-align:right;">
+-2.94
+</td>
+<td style="text-align:right;">
+-8.85
+</td>
+<td style="text-align:right;">
+-15.57
+</td>
+<td style="text-align:right;">
+-5.71
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Feb 2020
+</td>
+<td style="text-align:right;">
+-25.60
+</td>
+<td style="text-align:right;">
+-23.48
+</td>
+<td style="text-align:right;">
+-41.27
+</td>
+<td style="text-align:right;">
+-25.41
+</td>
+<td style="text-align:right;">
+-25.98
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mar 2020
+</td>
+<td style="text-align:right;">
+2.92
+</td>
+<td style="text-align:right;">
+-1.80
+</td>
+<td style="text-align:right;">
+3.85
+</td>
+<td style="text-align:right;">
+-6.28
+</td>
+<td style="text-align:right;">
+-5.40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Apr 2020
+</td>
+<td style="text-align:right;">
+1.36
+</td>
+<td style="text-align:right;">
+-11.89
+</td>
+<td style="text-align:right;">
+-9.62
+</td>
+<td style="text-align:right;">
+1.06
+</td>
+<td style="text-align:right;">
+3.92
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+May 2020
+</td>
+<td style="text-align:right;">
+7.79
+</td>
+<td style="text-align:right;">
+-6.39
+</td>
+<td style="text-align:right;">
+-4.04
+</td>
+<td style="text-align:right;">
+6.01
+</td>
+<td style="text-align:right;">
+8.51
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Jun 2020
+</td>
+<td style="text-align:right;">
+25.73
+</td>
+<td style="text-align:right;">
+10.22
+</td>
+<td style="text-align:right;">
+14.50
+</td>
+<td style="text-align:right;">
+20.77
+</td>
+<td style="text-align:right;">
+22.70
+</td>
+</tr>
+</tbody>
+</table>
+<p>Theil-Sen by weekday (for fun):</p>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<p><img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/theilSenCO2eDoWPlot-1.png" width="672" /></p>
+</div>
+<div id="half-hourly-patterns-2" class="section level3">
+<h3><span class="header-section-number">3.4.2</span> Half-hourly patterns</h3>
+<p>Figure <a href="#fig:recentDateTimeC02ekgPlot">3.26</a> shows total half-hourly CO2e emissions since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:recentDateTimeC02ekgPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/recentDateTimeC02ekgPlot-1.png" alt="Half-hourly total CO2e emissions, UK (recent)" width="672" />
+<p class="caption">
+Figure 3.26: Half-hourly total CO2e emissions, UK (recent)
+</p>
+</div>
+<p>Figure <a href="#fig:recentHalfHourlyProfileC02ekgPlot">3.27</a> shows the daily CO2e emissions profiles over time for each day of the week since 2020-02-01.</p>
+<div class="figure"><span id="fig:recentHalfHourlyProfileC02ekgPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/recentHalfHourlyProfileC02ekgPlot-1.png" alt="Half-hourly CO2e emissions, UK (recent)" width="672" />
+<p class="caption">
+Figure 3.27: Half-hourly CO2e emissions, UK (recent)
+</p>
+</div>
+<p>Figure <a href="#fig:makeWeekDayCO2eTPlot">3.28</a> shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:makeWeekDayCO2eTPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/makeWeekDayCO2eTPlot-1.png" alt="half-hourly CO2e" width="672" />
+<p class="caption">
+Figure 3.28: half-hourly CO2e
+</p>
+</div>
+<p>Figure <a href="#fig:makeWeekdayTimeCO2eTplot">3.29</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:makeWeekdayTimeCO2eTplot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/makeWeekdayTimeCO2eTplot-1.png" alt="% half-hourly CO2e" width="672" />
+<p class="caption">
+Figure 3.29: % half-hourly CO2e
+</p>
+</div>
+<p>Figure <a href="#fig:timeVariationCO2e">3.30</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.</p>
+<div class="figure"><span id="fig:timeVariationCO2e"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/timeVariationCO2e-1.png" alt="timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018" width="672" />
+<p class="caption">
+Figure 3.30: timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018
+</p>
+</div>
+<pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 23:52:30&quot; &quot;2018-06-27 23:45:00&quot; &quot;2018-09-22 20:42:58&quot; 
+##               3rd Qu.                  Max. 
+## &quot;2019-06-23 23:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>## Confirming dates plotted: dateFixed</code></pre>
+<pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
+## &quot;2020-01-02&quot; &quot;2020-02-15&quot; &quot;2020-03-30&quot; &quot;2020-03-30&quot; &quot;2020-05-14&quot; &quot;2020-06-30&quot;</code></pre>
+<pre><code>## Confirming months plotted: date</code></pre>
+<pre><code>## 
+##  Jan  Feb  Mar  Apr  May  Jun  Jul  Aug  Sep  Oct  Nov  Dec 
+## 5472 5424 5952 5760 5952 5184  432    0    0    0    0    0</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+<pre><code>## png 
+##   2</code></pre>
+</div>
+<div id="daily-patterns-2" class="section level3">
+<h3><span class="header-section-number">3.4.3</span> Daily patterns</h3>
+<p>Figure <a href="#fig:compareDailyCO2ekgPlot">3.31</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<blockquote>
+<p>check y axis</p>
+</blockquote>
+<pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;
+## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<div class="figure"><span id="fig:compareDailyCO2ekgPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/compareDailyCO2ekgPlot-1.png" alt="Mean half-hourly total CO2e by day, 2020 vs pre 2020" width="672" />
+<p class="caption">
+Figure 3.31: Mean half-hourly total CO2e by day, 2020 vs pre 2020
+</p>
+</div>
+<p>Figure <a href="#fig:compareDailyC02ekgpcPlot">3.32</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:compareDailyC02ekgpcPlot"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/compareDailyC02ekgpcPlot-1.png" alt="Percentage difference in mean half-hourly CO2e 2020 vs pre 2020" width="672" />
+<p class="caption">
+Figure 3.32: Percentage difference in mean half-hourly CO2e 2020 vs pre 2020
+</p>
+</div>
+</div>
+<div id="weekly-patterns-2" class="section level3">
+<h3><span class="header-section-number">3.4.4</span> Weekly patterns</h3>
+<p>tbc</p>
+</div>
+</div>
+</div>
+<div id="summary-to-date" class="section level1">
+<h1><span class="header-section-number">4</span> Summary (to date)</h1>
+</div>
+<div id="about" class="section level1">
+<h1><span class="header-section-number">5</span> About</h1>
+<div id="citation" class="section level2">
+<h2><span class="header-section-number">5.1</span> Citation</h2>
+<p>If you wish to use any of the material from this report please cite as:</p>
+<ul>
+<li>Ben Anderson (2020) <em>UK Electricity Generation and Carbon Itensity: covid 19 lockdown v1.0</em>, University of Southampton: Sustainable Energy Research Centre.</li>
+</ul>
+<p>This work is (c) 2020 the authors. Usage rights are specified in the License section (<a href="#license">5.4</a>).</p>
+</div>
+<div id="report-circulation" class="section level2">
+<h2><span class="header-section-number">5.2</span> Report circulation</h2>
+<ul>
+<li>Public – this report is intended for publication.</li>
+</ul>
+</div>
+<div id="code" class="section level2">
+<h2><span class="header-section-number">5.3</span> Code</h2>
+<p>All code used to create this report is available from:</p>
+<ul>
+<li><a href="https://github.com/CfSOtago/gridCarbon" class="uri">https://github.com/CfSOtago/gridCarbon</a></li>
+</ul>
+</div>
+<div id="license" class="section level2">
+<h2><span class="header-section-number">5.4</span> License</h2>
+<p>This work is made available under the Creative Commons <a href="https://creativecommons.org/licenses/by-sa/4.0/">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License</a>.</p>
+<p>This means you are free to:</p>
+<ul>
+<li><em>Share</em> — copy and redistribute the material in any medium or format</li>
+<li><em>Adapt</em> — remix, transform, and build upon the material for any purpose, even commercially.</li>
+</ul>
+<p>Under the following terms:</p>
+<ul>
+<li><em>Attribution</em> — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
+<li><em>ShareAlike</em> — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.</li>
+<li><em>No additional restrictions</em> — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.</li>
+</ul>
+<p><strong>Notices:</strong></p>
+<ul>
+<li>You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.</li>
+<li>No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.</li>
+</ul>
+<p>For the avoidance of doubt and explanation of terms please refer to the full <a href="https://creativecommons.org/licenses/by-sa/4.0/">license notice</a> and <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">legal code</a>.</p>
+</div>
+<div id="history" class="section level2">
+<h2><span class="header-section-number">5.5</span> History</h2>
+<p>You may not be reading the most recent version of this report. Please check:</p>
+<ul>
+<li>the github <a href="https://github.com/CfSOtago/gridCarbon">R code repository</a>;</li>
+<li>our <a href="https://github.com/CfSOtago/gridCarbon/issues">issues list</a> for any unfixed problems;</li>
+<li>our <a href="https://cfsotago.github.io/gridCarbon/">project publictions</a>;</li>
+</ul>
+<p>We do not 'support' the code but if you notice a problem please check the <a href="https://github.com/CfSOtago/gridCarbon/issues">issues</a> on our <a href="https://github.com/CfSOtago/gridCarbon">repo</a> and if it doesn't already exist, please open a new one. * this <a href="https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/">report's edit history</a></p>
+</div>
+<div id="support" class="section level2">
+<h2><span class="header-section-number">5.6</span> Support</h2>
+<p>This work was supported by:</p>
+<ul>
+<li>The <a href="https://www.otago.ac.nz/">University of Otago</a>;</li>
+<li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton's Sustainable Energy Research Group (2019-2020).</li>
+<li>The European Union via <a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a>, a Marie Skłodowska-Curie <a href="https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en">Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Sustainable Energy Research Group</a> (2019-2020) (Anderson)</li>
+</ul>
+
+</div>
+</div>
+<div id="annexes" class="section level1">
+<h1><span class="header-section-number">6</span> Annexes</h1>
+<div id="grid-generation-data" class="section level2">
+<h2><span class="header-section-number">6.1</span> Grid generation data</h2>
+<p>Descriptive stats using skimr::skim():</p>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+<span id="tab:skimGrid">Table 6.1: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+gridGenDT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+78288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+52
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Date
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+difftime
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+43
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSIXct
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rDateTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+78288
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: Date</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+obsDate
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2016-01-01
+</td>
+<td style="text-align:left;">
+2020-06-18
+</td>
+<td style="text-align:left;">
+2018-03-26
+</td>
+<td style="text-align:right;">
+1631
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+date
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2016-01-01
+</td>
+<td style="text-align:left;">
+2020-06-18
+</td>
+<td style="text-align:left;">
+2018-03-26
+</td>
+<td style="text-align:right;">
+1631
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: difftime</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+hms
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+0 secs
+</td>
+<td style="text-align:left;">
+84600 secs
+</td>
+<td style="text-align:left;">
+42300 secs
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+peakPeriod
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+Ear: 22834, Day: 22834, Eve: 13048, Lat: 13048
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+season
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+Spr: 22080, Win: 20208, Sum: 18528, Aut: 17472
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dow
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+Sun: 11184, Mon: 11184, Tue: 11184, Wed: 11184
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+GAS
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.317777e+04
+</td>
+<td style="text-align:right;">
+5.265370e+03
+</td>
+<td style="text-align:right;">
+2291.00
+</td>
+<td style="text-align:right;">
+9.114750e+03
+</td>
+<td style="text-align:right;">
+1.292500e+04
+</td>
+<td style="text-align:right;">
+1.715200e+04
+</td>
+<td style="text-align:right;">
+2.747200e+04
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COAL
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.866260e+03
+</td>
+<td style="text-align:right;">
+2.380300e+03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+2.310000e+02
+</td>
+<td style="text-align:right;">
+8.830000e+02
+</td>
+<td style="text-align:right;">
+2.594000e+03
+</td>
+<td style="text-align:right;">
+1.472400e+04
+</td>
+<td style="text-align:left;">
+▇▂▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NUCLEAR
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.845520e+03
+</td>
+<td style="text-align:right;">
+1.022700e+03
+</td>
+<td style="text-align:right;">
+3705.00
+</td>
+<td style="text-align:right;">
+6.213000e+03
+</td>
+<td style="text-align:right;">
+6.943000e+03
+</td>
+<td style="text-align:right;">
+7.646000e+03
+</td>
+<td style="text-align:right;">
+8.859000e+03
+</td>
+<td style="text-align:left;">
+▁▂▆▇▃
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WIND
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5.313530e+03
+</td>
+<td style="text-align:right;">
+3.702440e+03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+2.298000e+03
+</td>
+<td style="text-align:right;">
+4.554000e+03
+</td>
+<td style="text-align:right;">
+7.632000e+03
+</td>
+<td style="text-align:right;">
+1.712900e+04
+</td>
+<td style="text-align:left;">
+▇▆▃▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HYDRO
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4.152200e+02
+</td>
+<td style="text-align:right;">
+2.541200e+02
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+2.080000e+02
+</td>
+<td style="text-align:right;">
+3.810000e+02
+</td>
+<td style="text-align:right;">
+5.860000e+02
+</td>
+<td style="text-align:right;">
+1.403000e+03
+</td>
+<td style="text-align:left;">
+▇▇▅▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IMPORTS
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.529940e+03
+</td>
+<td style="text-align:right;">
+9.569900e+02
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+1.959000e+03
+</td>
+<td style="text-align:right;">
+2.720000e+03
+</td>
+<td style="text-align:right;">
+3.124000e+03
+</td>
+<td style="text-align:right;">
+4.884000e+03
+</td>
+<td style="text-align:left;">
+▂▅▇▇▂
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BIOMASS
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.134800e+03
+</td>
+<td style="text-align:right;">
+1.060460e+03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+1.295000e+03
+</td>
+<td style="text-align:right;">
+2.078000e+03
+</td>
+<td style="text-align:right;">
+3.204000e+03
+</td>
+<td style="text-align:left;">
+▇▂▃▅▂
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+OTHER
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7.295900e+02
+</td>
+<td style="text-align:right;">
+8.226500e+02
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+8.900000e+01
+</td>
+<td style="text-align:right;">
+1.420000e+02
+</td>
+<td style="text-align:right;">
+1.462000e+03
+</td>
+<td style="text-align:right;">
+2.173000e+03
+</td>
+<td style="text-align:left;">
+▇▁▁▂▃
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SOLAR
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.306980e+03
+</td>
+<td style="text-align:right;">
+2.018680e+03
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+1.300000e+01
+</td>
+<td style="text-align:right;">
+2.130000e+03
+</td>
+<td style="text-align:right;">
+9.680000e+03
+</td>
+<td style="text-align:left;">
+▇▂▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STORAGE
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.632100e+02
+</td>
+<td style="text-align:right;">
+3.273800e+02
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+1.700000e+02
+</td>
+<td style="text-align:right;">
+3.900000e+02
+</td>
+<td style="text-align:right;">
+2.394000e+03
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GENERATION
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.358283e+04
+</td>
+<td style="text-align:right;">
+7.038010e+03
+</td>
+<td style="text-align:right;">
+18287.00
+</td>
+<td style="text-align:right;">
+2.818600e+04
+</td>
+<td style="text-align:right;">
+3.331400e+04
+</td>
+<td style="text-align:right;">
+3.849250e+04
+</td>
+<td style="text-align:right;">
+5.342700e+04
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CARBON_INTENSITY
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.457800e+02
+</td>
+<td style="text-align:right;">
+7.526000e+01
+</td>
+<td style="text-align:right;">
+54.00
+</td>
+<td style="text-align:right;">
+1.950000e+02
+</td>
+<td style="text-align:right;">
+2.410000e+02
+</td>
+<td style="text-align:right;">
+2.910000e+02
+</td>
+<td style="text-align:right;">
+5.110000e+02
+</td>
+<td style="text-align:left;">
+▂▇▇▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LOW_CARBON
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.501605e+04
+</td>
+<td style="text-align:right;">
+4.152520e+03
+</td>
+<td style="text-align:right;">
+6755.00
+</td>
+<td style="text-align:right;">
+1.182000e+04
+</td>
+<td style="text-align:right;">
+1.449700e+04
+</td>
+<td style="text-align:right;">
+1.779925e+04
+</td>
+<td style="text-align:right;">
+3.074600e+04
+</td>
+<td style="text-align:left;">
+▅▇▅▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZERO_CARBON
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.388126e+04
+</td>
+<td style="text-align:right;">
+3.849980e+03
+</td>
+<td style="text-align:right;">
+4852.00
+</td>
+<td style="text-align:right;">
+1.085800e+04
+</td>
+<td style="text-align:right;">
+1.350200e+04
+</td>
+<td style="text-align:right;">
+1.652800e+04
+</td>
+<td style="text-align:right;">
+2.847300e+04
+</td>
+<td style="text-align:left;">
+▂▇▆▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RENEWABLE
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7.035740e+03
+</td>
+<td style="text-align:right;">
+4.049150e+03
+</td>
+<td style="text-align:right;">
+125.00
+</td>
+<td style="text-align:right;">
+3.823000e+03
+</td>
+<td style="text-align:right;">
+6.496000e+03
+</td>
+<td style="text-align:right;">
+9.709250e+03
+</td>
+<td style="text-align:right;">
+2.311800e+04
+</td>
+<td style="text-align:left;">
+▇▇▅▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FOSSIL
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.504403e+04
+</td>
+<td style="text-align:right;">
+6.709900e+03
+</td>
+<td style="text-align:right;">
+2421.00
+</td>
+<td style="text-align:right;">
+9.943000e+03
+</td>
+<td style="text-align:right;">
+1.429050e+04
+</td>
+<td style="text-align:right;">
+1.924000e+04
+</td>
+<td style="text-align:right;">
+3.684200e+04
+</td>
+<td style="text-align:left;">
+▅▇▆▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GAS_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.840000e+01
+</td>
+<td style="text-align:right;">
+1.094000e+01
+</td>
+<td style="text-align:right;">
+6.60
+</td>
+<td style="text-align:right;">
+3.090000e+01
+</td>
+<td style="text-align:right;">
+3.990000e+01
+</td>
+<td style="text-align:right;">
+4.680000e+01
+</td>
+<td style="text-align:right;">
+7.010000e+01
+</td>
+<td style="text-align:left;">
+▁▅▇▆▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+COAL_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4.920000e+00
+</td>
+<td style="text-align:right;">
+5.630000e+00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+8.000000e-01
+</td>
+<td style="text-align:right;">
+2.800000e+00
+</td>
+<td style="text-align:right;">
+7.200000e+00
+</td>
+<td style="text-align:right;">
+3.020000e+01
+</td>
+<td style="text-align:left;">
+▇▂▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NUCLEAR_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.128000e+01
+</td>
+<td style="text-align:right;">
+5.530000e+00
+</td>
+<td style="text-align:right;">
+9.70
+</td>
+<td style="text-align:right;">
+1.720000e+01
+</td>
+<td style="text-align:right;">
+2.050000e+01
+</td>
+<td style="text-align:right;">
+2.460000e+01
+</td>
+<td style="text-align:right;">
+4.310000e+01
+</td>
+<td style="text-align:left;">
+▃▇▅▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WIND_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.620000e+01
+</td>
+<td style="text-align:right;">
+1.142000e+01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+7.000000e+00
+</td>
+<td style="text-align:right;">
+1.375000e+01
+</td>
+<td style="text-align:right;">
+2.300000e+01
+</td>
+<td style="text-align:right;">
+5.830000e+01
+</td>
+<td style="text-align:left;">
+▇▆▃▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+HYDRO_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.210000e+00
+</td>
+<td style="text-align:right;">
+6.700000e-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+7.000000e-01
+</td>
+<td style="text-align:right;">
+1.100000e+00
+</td>
+<td style="text-align:right;">
+1.700000e+00
+</td>
+<td style="text-align:right;">
+4.200000e+00
+</td>
+<td style="text-align:left;">
+▇▇▅▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IMPORTS_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7.890000e+00
+</td>
+<td style="text-align:right;">
+3.320000e+00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+5.700000e+00
+</td>
+<td style="text-align:right;">
+8.100000e+00
+</td>
+<td style="text-align:right;">
+1.030000e+01
+</td>
+<td style="text-align:right;">
+1.890000e+01
+</td>
+<td style="text-align:left;">
+▂▆▇▃▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+BIOMASS_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.500000e+00
+</td>
+<td style="text-align:right;">
+3.370000e+00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+3.800000e+00
+</td>
+<td style="text-align:right;">
+6.200000e+00
+</td>
+<td style="text-align:right;">
+1.610000e+01
+</td>
+<td style="text-align:left;">
+▇▅▃▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+OTHER_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.230000e+00
+</td>
+<td style="text-align:right;">
+2.550000e+00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+3.000000e-01
+</td>
+<td style="text-align:right;">
+5.000000e-01
+</td>
+<td style="text-align:right;">
+4.600000e+00
+</td>
+<td style="text-align:right;">
+1.050000e+01
+</td>
+<td style="text-align:left;">
+▇▂▂▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SOLAR_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.680000e+00
+</td>
+<td style="text-align:right;">
+5.810000e+00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+5.700000e+00
+</td>
+<td style="text-align:right;">
+3.280000e+01
+</td>
+<td style="text-align:left;">
+▇▂▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+STORAGE_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7.000000e-01
+</td>
+<td style="text-align:right;">
+8.500000e-01
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+5.000000e-01
+</td>
+<td style="text-align:right;">
+1.100000e+00
+</td>
+<td style="text-align:right;">
+7.900000e+00
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+GENERATION_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.000000e+02
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+100.00
+</td>
+<td style="text-align:right;">
+1.000000e+02
+</td>
+<td style="text-align:right;">
+1.000000e+02
+</td>
+<td style="text-align:right;">
+1.000000e+02
+</td>
+<td style="text-align:right;">
+1.000000e+02
+</td>
+<td style="text-align:left;">
+▁▁▇▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LOW_CARBON_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4.586000e+01
+</td>
+<td style="text-align:right;">
+1.309000e+01
+</td>
+<td style="text-align:right;">
+16.40
+</td>
+<td style="text-align:right;">
+3.610000e+01
+</td>
+<td style="text-align:right;">
+4.420000e+01
+</td>
+<td style="text-align:right;">
+5.420000e+01
+</td>
+<td style="text-align:right;">
+8.790000e+01
+</td>
+<td style="text-align:left;">
+▂▇▆▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ZERO_CARBON_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4.236000e+01
+</td>
+<td style="text-align:right;">
+1.212000e+01
+</td>
+<td style="text-align:right;">
+15.50
+</td>
+<td style="text-align:right;">
+3.330000e+01
+</td>
+<td style="text-align:right;">
+4.080000e+01
+</td>
+<td style="text-align:right;">
+5.000000e+01
+</td>
+<td style="text-align:right;">
+8.510000e+01
+</td>
+<td style="text-align:left;">
+▂▇▅▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RENEWABLE_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.108000e+01
+</td>
+<td style="text-align:right;">
+1.194000e+01
+</td>
+<td style="text-align:right;">
+0.50
+</td>
+<td style="text-align:right;">
+1.170000e+01
+</td>
+<td style="text-align:right;">
+1.930000e+01
+</td>
+<td style="text-align:right;">
+2.860000e+01
+</td>
+<td style="text-align:right;">
+6.620000e+01
+</td>
+<td style="text-align:left;">
+▆▇▅▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FOSSIL_perc
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4.331000e+01
+</td>
+<td style="text-align:right;">
+1.293000e+01
+</td>
+<td style="text-align:right;">
+9.00
+</td>
+<td style="text-align:right;">
+3.430000e+01
+</td>
+<td style="text-align:right;">
+4.420000e+01
+</td>
+<td style="text-align:right;">
+5.270000e+01
+</td>
+<td style="text-align:right;">
+7.670000e+01
+</td>
+<td style="text-align:left;">
+▂▅▇▆▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2.017760e+03
+</td>
+<td style="text-align:right;">
+1.310000e+00
+</td>
+<td style="text-align:right;">
+2016.00
+</td>
+<td style="text-align:right;">
+2.017000e+03
+</td>
+<td style="text-align:right;">
+2.018000e+03
+</td>
+<td style="text-align:right;">
+2.019000e+03
+</td>
+<td style="text-align:right;">
+2.020000e+03
+</td>
+<td style="text-align:left;">
+▇▇▇▇▃
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nHalfHours
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4.800000e+01
+</td>
+<td style="text-align:right;">
+0.000000e+00
+</td>
+<td style="text-align:right;">
+48.00
+</td>
+<td style="text-align:right;">
+4.800000e+01
+</td>
+<td style="text-align:right;">
+4.800000e+01
+</td>
+<td style="text-align:right;">
+4.800000e+01
+</td>
+<td style="text-align:right;">
+4.800000e+01
+</td>
+<td style="text-align:left;">
+▁▁▇▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rGENERATION
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.089620e+04
+</td>
+<td style="text-align:right;">
+6.474970e+03
+</td>
+<td style="text-align:right;">
+16824.04
+</td>
+<td style="text-align:right;">
+2.593112e+04
+</td>
+<td style="text-align:right;">
+3.064888e+04
+</td>
+<td style="text-align:right;">
+3.541310e+04
+</td>
+<td style="text-align:right;">
+4.915284e+04
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+consumption_MW
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.089620e+04
+</td>
+<td style="text-align:right;">
+6.474970e+03
+</td>
+<td style="text-align:right;">
+16824.04
+</td>
+<td style="text-align:right;">
+2.593112e+04
+</td>
+<td style="text-align:right;">
+3.064888e+04
+</td>
+<td style="text-align:right;">
+3.541310e+04
+</td>
+<td style="text-align:right;">
+4.915284e+04
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+consGW
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.090000e+01
+</td>
+<td style="text-align:right;">
+6.470000e+00
+</td>
+<td style="text-align:right;">
+16.82
+</td>
+<td style="text-align:right;">
+2.593000e+01
+</td>
+<td style="text-align:right;">
+3.065000e+01
+</td>
+<td style="text-align:right;">
+3.541000e+01
+</td>
+<td style="text-align:right;">
+4.915000e+01
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+consumption_MWh
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.544810e+04
+</td>
+<td style="text-align:right;">
+3.237480e+03
+</td>
+<td style="text-align:right;">
+8412.02
+</td>
+<td style="text-align:right;">
+1.296556e+04
+</td>
+<td style="text-align:right;">
+1.532444e+04
+</td>
+<td style="text-align:right;">
+1.770655e+04
+</td>
+<td style="text-align:right;">
+2.457642e+04
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+consGWh
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.545000e+01
+</td>
+<td style="text-align:right;">
+3.240000e+00
+</td>
+<td style="text-align:right;">
+8.41
+</td>
+<td style="text-align:right;">
+1.297000e+01
+</td>
+<td style="text-align:right;">
+1.532000e+01
+</td>
+<td style="text-align:right;">
+1.771000e+01
+</td>
+<td style="text-align:right;">
+2.458000e+01
+</td>
+<td style="text-align:left;">
+▃▇▇▅▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C02e_g
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.931123e+09
+</td>
+<td style="text-align:right;">
+1.831032e+09
+</td>
+<td style="text-align:right;">
+714561700.00
+</td>
+<td style="text-align:right;">
+2.592210e+09
+</td>
+<td style="text-align:right;">
+3.602156e+09
+</td>
+<td style="text-align:right;">
+4.858209e+09
+</td>
+<td style="text-align:right;">
+1.172812e+10
+</td>
+<td style="text-align:left;">
+▆▇▃▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C02e_kg
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.931123e+06
+</td>
+<td style="text-align:right;">
+1.831032e+06
+</td>
+<td style="text-align:right;">
+714561.70
+</td>
+<td style="text-align:right;">
+2.592210e+06
+</td>
+<td style="text-align:right;">
+3.602156e+06
+</td>
+<td style="text-align:right;">
+4.858209e+06
+</td>
+<td style="text-align:right;">
+1.172812e+07
+</td>
+<td style="text-align:left;">
+▆▇▃▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+C02e_T
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.931120e+03
+</td>
+<td style="text-align:right;">
+1.831030e+03
+</td>
+<td style="text-align:right;">
+714.56
+</td>
+<td style="text-align:right;">
+2.592210e+03
+</td>
+<td style="text-align:right;">
+3.602160e+03
+</td>
+<td style="text-align:right;">
+4.858210e+03
+</td>
+<td style="text-align:right;">
+1.172812e+04
+</td>
+<td style="text-align:left;">
+▆▇▃▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+month
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.190000e+00
+</td>
+<td style="text-align:right;">
+3.450000e+00
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+3.000000e+00
+</td>
+<td style="text-align:right;">
+6.000000e+00
+</td>
+<td style="text-align:right;">
+9.000000e+00
+</td>
+<td style="text-align:right;">
+1.200000e+01
+</td>
+<td style="text-align:left;">
+▇▆▅▅▆
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+hour
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1.150000e+01
+</td>
+<td style="text-align:right;">
+6.920000e+00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+5.750000e+00
+</td>
+<td style="text-align:right;">
+1.150000e+01
+</td>
+<td style="text-align:right;">
+1.725000e+01
+</td>
+<td style="text-align:right;">
+2.300000e+01
+</td>
+<td style="text-align:left;">
+▇▇▆▇▇
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DATETIME
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2016-01-01
+</td>
+<td style="text-align:left;">
+2020-06-18 23:30:00
+</td>
+<td style="text-align:left;">
+2018-03-26 11:45:00
+</td>
+<td style="text-align:right;">
+78288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeUTC
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2016-01-01
+</td>
+<td style="text-align:left;">
+2020-06-18 23:30:00
+</td>
+<td style="text-align:left;">
+2018-03-26 11:45:00
+</td>
+<td style="text-align:right;">
+78288
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="embedded-genration-data" class="section level2">
+<h2><span class="header-section-number">6.2</span> Embedded genration data</h2>
+<p>Descriptive stats using skimr::skim():</p>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+<span id="tab:skimEmbedded">Table 6.2: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+embeddedGenDT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+92938
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+15
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Date
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+difftime
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSIXct
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rDate
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1936
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FORECAST_ACTUAL_INDICATOR
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+90058
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+92928
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: Date</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+obsDate
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2015-01-01
+</td>
+<td style="text-align:left;">
+2020-06-29
+</td>
+<td style="text-align:left;">
+2017-08-29
+</td>
+<td style="text-align:right;">
+1936
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: difftime</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+hms
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+0 secs
+</td>
+<td style="text-align:left;">
+84600 secs
+</td>
+<td style="text-align:left;">
+41400 secs
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+peakPeriod
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+Ear: 27114, Day: 27104, Eve: 15488, Lat: 15488
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+SETTLEMENT_PERIOD
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+24.50
+</td>
+<td style="text-align:right;">
+13.86
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:left;">
+▇▇▇▇▆
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMBEDDED_WIND_GENERATION
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1280.56
+</td>
+<td style="text-align:right;">
+680.01
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+731
+</td>
+<td style="text-align:right;">
+1175
+</td>
+<td style="text-align:right;">
+1729
+</td>
+<td style="text-align:right;">
+3826
+</td>
+<td style="text-align:left;">
+▇▇▅▂▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMBEDDED_WIND_CAPACITY
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5212.06
+</td>
+<td style="text-align:right;">
+892.46
+</td>
+<td style="text-align:right;">
+3601
+</td>
+<td style="text-align:right;">
+4253
+</td>
+<td style="text-align:right;">
+5305
+</td>
+<td style="text-align:right;">
+5978
+</td>
+<td style="text-align:right;">
+6527
+</td>
+<td style="text-align:left;">
+▇▃▆▆▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMBEDDED_SOLAR_GENERATION
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1196.53
+</td>
+<td style="text-align:right;">
+1861.81
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:right;">
+1900
+</td>
+<td style="text-align:right;">
+9670
+</td>
+<td style="text-align:left;">
+▇▂▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMBEDDED_SOLAR_CAPACITY
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+11515.24
+</td>
+<td style="text-align:right;">
+1859.51
+</td>
+<td style="text-align:right;">
+5994
+</td>
+<td style="text-align:right;">
+9602
+</td>
+<td style="text-align:right;">
+12372
+</td>
+<td style="text-align:right;">
+13052
+</td>
+<td style="text-align:right;">
+13080
+</td>
+<td style="text-align:left;">
+▁▁▂▂▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017.18
+</td>
+<td style="text-align:right;">
+1.54
+</td>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:left;">
+▇▃▃▃▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+nHalfHours
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+48.00
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+▁▁▇▁▁
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DateTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2015-01-01
+</td>
+<td style="text-align:left;">
+2020-06-29 23:30:00
+</td>
+<td style="text-align:left;">
+2017-08-29 00:15:00
+</td>
+<td style="text-align:right;">
+92928
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeUTC
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2015-01-01
+</td>
+<td style="text-align:left;">
+2020-06-29 23:30:00
+</td>
+<td style="text-align:left;">
+2017-08-29 00:15:00
+</td>
+<td style="text-align:right;">
+92928
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## Forecast or actual or NA?</code></pre>
+<pre><code>## 
+##           A  &lt;NA&gt; 
+## 90058  2880     0</code></pre>
+<p>Figure @(fig:tileEmbeddedSolar): Tile plot of halfhourly GW over time. We like tile plots.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tileEmbeddedSolar1"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tileEmbeddedSolar-1.png" alt="halfhourly GW over time" width="672" />
+<p class="caption">
+Figure 6.1: halfhourly GW over time
+</p>
+</div>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tileEmbeddedSolar2"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tileEmbeddedSolar-2.png" alt="halfhourly GW over time" width="672" />
+<p class="caption">
+Figure 6.2: halfhourly GW over time
+</p>
+</div>
+<p>Figure @(fig:tileEmbeddedWind): Tile plot of halfhourly GW over time. We like tile plots.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tileEmbeddedWind1"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tileEmbeddedWind-1.png" alt="halfhourly GW over time" width="672" />
+<p class="caption">
+Figure 6.3: halfhourly GW over time
+</p>
+</div>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tileEmbeddedWind2"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/tileEmbeddedWind-2.png" alt="halfhourly GW over time" width="672" />
+<p class="caption">
+Figure 6.4: halfhourly GW over time
+</p>
+</div>
+<p>So there are data holes.</p>
+<p>History: <a href="https://demandforecast.nationalgrid.com/efs_demand_forecast/faces/DataExplorer" class="uri">https://demandforecast.nationalgrid.com/efs_demand_forecast/faces/DataExplorer</a> &lt;- up to end March</p>
+<p>Updates: <a href="https://demandforecast.nationalgrid.com/efs_demand_forecast/demandupdatedownload" class="uri">https://demandforecast.nationalgrid.com/efs_demand_forecast/demandupdatedownload</a> &lt;- since May 1st</p>
+<p>And guess which period we're interested in....</p>
+</div>
+<div id="disentangling-the-embedded-generation-data" class="section level2">
+<h2><span class="header-section-number">6.3</span> Disentangling the embedded generation data</h2>
+<p>It is not entirely clear if the embedded wind &amp; solar is already included in the gridGen data.</p>
+<div class="figure"><span id="fig:checkSolar1"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/checkSolar-1.png" alt="Solar check" width="672" />
+<p class="caption">
+Figure 6.5: Solar check
+</p>
+</div>
+<pre><code>## Using &#39;meanMW&#39; as value column. Use &#39;value.var&#39; to override</code></pre>
+<pre><code>##    year Embedded Solar Grid Solar
+## 1: 2016       1089.292   1180.716
+## 2: 2017       1187.373   1242.915
+## 3: 2018       1317.690   1344.615
+## 4: 2019       1331.162   1341.114
+## 5: 2020       1400.497   1561.213</code></pre>
+<div class="figure"><span id="fig:checkSolar2"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/checkSolar-2.png" alt="Solar check" width="672" />
+<p class="caption">
+Figure 6.6: Solar check
+</p>
+</div>
+<pre><code>## Warning: Removed 3360 rows containing missing values (geom_tile).</code></pre>
+<div class="figure"><span id="fig:checkSolar3"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/checkSolar-3.png" alt="Solar check" width="672" />
+<p class="caption">
+Figure 6.7: Solar check
+</p>
+</div>
+<p>2020 only varies because of the data gap in the embedded data files. There seem to be some weird flips. Do we trust this data?</p>
+<div class="figure"><span id="fig:checkWind1"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/checkWind-1.png" alt="Wind check" width="672" />
+<p class="caption">
+Figure 6.8: Wind check
+</p>
+</div>
+<pre><code>## Using &#39;meanMW&#39; as value column. Use &#39;value.var&#39; to override</code></pre>
+<pre><code>##    year Embedded wind Grid wind
+## 1: 2016      1065.739  3015.948
+## 2: 2017      1399.284  4614.868
+## 3: 2018      1400.371  5622.056
+## 4: 2019      1378.099  6637.613
+## 5: 2020      1693.090  8254.966</code></pre>
+<div class="figure"><span id="fig:checkWind2"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/checkWind-2.png" alt="Wind check" width="672" />
+<p class="caption">
+Figure 6.9: Wind check
+</p>
+</div>
+<pre><code>## Warning: Removed 3360 rows containing missing values (geom_tile).</code></pre>
+<div class="figure"><span id="fig:checkWind3"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/checkWind-3.png" alt="Wind check" width="672" />
+<p class="caption">
+Figure 6.10: Wind check
+</p>
+</div>
+<p>Looks like the wind data is trustable - but we have a gap...</p>
+</div>
+<div id="fuel-trends" class="section level2">
+<h2><span class="header-section-number">6.4</span> Fuel trends</h2>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:fuelGWByYear">Table 6.3: </span>Mean half-hourly GW by fuel by year
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+coal
+</th>
+<th style="text-align:right;">
+gas
+</th>
+<th style="text-align:right;">
+nuclear
+</th>
+<th style="text-align:right;">
+wind
+</th>
+<th style="text-align:right;">
+hydro
+</th>
+<th style="text-align:right;">
+solar
+</th>
+<th style="text-align:right;">
+biomass
+</th>
+<th style="text-align:right;">
+imports
+</th>
+<th style="text-align:right;">
+other
+</th>
+<th style="text-align:right;">
+N obs
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:right;">
+3191.55
+</td>
+<td style="text-align:right;">
+14486.43
+</td>
+<td style="text-align:right;">
+7604.86
+</td>
+<td style="text-align:right;">
+3015.97
+</td>
+<td style="text-align:right;">
+384.71
+</td>
+<td style="text-align:right;">
+1180.82
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+2311.30
+</td>
+<td style="text-align:right;">
+1616.29
+</td>
+<td style="text-align:right;">
+17568
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+2353.36
+</td>
+<td style="text-align:right;">
+13609.80
+</td>
+<td style="text-align:right;">
+7483.64
+</td>
+<td style="text-align:right;">
+4614.83
+</td>
+<td style="text-align:right;">
+452.12
+</td>
+<td style="text-align:right;">
+1243.04
+</td>
+<td style="text-align:right;">
+253.72
+</td>
+<td style="text-align:right;">
+2224.93
+</td>
+<td style="text-align:right;">
+1397.93
+</td>
+<td style="text-align:right;">
+17520
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+1758.89
+</td>
+<td style="text-align:right;">
+13156.65
+</td>
+<td style="text-align:right;">
+6923.77
+</td>
+<td style="text-align:right;">
+5622.07
+</td>
+<td style="text-align:right;">
+365.88
+</td>
+<td style="text-align:right;">
+1344.78
+</td>
+<td style="text-align:right;">
+1838.06
+</td>
+<td style="text-align:right;">
+2516.04
+</td>
+<td style="text-align:right;">
+81.70
+</td>
+<td style="text-align:right;">
+17520
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+677.69
+</td>
+<td style="text-align:right;">
+13066.67
+</td>
+<td style="text-align:right;">
+6023.60
+</td>
+<td style="text-align:right;">
+6637.58
+</td>
+<td style="text-align:right;">
+408.03
+</td>
+<td style="text-align:right;">
+1341.23
+</td>
+<td style="text-align:right;">
+1963.79
+</td>
+<td style="text-align:right;">
+2870.51
+</td>
+<td style="text-align:right;">
+88.51
+</td>
+<td style="text-align:right;">
+17520
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+749.65
+</td>
+<td style="text-align:right;">
+9716.58
+</td>
+<td style="text-align:right;">
+5437.31
+</td>
+<td style="text-align:right;">
+8254.97
+</td>
+<td style="text-align:right;">
+523.11
+</td>
+<td style="text-align:right;">
+1561.21
+</td>
+<td style="text-align:right;">
+2179.84
+</td>
+<td style="text-align:right;">
+2954.13
+</td>
+<td style="text-align:right;">
+153.14
+</td>
+<td style="text-align:right;">
+8160
+</td>
+</tr>
+</tbody>
+</table>
+<p>Figure <a href="#fig:fuelTrendPlots"><strong>??</strong></a> shows mean half-hourly generation per month by fuel together with a smoothed trend line. Note that these values are <em>not</em> de-seasoned.</p>
+<p>Clearly some of these trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to <a href="#fig:compareDailyGWhPlot">3.14</a>.</p>
+<div class="figure"><span id="fig:smoothTrendPlots1"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-1.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.11: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots2"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-2.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.12: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots3"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-3.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.13: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots4"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-4.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.14: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots5"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-5.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.15: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots6"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-6.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.16: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots7"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-7.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.17: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots8"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-8.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.18: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots9"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-9.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.19: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+<div class="figure"><span id="fig:smoothTrendPlots10"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/smoothTrendPlots-10.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
+<p class="caption">
+Figure 6.20: Trend plots of mean half-hourly fuel use per month since 2016-01-01
+</p>
+</div>
+</div>
+<div id="experimental-plots" class="section level2">
+<h2><span class="header-section-number">6.5</span> Experimental plots</h2>
+<p>Figure <a href="#fig:binedDemand">6.21</a> shows the relationship between half-hourly carbon intensity and half-hourly generation over the last five years. 2020 is excluded as it is not yet complete.</p>
+<pre><code>## 
+## Attaching package: &#39;gtools&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:drake&#39;:
+## 
+##     running</code></pre>
+<div class="figure"><span id="fig:binedDemand"></span>
+<img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/binedDemand-1.png" alt="Box &amp; whiskers plots of carbon intensity over time by generation decile" width="672" />
+<p class="caption">
+Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generation decile
+</p>
+</div>
+<p>The openair package <span class="citation">(Carslaw and Ropkins 2012)</span> contains a number of novel plotting methods.</p>
+<pre><code>## Warning: `as_data_frame()` is deprecated as of tibble 2.0.0.
+## Please use `as_tibble()` instead.
+## The signature and semantics have changed, see `?as_tibble`.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<pre><code>## Warning: `data_frame()` is deprecated as of tibble 1.1.0.
+## Please use `tibble()` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<p><img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/carbonRose-1.png" width="672" /></p>
+<p><img src="covidLockdown_UK_upTo_2020-07-01_files/figure-html/carbonScatter-1.png" width="672" /></p>
+</div>
+</div>
+<div id="runtime" class="section level1">
+<h1><span class="header-section-number">7</span> Runtime</h1>
+<p>Analysis completed in 277.17 seconds ( 4.62 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
+</div>
+<div id="r-environment" class="section level1">
+<h1><span class="header-section-number">8</span> R environment</h1>
+<div id="r-packages-used" class="section level2">
+<h2><span class="header-section-number">8.1</span> R packages used</h2>
+<ul>
+<li>base R <span class="citation">(R Core Team 2016)</span></li>
+<li>bookdown <span class="citation">(Xie 2016a)</span></li>
+<li>data.table <span class="citation">(Dowle et al. 2015)</span></li>
+<li>drake <span class="citation">(Landau 2019)</span></li>
+<li>ggplot2 <span class="citation">(Wickham 2009)</span></li>
+<li>kableExtra <span class="citation">(Zhu 2018)</span></li>
+<li>knitr <span class="citation">(Xie 2016b)</span></li>
+<li>lubridate <span class="citation">(Grolemund and Wickham 2011)</span></li>
+<li>rmarkdown <span class="citation">(Allaire et al. 2018)</span></li>
+<li>zoo <span class="citation">(Zeileis and Grothendieck 2005)</span></li>
+</ul>
+</div>
+<div id="session-info" class="section level2">
+<h2><span class="header-section-number">8.2</span> Session info</h2>
+<pre><code>## R version 3.6.0 (2019-04-26)
+## Platform: x86_64-redhat-linux-gnu (64-bit)
+## Running under: Red Hat Enterprise Linux
+## 
+## Matrix products: default
+## BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C               LC_TIME=en_GB.UTF-8       
+##  [4] LC_COLLATE=en_GB.UTF-8     LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] gtools_3.8.1      openair_2.7-2     kableExtra_1.1.0  zoo_1.8-4         skimr_2.1.1      
+##  [6] lubridate_1.7.9   hms_0.5.3         ggplot2_3.3.1     drake_7.12.2      data.table_1.12.0
+## [11] gridCarbon_0.1.0  here_0.1         
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.1          txtq_0.2.0          lattice_0.20-38     tidyr_1.1.0        
+##  [5] prettyunits_1.0.2   assertthat_0.2.0    rprojroot_1.3-2     digest_0.6.25      
+##  [9] utf8_1.1.4          R6_2.3.0            repr_1.1.0          backports_1.1.3    
+## [13] evaluate_0.14       highr_0.7           httr_1.4.1          pillar_1.4.4       
+## [17] rlang_0.4.6         progress_1.2.2      rstudioapi_0.11     hexbin_1.27.2      
+## [21] Matrix_1.2-17       rmarkdown_2.2       labeling_0.3        splines_3.6.0      
+## [25] webshot_0.5.2       readr_1.3.1         stringr_1.4.0       igraph_1.2.2       
+## [29] munsell_0.5.0       compiler_3.6.0      xfun_0.14           pkgconfig_2.0.2    
+## [33] base64enc_0.1-3     mgcv_1.8-28         htmltools_0.3.6     tidyselect_1.1.0   
+## [37] tibble_3.0.1        bookdown_0.19       fansi_0.4.0         viridisLite_0.3.0  
+## [41] crayon_1.3.4        dplyr_1.0.0         withr_2.1.2         MASS_7.3-51.4      
+## [45] grid_3.6.0          nlme_3.1-139        jsonlite_1.6        gtable_0.2.0       
+## [49] lifecycle_0.2.0     magrittr_1.5        storr_1.2.1         scales_1.0.0       
+## [53] cli_2.0.2           stringi_1.2.4       mapproj_1.2.7       latticeExtra_0.6-28
+## [57] xml2_1.3.2          ellipsis_0.3.1      filelock_1.0.2      generics_0.0.2     
+## [61] vctrs_0.3.1         RColorBrewer_1.1-2  tools_3.6.0         forcats_0.5.0      
+## [65] glue_1.4.1          purrr_0.3.4         maps_3.3.0          parallel_3.6.0     
+## [69] yaml_2.2.0          colorspace_1.4-0    cluster_2.0.8       base64url_1.4      
+## [73] rvest_0.3.5         knitr_1.28</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-rmarkdown">
+<p>Allaire, JJ, Yihui Xie, Jonathan McPherson, Javier Luraschi, Kevin Ushey, Aron Atkins, Hadley Wickham, Joe Cheng, and Winston Chang. 2018. <em>Rmarkdown: Dynamic Documents for R</em>. <a href="https://CRAN.R-project.org/package=rmarkdown" class="uri">https://CRAN.R-project.org/package=rmarkdown</a>.</p>
+</div>
+<div id="ref-openair">
+<p>Carslaw, David C., and Karl Ropkins. 2012. “Openair — an R Package for Air Quality Data Analysis.” <em>Environmental Modelling &amp; Software</em> 27–28 (0): 52–61. doi:<a href="https://doi.org/10.1016/j.envsoft.2011.09.008">10.1016/j.envsoft.2011.09.008</a>.</p>
+</div>
+<div id="ref-data.table">
+<p>Dowle, M, A Srinivasan, T Short, S Lianoglou with contributions from R Saporta, and E Antonyan. 2015. <em>Data.table: Extension of Data.frame</em>. <a href="https://CRAN.R-project.org/package=data.table" class="uri">https://CRAN.R-project.org/package=data.table</a>.</p>
+</div>
+<div id="ref-lubridate">
+<p>Grolemund, Garrett, and Hadley Wickham. 2011. “Dates and Times Made Easy with lubridate.” <em>Journal of Statistical Software</em> 40 (3): 1–25. <a href="http://www.jstatsoft.org/v40/i03/" class="uri">http://www.jstatsoft.org/v40/i03/</a>.</p>
+</div>
+<div id="ref-khan_analysis_2018">
+<p>Khan, Imran, Michael W. Jack, and Janet Stephenson. 2018. “Analysis of Greenhouse Gas Emissions in Electricity Systems Using Time-Varying Carbon Intensity.” <em>Journal of Cleaner Production</em> 184 (May): 1091–1101. doi:<a href="https://doi.org/10.1016/j.jclepro.2018.02.309">10.1016/j.jclepro.2018.02.309</a>.</p>
+</div>
+<div id="ref-drake">
+<p>Landau, William Michael. 2019. <em>Drake: A Pipeline Toolkit for Reproducible Computation at Scale</em>. <a href="https://CRAN.R-project.org/package=drake" class="uri">https://CRAN.R-project.org/package=drake</a>.</p>
+</div>
+<div id="ref-baseR">
+<p>R Core Team. 2016. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-staffell_measuring_2017">
+<p>Staffell, Iain. 2017. “Measuring the Progress and Impacts of Decarbonising British Electricity.” <em>Energy Policy</em> 102 (March): 463–75. doi:<a href="https://doi.org/10.1016/j.enpol.2016.12.037">10.1016/j.enpol.2016.12.037</a>.</p>
+</div>
+<div id="ref-ggplot2">
+<p>Wickham, Hadley. 2009. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="http://ggplot2.org" class="uri">http://ggplot2.org</a>.</p>
+</div>
+<div id="ref-bookdown">
+<p>Xie, Yihui. 2016a. <em>Bookdown: Authoring Books and Technical Documents with R Markdown</em>. Boca Raton, Florida: Chapman; Hall/CRC. <a href="https://github.com/rstudio/bookdown" class="uri">https://github.com/rstudio/bookdown</a>.</p>
+</div>
+<div id="ref-knitr">
+<p>———. 2016b. <em>Knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. <a href="https://CRAN.R-project.org/package=knitr" class="uri">https://CRAN.R-project.org/package=knitr</a>.</p>
+</div>
+<div id="ref-zoo">
+<p>Zeileis, Achim, and Gabor Grothendieck. 2005. “Zoo: S3 Infrastructure for Regular and Irregular Time Series.” <em>Journal of Statistical Software</em> 14 (6): 1–27. doi:<a href="https://doi.org/10.18637/jss.v014.i06">10.18637/jss.v014.i06</a>.</p>
+</div>
+<div id="ref-kableExtra">
+<p>Zhu, Hao. 2018. <em>KableExtra: Construct Complex Table with ’Kable’ and Pipe Syntax</em>. <a href="https://CRAN.R-project.org/package=kableExtra" class="uri">https://CRAN.R-project.org/package=kableExtra</a>.</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

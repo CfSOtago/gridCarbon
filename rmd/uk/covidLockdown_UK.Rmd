@@ -245,35 +245,102 @@ dev.off()
 ```
 
 
+## Embedded generation data
+
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
+
+> We have not yet found a source of this data (if we even need it).
+
+> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).
+
+# Analysis
+
+In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data. 
+
+## General patterns
+
+
 Figure @\ref(fig:tilePlotGWh): Tile plot of halfhourly GWh over time. We like tile plots.
 
 ```{r tilePlotGWh, fig.cap="halfhourly consumption GWh over time"}
-p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, fill = consGWh)) +
-  geom_tile() +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c(name="GWh") +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
-       )
-yMin <- min(gridGenDT$hms)
-yMax <- max(gridGenDT$hms)
-p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
-                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
 
+makeTilePLot <- function(dt, fillVar, fillDiv, fillVarLabel){
+  p <- ggplot2::ggplot(dt, 
+                       aes(x = obsDate, y = hms, 
+                           fill = get(fillVar)/fillDiv)) +
+    geom_tile() +
+    #scale_fill_continuous(low = "green", high = "red") +
+    scale_fill_viridis_c(name=fillVarLabel) +
+    theme(legend.position="bottom") +
+    scale_x_date(date_breaks = "2 months", date_labels =  "%b - %Y")  +
+    theme(axis.text.x=element_text(angle=90, hjust=1)) +
+    #scale_y_time(breaks = 6) +
+    # labels = c("00:00:00", "04:00:00", "08:00:00",
+    #            "12:00:00", "16:00:00", "20:00:00")) +
+    labs(x = "Date",
+         y = "Half-hour"
+    )
+  
+  p <- addLockdownRect(p, yMin = 0, yMax = 84600, # 0 to 00:00:00 
+                       from = gcParams$UKlockDownStartDate, 
+                       to = max(gridGenDT$obsDate))
+  return(p)
+}
+
+
+p <- makeTilePLot(gridGenDT, fillVar = "consGWh",  
+                  fillDiv = 1, 
+                  fillVarLabel = "GWh")
 p
+
+ggplot2::ggsave(filename = "UK_allGWh_TilePlotForPaper.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 10, units = "in")
 
 p <- p + labs(x = "Date",
               y = "Half-hour",
               caption = paste0(localParams$gridCaption, localParams$lockdownCap),
                         "\nPlot by @dataknut @energySoton")
 
-ggplot2::ggsave(filename = "UK_allGWhPlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
+ggplot2::ggsave(filename = "UK_allGWh_TilePlotForTwitter.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 9, units = "in")
+
+```
+
+Figure @\ref(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots.
+
+```{r tilePlotCI, fig.cap="halfhourly CI over time"}
+p <- makeTilePLot(gridGenDT, fillVar = "CARBON_INTENSITY",  
+                  fillDiv = 1, 
+                  fillVarLabel = "g CO2e/kWh")
+ggplot2::ggsave(filename = "UK_allCI_TilePlotForPaper.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 10, units = "in")
+p
+
+p <- p + labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+ggplot2::ggsave(filename = "UK_allCI_TilePlotForTwitter.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 9, units = "in")
+
+```
+
+Figure @\ref(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots
+
+```{r tilePlotCO2e, fig.cap="halfhourly total CO2e (kT) over time"}
+p <- makeTilePLot(gridGenDT, fillVar = "C02e_T", 
+                  fillDiv = 1000, 
+                  fillVarLabel = "kT CO2e")
+ggplot2::ggsave(filename = "UK_allCO2e_TilePlotForPaper.png", path = here::here("docs","uk","plots"), 
+                plot = p, width = 10, units = "in")
+p
+p <- p + labs(x = "Date",
+       y = "Half-hour",
+       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
+                        "\nPlot by @dataknut @energySoton")
+       )
+ggplot2::ggsave(filename = "UK_allCO2e_TilePlotForTwitter.png", path = here::here("docs","uk","plots"), 
                 plot = p, width = 9, units = "in")
 
 ```
@@ -310,76 +377,9 @@ ggplot2::ggsave(filename = "UK_allGWhlineBySeasonForTwitter.png", path = here::h
 p
 ```
 
+Figure @\ref(fig:profilePlotGWhBySeason2019): halfhourly mean GWh by season in 2019. 
 
-Figure @\ref(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots
-
-```{r tilePlotCI, fig.cap="halfhourly CI over time"}
-p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, 
-                         fill = CARBON_INTENSITY)) +
-  geom_tile() +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c(name = "g CO2e/kWh") +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
-       )
-yMin <- min(gridGenDT$hms)
-yMax <- max(gridGenDT$hms)
-p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
-                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-
-p
-
-p <- p + labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
-       )
-ggplot2::ggsave(filename = "UK_allCIPlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
-
-```
-
-Figure @\ref(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots
-
-```{r tilePlotCO2e, fig.cap="halfhourly total CO2e (kT) over time"}
-p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, fill = C02e_T/1000)) +
-  geom_tile() +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c(name="CO2e (kT)") +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
-       )
-yMin <- min(gridGenDT$hms)
-yMax <- max(gridGenDT$hms)
-p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
-                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-p
-
-p <- p + labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
-       )
-ggplot2::ggsave(filename = "UK_allCO2ePlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
-
-```
-
-Figure @\ref(fig:GWhBySeason2019): halfhourly mean GWh by season in 2019. We like tile plots
-
-```{r GWhBySeason2019, fig.cap="halfhourly mean GWh by season in 2019"}
+```{r profilePlotGWhBySeason2019, fig.cap="halfhourly mean GWh by season in 2019"}
 gridGenDT <- gridCarbon::addSeason(gridGenDT, date = "obsDate", h = "N")
 plotDT <- gridGenDT[year == 2019, .(meanGWh = mean(consGWh)), keyby = .(hms, season)]
 p <- ggplot2::ggplot(plotDT, 
@@ -402,19 +402,8 @@ ggplot2::ggsave(filename = "UK_meanGWhBySeason_2019.png", path = here::here("doc
 p
 ```
 
-## Embedded generation data
 
-Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
-
-> We have not yet found a source of this data (if we even need it).
-
-> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).
-
-# Analysis
-
-In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data. 
-
-## Generation: Analysing deviation from 'normal'
+## Consumption: Analysing deviation from 'normal' 
 
 Several [articles](https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606) and [analyses](https://twitter.com/DrIAGWilson/status/1255100828781883394) have suggested that demand (and thus generation) patterns have shifted so that [weekdays have become more like weekends](http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html).
 
