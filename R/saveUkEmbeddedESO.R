@@ -1,10 +1,12 @@
-#' \code{saveUkEmbeddedESO} saves the clean latest UK embedded ESO data 
+#' \code{saveUkEmbeddedESO} saves the latest cleaned UK embedded ESO data 
 #' 
 #' @param dt the data.table to save (returned by \code{cleanUkGridESO})
 #' @param processedPath the folder to put it in
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #' @family data
+#' @family embedded
+#' @family uk
 #'
 saveUkEmbeddedESO <- function(dt,path){
   # localParams$rawUkEsoDataPath

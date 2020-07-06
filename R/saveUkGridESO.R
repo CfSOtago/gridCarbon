@@ -5,7 +5,9 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #' @family data
-#'
+#' @family grid
+#' @family uk
+#' 
 saveUkGridESO <- function(dt,path){
   # localParams$rawUkEsoDataPath
   of <- paste0(path,"/gridGen/raw/latest_ukGridEsoGen.csv") # we don't add a date to this to prevent bloat
