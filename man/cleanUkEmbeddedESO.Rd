@@ -2,9 +2,10 @@
 % Please edit documentation in R/cleanUkEmbeddedESO.R
 \name{cleanUkEmbeddedESO}
 \alias{cleanUkEmbeddedESO}
-\title{\code{cleanUkEmbeddedESO} cleans up UK embedded ESO data adding lates update to the historical data}
+\title{\code{cleanUkEmbeddedESO} cleans up UK embedded ESO data adding latest the update to the historical data we
+previously manually downloaded. Not ideal. Hopefully NG_ESO will fix the data discontinuity at some point.}
 \usage{
-cleanUkEmbeddedESO(dt, rawPath)
+cleanUkEmbeddedESO(dt, path)
 }
 \arguments{
 \item{dt}{the data.table to clean (returned by \code{getUkEmbeddedESO})}
@@ -45,8 +46,23 @@ Other data:
 \code{\link{saveUkGridESO}()},
 \code{\link{setEmbeddedGenTimePeriod}()},
 \code{\link{setGridGenTimePeriod}()}
+
+Other embedded: 
+\code{\link{cleanNZEmbEA}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{makeNZYearlyData}()},
+\code{\link{saveUkEmbeddedESO}()}
+
+Other uk: 
+\code{\link{cleanUkGridESO}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{saveUkEmbeddedESO}()},
+\code{\link{saveUkGridESO}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
 \concept{data}
+\concept{embedded}
+\concept{uk}

@@ -44,8 +44,11 @@ Other data:
 \code{\link{setGridGenTimePeriod}()}
 
 Other embedded: 
+\code{\link{cleanUkEmbeddedESO}()},
 \code{\link{getNZEmbMeta}()},
-\code{\link{makeNZYearlyData}()}
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{makeNZYearlyData}()},
+\code{\link{saveUkEmbeddedESO}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},

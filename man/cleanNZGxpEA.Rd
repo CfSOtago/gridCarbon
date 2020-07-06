@@ -45,12 +45,14 @@ Other data:
 
 Other grid: 
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
 \code{\link{getNZGxpEA}()},
 \code{\link{getNZGxpMeta}()},
-\code{\link{makeNZYearlyData}()}
+\code{\link{makeNZYearlyData}()},
+\code{\link{saveUkGridESO}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},

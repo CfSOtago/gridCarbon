@@ -42,7 +42,10 @@ Other data:
 
 Other embedded: 
 \code{\link{cleanNZEmbEA}()},
-\code{\link{makeNZYearlyData}()}
+\code{\link{cleanUkEmbeddedESO}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{makeNZYearlyData}()},
+\code{\link{saveUkEmbeddedESO}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},
