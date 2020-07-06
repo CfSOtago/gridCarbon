@@ -8,6 +8,7 @@ createDailyMeanComparePlot(
   dt,
   yVar,
   yCap,
+  form = "step",
   yDiv = 1,
   lockDownStart,
   lockDownEnd
@@ -19,6 +20,8 @@ createDailyMeanComparePlot(
 \item{yVar}{the variable you want to plot}
 
 \item{yCap}{the caption for the y axis}
+
+\item{form}{do you want a "line" = geom_line() or a "step" = geom_step()? Step is the default}
 
 \item{yDiv}{the value you want to divide yVar by to make the y axis more sensible. Default = 1}
 

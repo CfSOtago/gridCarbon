@@ -2,7 +2,7 @@
 % Please edit documentation in R/addVeDayDateTime.R
 \name{addVeDayDateTime}
 \alias{addVeDayDateTime}
-\title{\code{addVeDayDateTime} adds label for VE day 2020 where x axis is a dateTime. Should work in any time-zone.}
+\title{\code{addVeDayDateTime} adds extended weekend shading and label for VE day 2020 where x axis is a dateTime. Should work in any time-zone.}
 \usage{
 addVeDayDateTime(p, yMin, yMax)
 }
@@ -14,7 +14,7 @@ addVeDayDateTime(p, yMin, yMax)
 \item{yMax}{the largest y value}
 }
 \description{
-\code{addVeDayDateTime} adds label for VE day 2020 where x axis is a dateTime. Should work in any time-zone.
+\code{addVeDayDateTime} adds extended weekend shading and label for VE day 2020 where x axis is a dateTime. Should work in any time-zone.
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
