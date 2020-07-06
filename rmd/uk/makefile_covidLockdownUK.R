@@ -35,8 +35,8 @@ localParams <- list()
 localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
 
 # up to but not including
-#localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
-localParams$toDate <- lubridate::today() # for latest
+localParams$toDate <- as.Date("2020-06-30") # 30th June for paper
+#localParams$toDate <- lubridate::today() # for latest
 
 # plot cut dates
 localParams$recentCutDate <- as.Date("2020-02-01")
@@ -129,6 +129,7 @@ plan <- drake::drake_plan(
                                                    yVar = "consGWh", 
                                                    yCap = "GWh",
                                                    yDiv = 1,
+                                                   form = "step", # default
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
@@ -159,6 +160,7 @@ plan <- drake::drake_plan(
                                                    yVar = "CARBON_INTENSITY", 
                                                    yCap = "Mean daily half hourly carbon intensity",
                                                    yDiv = 1 , # what to divide the y value by
+                                                  form = "step", # default
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate 
   ),
@@ -187,7 +189,8 @@ plan <- drake::drake_plan(
   compareDailyCO2ekgPlot = createDailyMeanComparePlot(alignedGridGenData, 
                                                    yVar = "C02e_T", 
                                                    yCap = "Mean half hourly C02e (T)",
-                                                   yDiv = 1 , # totalC02e_kg is in kg
+                                                   yDiv = 1 , # totalC02e_kg is in T
+                                                   form = "step", # default
                                                    lockDownStart = gcParams$UKlockDownStartDate,
                                                    lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
