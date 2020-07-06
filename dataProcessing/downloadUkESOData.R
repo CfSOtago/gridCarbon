@@ -31,15 +31,11 @@ update <- "yes" # doesn't matter what this is but to force an update, edit it :-
 localParams <- list() # repo level params are in gcParams
 localParams$gridUrl <- "http://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/7b41ea4d-cada-491e-8ad6-7b62f6a63193/download/df_fuel_ckan.csv"
 
-localParams$rawUkGridGenPath <- path.expand(paste0(gcParams$ukData, "/gridGen/raw/"))
-localParams$processedUkGridGenPath <- path.expand(paste0(gcParams$ukData, "/gridGen/processed/"))
 
 # "https://data.nationalgrideso.com/demand/daily-demand-update/r/demand_data_update_daily"
 # history before 1/5/2020 is at https://demandforecast.nationalgrid.com/efs_demand_forecast/faces/DataExplorer;jsessionid=Wi7TQtk8s4h5K5Z-6uSHOTeTMzAEVBy8W8RvO9fyBax8DALJ68c_!-947165471
 # why?
 localParams$embeddedUrl <- "https://demandforecast.nationalgrid.com/efs_demand_forecast/demandupdatedownload"
-localParams$rawUkEmbeddedGenPath <- path.expand(paste0(gcParams$ukData, "/embeddedGen/raw/"))
-localParams$processedUkEmbeddedGenPath <- path.expand(paste0(gcParams$ukData, "/embeddedGen/processed/"))
 
 
 # Local functions ----
@@ -59,8 +55,7 @@ plan <- drake::drake_plan(
   # grid
   gridGenData = gridCarbon::getUkGridESO(localParams$gridUrl, 
                                          update), # returns data as data.table
-  cleanGridGenData = gridCarbon::cleanUkGridESO(gridGenData,
-                                                path = gcParams$ukData), # returns clean data.table
+  cleanGridGenData = gridCarbon::cleanUkGridESO(gridGenData), # returns clean data.table
   saveResultGrid = gridCarbon::saveUkGridESO(cleanGridGenData, 
                                              path = gcParams$ukData), # doesn't return anything
   # embedded
@@ -68,7 +63,7 @@ plan <- drake::drake_plan(
   embeddedGenData = gridCarbon::getUkEmbeddedESO(localParams$embeddedUrl, 
                                                  update), # returns latest data update as data.table
   cleanEmbeddedGenData = gridCarbon::cleanUkEmbeddedESO(embeddedGenData, 
-                                                        path = gcParams$ukData), 
+                                                        path = gcParams$ukData), # needs a path as it uses newly updated data
   saveResultEmbedded = gridCarbon::saveUkEmbeddedESO(cleanEmbeddedGenData,
                                                      path = gcParams$ukData) # adds the latest update to what we already have (removes duplicates obvs)
 )
@@ -87,14 +82,54 @@ gridGenDT[, rDateTimeUTC := lubridate::with_tz(rDateTime, tzone = "UTC")]
 setkey(gridGenDT, rDateTimeUTC)
 embeddedGenDT[, rDateTime := lubridate::as_datetime(rDateTime)]
 embeddedGenDT[, rDateTimeUTC := lubridate::with_tz(rDateTime, tzone = "UTC")]
-setkey(embeddedGenDT, rDateTimeUTC)
-allGenDT <- embeddedGenDT[gridGenDT] # keeps all of gridGen (continuous & longer)
+
+# check for gaps
+library(ggplot2)
+pEmbeddedWind <- ggplot2::ggplot(embeddedGenDT, aes(x = rDate, y = hms, fill = EMBEDDED_WIND_GENERATION/1000)) +
+  geom_tile() +
+  theme(legend.position = "bottom")
+ggplot2::ggsave(here::here("dataProcessing", "plots", "ukEmbeddedWind_tile.png"), pEmbeddedWind, width = 6, units = "in")
+
+pEmbeddedSolar <- ggplot2::ggplot(embeddedGenDT, aes(x = rDate, y = hms, fill = EMBEDDED_SOLAR_GENERATION/1000)) +
+  geom_tile() +
+  theme(legend.position = "bottom")
+ggplot2::ggsave(here::here("dataProcessing", "plots", "ukEmbeddedSolar_tile.png"), pEmbeddedSolar, width = 6, units = "in")
+
+gridGenDT[, rDate := as.Date(rDateTimeUTC)]
+gridGenDT[, hms := hms::as_hms(rDateTimeUTC)]
+pGrid <- ggplot2::ggplot(gridGenDT, aes(x = rDate, y = hms, fill = GENERATION/1000)) +
+  geom_tile() +
+  theme(legend.position = "bottom")
+ggplot2::ggsave(here::here("dataProcessing", "plots", "ukGridGen_tile.png"), pGrid,width = 6, units = "in")
+
+embSolar <- embeddedGenDT[,.(rDateTimeUTC, EMBEDDED_SOLAR_GENERATION)]
+embSolar[, MW := EMBEDDED_SOLAR_GENERATION]
+embSolar[, source := "Embedded solar"]
+embWind <- embeddedGenDT[,.(rDateTimeUTC, EMBEDDED_WIND_GENERATION)]
+embWind[, MW := EMBEDDED_WIND_GENERATION]
+embWind[, source := "Embedded wind"]
+
+gridGenDT[, MW := GENERATION]
+gridGenDT[, source := "All grid"]
+
+allGenDT <- rbind(embWind[,.(rDateTimeUTC, MW, source)],
+                  embSolar[,.(rDateTimeUTC, MW, source)],
+                  gridGenDT[,.(rDateTimeUTC, MW, source)]) 
+allGenDT[, hms := hms::as_hms(rDateTimeUTC)]
+allGenDT[, rDate := lubridate::date(rDateTimeUTC)]
+
+pAllGen <- ggplot2::ggplot(allGenDT, aes(x = rDate, y = hms, fill = MW/1000)) +
+  geom_tile() +
+  facet_grid(source ~ .) +
+  theme(legend.position = "bottom")
+ggplot2::ggsave(here::here("dataProcessing", "plots", "ukAllGen_tile.png"), pAllGen, width = 6, units = "in")
+
 
 # latest dates:
-message("We now have gridGen data from, " , min(gridGenDT$rDateTime), 
-        " to: ", max(gridGenDT$rDateTime))
-message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTime), 
-        " to: ", max(embeddedGenDT$rDateTime))
+message("We now have gridGen data from, " , min(gridGenDT$rDateTimeUTC), 
+        " to: ", max(gridGenDT$rDateTimeUTC))
+message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
+        " to: ", max(embeddedGenDT$rDateTimeUTC))
 
 # Finish off ----
 
