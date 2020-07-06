@@ -4,7 +4,7 @@
 \alias{saveUkEmbeddedESO}
 \title{\code{saveUkEmbeddedESO} saves the clean latest UK embedded ESO data}
 \usage{
-saveUkEmbeddedESO(dt, processedPath)
+saveUkEmbeddedESO(dt, path)
 }
 \arguments{
 \item{dt}{the data.table to save (returned by \code{cleanUkGridESO})}
@@ -35,7 +35,6 @@ Other data:
 \code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
-\code{\link{makeUkGridESOYearlyData}()},
 \code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
