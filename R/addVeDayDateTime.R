@@ -1,4 +1,4 @@
-#' \code{addVeDayDateTime} adds label for VE day 2020 where x axis is a dateTime. Should work in any time-zone.
+#' \code{addVeDayDateTime} adds extended weekend shading and label for VE day 2020 where x axis is a dateTime. Should work in any time-zone.
 #'
 #' @param p the plot to add them to
 #' @param yMin the smallest y value
@@ -7,7 +7,11 @@
 #' @export
 #'
 addVeDayDateTime <- function(p, yMin, yMax){
-  p <- p + annotate("text", x = lubridate::as_datetime("2020-05-08 12:00:00"),
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-05-08 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-05-10 23:59:59"), # 3 day weekend starting Friday (in the UK)
+                    ymin = yMin, ymax = yMax,
+                    alpha = gcParams$weAlpha, fill = gcParams$weFill) + # VE Day
+    annotate("text", x = lubridate::as_datetime("2020-05-08 12:00:00"),
              y = yMax*gcParams$labelPos,
              label = "VE Day 2020")
   return(p)

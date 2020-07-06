@@ -1,4 +1,4 @@
-#' \code{addVeDayDate} adds label for VE day 2020 where x axis is a date. Should work in any time-zone
+#' \code{addVeDayDate} adds extended weekend shading and label for VE day 2020 where x axis is a date. Should work in any time-zone
 #'
 #' @param p the plot to add them to
 #' @param yMin the smallest y value
@@ -7,7 +7,11 @@
 #' @export
 #'
 addVeDayDate <- function(p, yMin, yMax){
-  p <- p + annotate("text", x = as.Date("2020-05-08"),
+  p <- p + annotate("rect", xmin = as.Date("2020-05-08"),
+           xmax = as.Date("2020-05-11"), # 3 day weekend starting Friday (in UK)
+           ymin = yMin, ymax = yMax,
+           alpha = gcParams$weAlpha, fill = gcParams$weFill) +
+    annotate("text", x = as.Date("2020-05-08"),
              y = yMax*gcParams$labelPos,
              label = "VE Day 2020")
   return(p)
