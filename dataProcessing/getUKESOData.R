@@ -59,17 +59,18 @@ plan <- drake::drake_plan(
   # grid
   gridGenData = gridCarbon::getUkGridESO(localParams$gridUrl, 
                                          update), # returns data as data.table
-  cleanGridGenData = gridCarbon::cleanUkGridESO(gridGenData), # returns clean data.table
+  cleanGridGenData = gridCarbon::cleanUkGridESO(gridGenData,
+                                                path = gcParams$ukData), # returns clean data.table
   saveResultGrid = gridCarbon::saveUkGridESO(cleanGridGenData, 
-                                             localParams$rawUkGridGenPath), # doesn't return anything
+                                             path = gcParams$ukData), # doesn't return anything
   # embedded
   # if this breaks check the url is still current
   embeddedGenData = gridCarbon::getUkEmbeddedESO(localParams$embeddedUrl, 
                                                  update), # returns latest data update as data.table
   cleanEmbeddedGenData = gridCarbon::cleanUkEmbeddedESO(embeddedGenData, 
-                                                        rawPath = localParams$rawUkEmbeddedGenPath), 
+                                                        path = gcParams$ukData), 
   saveResultEmbedded = gridCarbon::saveUkEmbeddedESO(cleanEmbeddedGenData,
-                                         processedPath = localParams$processedUkEmbeddedGenPath) # adds the latest update to what we already have (removes duplicates obvs)
+                                                     path = gcParams$ukData) # adds the latest update to what we already have (removes duplicates obvs)
 )
 
 # > run drake plan ----
