@@ -269,7 +269,7 @@ div.tocify {
 <h1 class="title toc-ignore">UK Electricity Generation and Carbon Itensity</h1>
 <h3 class="subtitle">covid 19 lockdown v1.0</h3>
 <h4 class="author">Ben Anderson</h4>
-<h4 class="date">Last run at: 2020-06-30 22:05:33</h4>
+<h4 class="date">Last run at: 2020-07-06 17:17:26</h4>
 
 </div>
 
@@ -1085,46 +1085,6 @@ Figure 2.1: Fuel trend plots by peak period
 <p><img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/stFuelTrendsPeakPeriod-1.png" width="672" /></p>
 <pre><code>## png 
 ##   2</code></pre>
-<p>Figure @(fig:tilePlotGWh): Tile plot of halfhourly GWh over time. We like tile plots.</p>
-<div class="figure"><span id="fig:tilePlotGWh"></span>
-<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/tilePlotGWh-1.png" alt="halfhourly consumption GWh over time" width="672" />
-<p class="caption">
-Figure 2.2: halfhourly consumption GWh over time
-</p>
-</div>
-<pre><code>## Saving 9 x 5 in image</code></pre>
-<p>Figure @(fig:profilePlotGWh): line plot of halfhourly GWh by season.</p>
-<pre><code>## Saving 9 x 5 in image</code></pre>
-<div class="figure"><span id="fig:profilePlotGWh"></span>
-<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/profilePlotGWh-1.png" alt="mean halfhourly GWh" width="672" />
-<p class="caption">
-Figure 2.3: mean halfhourly GWh
-</p>
-</div>
-<p>Figure @(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots</p>
-<div class="figure"><span id="fig:tilePlotCI"></span>
-<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/tilePlotCI-1.png" alt="halfhourly CI over time" width="672" />
-<p class="caption">
-Figure 2.4: halfhourly CI over time
-</p>
-</div>
-<pre><code>## Saving 9 x 5 in image</code></pre>
-<p>Figure @(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots</p>
-<div class="figure"><span id="fig:tilePlotCO2e"></span>
-<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/tilePlotCO2e-1.png" alt="halfhourly total CO2e (kT) over time" width="672" />
-<p class="caption">
-Figure 2.5: halfhourly total CO2e (kT) over time
-</p>
-</div>
-<pre><code>## Saving 9 x 5 in image</code></pre>
-<p>Figure @(fig:GWhBySeason2019): halfhourly mean GWh by season in 2019. We like tile plots</p>
-<pre><code>## Saving 9 x 5 in image</code></pre>
-<div class="figure"><span id="fig:GWhBySeason2019"></span>
-<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/GWhBySeason2019-1.png" alt="halfhourly mean GWh by season in 2019" width="672" />
-<p class="caption">
-Figure 2.6: halfhourly mean GWh by season in 2019
-</p>
-</div>
 </div>
 <div id="embedded-generation-data" class="section level2">
 <h2><span class="header-section-number">2.2</span> Embedded generation data</h2>
@@ -1140,12 +1100,1712 @@ Figure 2.6: halfhourly mean GWh by season in 2019
 <div id="analysis" class="section level1">
 <h1><span class="header-section-number">3</span> Analysis</h1>
 <p>In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data.</p>
-<div id="generation-analysing-deviation-from-normal" class="section level2">
-<h2><span class="header-section-number">3.1</span> Generation: Analysing deviation from 'normal'</h2>
+<div id="general-patterns" class="section level2">
+<h2><span class="header-section-number">3.1</span> General patterns</h2>
+<p>Figure @(fig:tilePlotGWh): Tile plot of halfhourly GWh over time. We like tile plots.</p>
+<div class="figure"><span id="fig:tilePlotGWh"></span>
+<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/tilePlotGWh-1.png" alt="halfhourly consumption GWh over time" width="672" />
+<p class="caption">
+Figure 3.1: halfhourly consumption GWh over time
+</p>
+</div>
+<pre><code>## Saving 10 x 5 in image</code></pre>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure @(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots.</p>
+<pre><code>## Saving 10 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tilePlotCI"></span>
+<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/tilePlotCI-1.png" alt="halfhourly CI over time" width="672" />
+<p class="caption">
+Figure 3.2: halfhourly CI over time
+</p>
+</div>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure @(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots</p>
+<pre><code>## Saving 10 x 5 in image</code></pre>
+<div class="figure"><span id="fig:tilePlotCO2e"></span>
+<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/tilePlotCO2e-1.png" alt="halfhourly total CO2e (kT) over time" width="672" />
+<p class="caption">
+Figure 3.3: halfhourly total CO2e (kT) over time
+</p>
+</div>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure @(fig:profilePlotGWh): line plot of halfhourly GWh by season.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:profilePlotGWh"></span>
+<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/profilePlotGWh-1.png" alt="mean halfhourly GWh" width="672" />
+<p class="caption">
+Figure 3.4: mean halfhourly GWh
+</p>
+</div>
+<p>Figure @(fig:profilePlotGWhBySeason2019): halfhourly mean GWh by season in 2019.</p>
+<pre><code>## Saving 9 x 5 in image</code></pre>
+<div class="figure"><span id="fig:profilePlotGWhBySeason2019"></span>
+<img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/profilePlotGWhBySeason2019-1.png" alt="halfhourly mean GWh by season in 2019" width="672" />
+<p class="caption">
+Figure 3.5: halfhourly mean GWh by season in 2019
+</p>
+</div>
+<p>Find highs and lows. Good for a story</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+rDateTimeUTC
+</th>
+<th style="text-align:left;">
+wkday
+</th>
+<th style="text-align:right;">
+consGWh
+</th>
+<th style="text-align:right;">
+CARBON_INTENSITY
+</th>
+<th style="text-align:right;">
+C02e_T
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2020-05-25 03:30:00
+</td>
+<td style="text-align:left;">
+Mon
+</td>
+<td style="text-align:right;">
+8.41202
+</td>
+<td style="text-align:right;">
+202
+</td>
+<td style="text-align:right;">
+1699.228
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-30 04:00:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+8.41616
+</td>
+<td style="text-align:right;">
+162
+</td>
+<td style="text-align:right;">
+1363.418
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-06-14 03:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+8.44928
+</td>
+<td style="text-align:right;">
+213
+</td>
+<td style="text-align:right;">
+1799.697
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-30 04:30:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+8.47596
+</td>
+<td style="text-align:right;">
+165
+</td>
+<td style="text-align:right;">
+1398.533
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-30 03:30:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+8.48838
+</td>
+<td style="text-align:right;">
+146
+</td>
+<td style="text-align:right;">
+1239.303
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-25 04:30:00
+</td>
+<td style="text-align:left;">
+Mon
+</td>
+<td style="text-align:right;">
+8.51782
+</td>
+<td style="text-align:right;">
+218
+</td>
+<td style="text-align:right;">
+1856.885
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-06-14 04:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+8.52610
+</td>
+<td style="text-align:right;">
+218
+</td>
+<td style="text-align:right;">
+1858.690
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-25 04:00:00
+</td>
+<td style="text-align:left;">
+Mon
+</td>
+<td style="text-align:right;">
+8.53116
+</td>
+<td style="text-align:right;">
+218
+</td>
+<td style="text-align:right;">
+1859.793
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-06-13 03:30:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+8.54358
+</td>
+<td style="text-align:right;">
+201
+</td>
+<td style="text-align:right;">
+1717.260
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-25 03:00:00
+</td>
+<td style="text-align:left;">
+Mon
+</td>
+<td style="text-align:right;">
+8.54726
+</td>
+<td style="text-align:right;">
+199
+</td>
+<td style="text-align:right;">
+1700.905
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+rDateTimeUTC
+</th>
+<th style="text-align:left;">
+wkday
+</th>
+<th style="text-align:right;">
+consGWh
+</th>
+<th style="text-align:right;">
+CARBON_INTENSITY
+</th>
+<th style="text-align:right;">
+C02e_T
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2020-05-24 12:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+13.97894
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:right;">
+754.8628
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 12:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+14.06864
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+773.7752
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 13:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+13.63900
+</td>
+<td style="text-align:right;">
+55
+</td>
+<td style="text-align:right;">
+750.1450
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-08-17 13:30:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+13.29124
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:right;">
+757.6007
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 14:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+12.96556
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:right;">
+739.0369
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 14:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+12.65920
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:right;">
+721.5744
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-08-17 14:00:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+13.39152
+</td>
+<td style="text-align:right;">
+58
+</td>
+<td style="text-align:right;">
+776.7082
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 13:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+13.41406
+</td>
+<td style="text-align:right;">
+58
+</td>
+<td style="text-align:right;">
+778.0155
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 11:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+14.10360
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+846.2160
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-08-17 14:30:00
+</td>
+<td style="text-align:left;">
+Sat
+</td>
+<td style="text-align:right;">
+13.23328
+</td>
+<td style="text-align:right;">
+61
+</td>
+<td style="text-align:right;">
+807.2301
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+rDateTimeUTC
+</th>
+<th style="text-align:left;">
+wkday
+</th>
+<th style="text-align:right;">
+consGWh
+</th>
+<th style="text-align:right;">
+CARBON_INTENSITY
+</th>
+<th style="text-align:right;">
+C02e_T
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2020-05-24 06:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+10.66510
+</td>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:right;">
+714.5617
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-10-10 02:30:00
+</td>
+<td style="text-align:left;">
+Thu
+</td>
+<td style="text-align:right;">
+10.71616
+</td>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:right;">
+717.9827
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 05:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+9.97740
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+718.3728
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 06:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+10.43786
+</td>
+<td style="text-align:right;">
+69
+</td>
+<td style="text-align:right;">
+720.2123
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 14:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+12.65920
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:right;">
+721.5744
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 05:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+10.03214
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+722.3141
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 04:30:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+9.97096
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:right;">
+727.8801
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-24 04:00:00
+</td>
+<td style="text-align:left;">
+Sun
+</td>
+<td style="text-align:right;">
+9.99258
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:right;">
+729.4583
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-10-10 03:30:00
+</td>
+<td style="text-align:left;">
+Thu
+</td>
+<td style="text-align:right;">
+10.64394
+</td>
+<td style="text-align:right;">
+69
+</td>
+<td style="text-align:right;">
+734.4319
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-10-10 02:00:00
+</td>
+<td style="text-align:left;">
+Thu
+</td>
+<td style="text-align:right;">
+10.85278
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:right;">
+737.9890
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+obsDate
+</th>
+<th style="text-align:right;">
+meanGWh
+</th>
+<th style="text-align:right;">
+minGWh
+</th>
+<th style="text-align:right;">
+maxGWh
+</th>
+<th style="text-align:right;">
+meanCI
+</th>
+<th style="text-align:right;">
+minCI
+</th>
+<th style="text-align:right;">
+maxCI
+</th>
+<th style="text-align:right;">
+meanCO2eT
+</th>
+<th style="text-align:right;">
+minCO2eT
+</th>
+<th style="text-align:right;">
+maxCO2eT
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2020-05-25
+</td>
+<td style="text-align:right;">
+11.37239
+</td>
+<td style="text-align:right;">
+8.41202
+</td>
+<td style="text-align:right;">
+13.87038
+</td>
+<td style="text-align:right;">
+163.0833
+</td>
+<td style="text-align:right;">
+98
+</td>
+<td style="text-align:right;">
+219
+</td>
+<td style="text-align:right;">
+1796.131
+</td>
+<td style="text-align:right;">
+1295.509
+</td>
+<td style="text-align:right;">
+2174.201
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-30
+</td>
+<td style="text-align:right;">
+11.30749
+</td>
+<td style="text-align:right;">
+8.41616
+</td>
+<td style="text-align:right;">
+13.41406
+</td>
+<td style="text-align:right;">
+133.6458
+</td>
+<td style="text-align:right;">
+99
+</td>
+<td style="text-align:right;">
+172
+</td>
+<td style="text-align:right;">
+1484.566
+</td>
+<td style="text-align:right;">
+1239.303
+</td>
+<td style="text-align:right;">
+1827.769
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-06-14
+</td>
+<td style="text-align:right;">
+11.13971
+</td>
+<td style="text-align:right;">
+8.44928
+</td>
+<td style="text-align:right;">
+13.47616
+</td>
+<td style="text-align:right;">
+230.7083
+</td>
+<td style="text-align:right;">
+200
+</td>
+<td style="text-align:right;">
+276
+</td>
+<td style="text-align:right;">
+2569.469
+</td>
+<td style="text-align:right;">
+1799.697
+</td>
+<td style="text-align:right;">
+3277.563
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-06-13
+</td>
+<td style="text-align:right;">
+11.44445
+</td>
+<td style="text-align:right;">
+8.54358
+</td>
+<td style="text-align:right;">
+13.49456
+</td>
+<td style="text-align:right;">
+203.8542
+</td>
+<td style="text-align:right;">
+174
+</td>
+<td style="text-align:right;">
+246
+</td>
+<td style="text-align:right;">
+2336.925
+</td>
+<td style="text-align:right;">
+1664.338
+</td>
+<td style="text-align:right;">
+3131.305
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-06-15
+</td>
+<td style="text-align:right;">
+12.54450
+</td>
+<td style="text-align:right;">
+8.54910
+</td>
+<td style="text-align:right;">
+15.71084
+</td>
+<td style="text-align:right;">
+260.4792
+</td>
+<td style="text-align:right;">
+235
+</td>
+<td style="text-align:right;">
+291
+</td>
+<td style="text-align:right;">
+3254.100
+</td>
+<td style="text-align:right;">
+2111.628
+</td>
+<td style="text-align:right;">
+3953.418
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-17
+</td>
+<td style="text-align:right;">
+11.31522
+</td>
+<td style="text-align:right;">
+8.56336
+</td>
+<td style="text-align:right;">
+13.79356
+</td>
+<td style="text-align:right;">
+145.4375
+</td>
+<td style="text-align:right;">
+91
+</td>
+<td style="text-align:right;">
+183
+</td>
+<td style="text-align:right;">
+1622.266
+</td>
+<td style="text-align:right;">
+1179.364
+</td>
+<td style="text-align:right;">
+2285.654
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-31
+</td>
+<td style="text-align:right;">
+11.06764
+</td>
+<td style="text-align:right;">
+8.56750
+</td>
+<td style="text-align:right;">
+12.87724
+</td>
+<td style="text-align:right;">
+140.4583
+</td>
+<td style="text-align:right;">
+108
+</td>
+<td style="text-align:right;">
+180
+</td>
+<td style="text-align:right;">
+1555.729
+</td>
+<td style="text-align:right;">
+1194.313
+</td>
+<td style="text-align:right;">
+2130.024
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-26
+</td>
+<td style="text-align:right;">
+12.18436
+</td>
+<td style="text-align:right;">
+8.59096
+</td>
+<td style="text-align:right;">
+14.85616
+</td>
+<td style="text-align:right;">
+195.6042
+</td>
+<td style="text-align:right;">
+159
+</td>
+<td style="text-align:right;">
+255
+</td>
+<td style="text-align:right;">
+2386.506
+</td>
+<td style="text-align:right;">
+1440.376
+</td>
+<td style="text-align:right;">
+3229.429
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2017-07-02
+</td>
+<td style="text-align:right;">
+12.26870
+</td>
+<td style="text-align:right;">
+8.61120
+</td>
+<td style="text-align:right;">
+14.53278
+</td>
+<td style="text-align:right;">
+184.4375
+</td>
+<td style="text-align:right;">
+137
+</td>
+<td style="text-align:right;">
+238
+</td>
+<td style="text-align:right;">
+2261.442
+</td>
+<td style="text-align:right;">
+1420.848
+</td>
+<td style="text-align:right;">
+3213.921
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-09
+</td>
+<td style="text-align:right;">
+11.04717
+</td>
+<td style="text-align:right;">
+8.62638
+</td>
+<td style="text-align:right;">
+13.27882
+</td>
+<td style="text-align:right;">
+197.3333
+</td>
+<td style="text-align:right;">
+141
+</td>
+<td style="text-align:right;">
+244
+</td>
+<td style="text-align:right;">
+2150.398
+</td>
+<td style="text-align:right;">
+1347.531
+</td>
+<td style="text-align:right;">
+2660.140
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+obsDate
+</th>
+<th style="text-align:right;">
+meanGWh
+</th>
+<th style="text-align:right;">
+minGWh
+</th>
+<th style="text-align:right;">
+maxGWh
+</th>
+<th style="text-align:right;">
+meanCI
+</th>
+<th style="text-align:right;">
+minCI
+</th>
+<th style="text-align:right;">
+maxCI
+</th>
+<th style="text-align:right;">
+meanCO2eT
+</th>
+<th style="text-align:right;">
+minCO2eT
+</th>
+<th style="text-align:right;">
+maxCO2eT
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2020-05-24
+</td>
+<td style="text-align:right;">
+11.71921
+</td>
+<td style="text-align:right;">
+9.37894
+</td>
+<td style="text-align:right;">
+14.10360
+</td>
+<td style="text-align:right;">
+98.02083
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:right;">
+183
+</td>
+<td style="text-align:right;">
+1135.773
+</td>
+<td style="text-align:right;">
+714.5617
+</td>
+<td style="text-align:right;">
+1966.104
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-08-17
+</td>
+<td style="text-align:right;">
+12.36384
+</td>
+<td style="text-align:right;">
+10.33390
+</td>
+<td style="text-align:right;">
+14.36902
+</td>
+<td style="text-align:right;">
+89.14583
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:right;">
+130
+</td>
+<td style="text-align:right;">
+1099.135
+</td>
+<td style="text-align:right;">
+757.6007
+</td>
+<td style="text-align:right;">
+1658.792
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-08-18
+</td>
+<td style="text-align:right;">
+12.16124
+</td>
+<td style="text-align:right;">
+9.85412
+</td>
+<td style="text-align:right;">
+14.24160
+</td>
+<td style="text-align:right;">
+94.29167
+</td>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:right;">
+115
+</td>
+<td style="text-align:right;">
+1134.867
+</td>
+<td style="text-align:right;">
+883.4553
+</td>
+<td style="text-align:right;">
+1492.256
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-10-10
+</td>
+<td style="text-align:right;">
+14.71122
+</td>
+<td style="text-align:right;">
+10.64394
+</td>
+<td style="text-align:right;">
+17.75140
+</td>
+<td style="text-align:right;">
+137.31250
+</td>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:right;">
+188
+</td>
+<td style="text-align:right;">
+2122.162
+</td>
+<td style="text-align:right;">
+717.9827
+</td>
+<td style="text-align:right;">
+3266.258
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-23
+</td>
+<td style="text-align:right;">
+11.95653
+</td>
+<td style="text-align:right;">
+9.92818
+</td>
+<td style="text-align:right;">
+14.08336
+</td>
+<td style="text-align:right;">
+85.89583
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:right;">
+116
+</td>
+<td style="text-align:right;">
+1023.354
+</td>
+<td style="text-align:right;">
+796.4698
+</td>
+<td style="text-align:right;">
+1463.887
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-09-05
+</td>
+<td style="text-align:right;">
+14.31228
+</td>
+<td style="text-align:right;">
+10.79022
+</td>
+<td style="text-align:right;">
+16.80702
+</td>
+<td style="text-align:right;">
+133.95833
+</td>
+<td style="text-align:right;">
+70
+</td>
+<td style="text-align:right;">
+192
+</td>
+<td style="text-align:right;">
+1989.228
+</td>
+<td style="text-align:right;">
+772.4458
+</td>
+<td style="text-align:right;">
+3082.920
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-08-27
+</td>
+<td style="text-align:right;">
+12.94916
+</td>
+<td style="text-align:right;">
+9.91852
+</td>
+<td style="text-align:right;">
+15.33318
+</td>
+<td style="text-align:right;">
+141.54167
+</td>
+<td style="text-align:right;">
+71
+</td>
+<td style="text-align:right;">
+236
+</td>
+<td style="text-align:right;">
+1879.830
+</td>
+<td style="text-align:right;">
+741.7224
+</td>
+<td style="text-align:right;">
+3223.255
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-03-15
+</td>
+<td style="text-align:right;">
+14.67863
+</td>
+<td style="text-align:right;">
+11.32106
+</td>
+<td style="text-align:right;">
+18.56468
+</td>
+<td style="text-align:right;">
+141.79167
+</td>
+<td style="text-align:right;">
+71
+</td>
+<td style="text-align:right;">
+237
+</td>
+<td style="text-align:right;">
+2179.506
+</td>
+<td style="text-align:right;">
+807.3879
+</td>
+<td style="text-align:right;">
+3893.368
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-07-28
+</td>
+<td style="text-align:right;">
+11.84048
+</td>
+<td style="text-align:right;">
+9.48750
+</td>
+<td style="text-align:right;">
+13.66200
+</td>
+<td style="text-align:right;">
+113.60417
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+153
+</td>
+<td style="text-align:right;">
+1322.337
+</td>
+<td style="text-align:right;">
+947.3645
+</td>
+<td style="text-align:right;">
+1647.737
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-08-24
+</td>
+<td style="text-align:right;">
+13.65624
+</td>
+<td style="text-align:right;">
+10.32332
+</td>
+<td style="text-align:right;">
+15.84194
+</td>
+<td style="text-align:right;">
+133.20833
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+189
+</td>
+<td style="text-align:right;">
+1881.198
+</td>
+<td style="text-align:right;">
+746.4917
+</td>
+<td style="text-align:right;">
+2861.317
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+obsDate
+</th>
+<th style="text-align:right;">
+meanGWh
+</th>
+<th style="text-align:right;">
+minGWh
+</th>
+<th style="text-align:right;">
+maxGWh
+</th>
+<th style="text-align:right;">
+meanCI
+</th>
+<th style="text-align:right;">
+minCI
+</th>
+<th style="text-align:right;">
+maxCI
+</th>
+<th style="text-align:right;">
+meanCO2eT
+</th>
+<th style="text-align:right;">
+minCO2eT
+</th>
+<th style="text-align:right;">
+maxCO2eT
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+2020-05-24
+</td>
+<td style="text-align:right;">
+11.71921
+</td>
+<td style="text-align:right;">
+9.37894
+</td>
+<td style="text-align:right;">
+14.10360
+</td>
+<td style="text-align:right;">
+98.02083
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:right;">
+183
+</td>
+<td style="text-align:right;">
+1135.773
+</td>
+<td style="text-align:right;">
+714.5617
+</td>
+<td style="text-align:right;">
+1966.104
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-10-10
+</td>
+<td style="text-align:right;">
+14.71122
+</td>
+<td style="text-align:right;">
+10.64394
+</td>
+<td style="text-align:right;">
+17.75140
+</td>
+<td style="text-align:right;">
+137.31250
+</td>
+<td style="text-align:right;">
+67
+</td>
+<td style="text-align:right;">
+188
+</td>
+<td style="text-align:right;">
+2122.162
+</td>
+<td style="text-align:right;">
+717.9827
+</td>
+<td style="text-align:right;">
+3266.258
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-08-27
+</td>
+<td style="text-align:right;">
+12.94916
+</td>
+<td style="text-align:right;">
+9.91852
+</td>
+<td style="text-align:right;">
+15.33318
+</td>
+<td style="text-align:right;">
+141.54167
+</td>
+<td style="text-align:right;">
+71
+</td>
+<td style="text-align:right;">
+236
+</td>
+<td style="text-align:right;">
+1879.830
+</td>
+<td style="text-align:right;">
+741.7224
+</td>
+<td style="text-align:right;">
+3223.255
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-08-24
+</td>
+<td style="text-align:right;">
+13.65624
+</td>
+<td style="text-align:right;">
+10.32332
+</td>
+<td style="text-align:right;">
+15.84194
+</td>
+<td style="text-align:right;">
+133.20833
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+189
+</td>
+<td style="text-align:right;">
+1881.198
+</td>
+<td style="text-align:right;">
+746.4917
+</td>
+<td style="text-align:right;">
+2861.317
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2018-08-26
+</td>
+<td style="text-align:right;">
+12.39462
+</td>
+<td style="text-align:right;">
+9.24416
+</td>
+<td style="text-align:right;">
+14.85524
+</td>
+<td style="text-align:right;">
+130.00000
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+211
+</td>
+<td style="text-align:right;">
+1572.858
+</td>
+<td style="text-align:right;">
+750.0686
+</td>
+<td style="text-align:right;">
+2047.287
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-11
+</td>
+<td style="text-align:right;">
+13.21756
+</td>
+<td style="text-align:right;">
+10.36656
+</td>
+<td style="text-align:right;">
+15.62666
+</td>
+<td style="text-align:right;">
+119.58333
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:right;">
+174
+</td>
+<td style="text-align:right;">
+1602.107
+</td>
+<td style="text-align:right;">
+756.7589
+</td>
+<td style="text-align:right;">
+2491.884
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-08-17
+</td>
+<td style="text-align:right;">
+12.36384
+</td>
+<td style="text-align:right;">
+10.33390
+</td>
+<td style="text-align:right;">
+14.36902
+</td>
+<td style="text-align:right;">
+89.14583
+</td>
+<td style="text-align:right;">
+57
+</td>
+<td style="text-align:right;">
+130
+</td>
+<td style="text-align:right;">
+1099.135
+</td>
+<td style="text-align:right;">
+757.6007
+</td>
+<td style="text-align:right;">
+1658.792
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2019-09-05
+</td>
+<td style="text-align:right;">
+14.31228
+</td>
+<td style="text-align:right;">
+10.79022
+</td>
+<td style="text-align:right;">
+16.80702
+</td>
+<td style="text-align:right;">
+133.95833
+</td>
+<td style="text-align:right;">
+70
+</td>
+<td style="text-align:right;">
+192
+</td>
+<td style="text-align:right;">
+1989.228
+</td>
+<td style="text-align:right;">
+772.4458
+</td>
+<td style="text-align:right;">
+3082.920
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2017-10-01
+</td>
+<td style="text-align:right;">
+13.03862
+</td>
+<td style="text-align:right;">
+9.83434
+</td>
+<td style="text-align:right;">
+16.18556
+</td>
+<td style="text-align:right;">
+151.27083
+</td>
+<td style="text-align:right;">
+78
+</td>
+<td style="text-align:right;">
+200
+</td>
+<td style="text-align:right;">
+1979.208
+</td>
+<td style="text-align:right;">
+786.0232
+</td>
+<td style="text-align:right;">
+2800.102
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2020-05-23
+</td>
+<td style="text-align:right;">
+11.95653
+</td>
+<td style="text-align:right;">
+9.92818
+</td>
+<td style="text-align:right;">
+14.08336
+</td>
+<td style="text-align:right;">
+85.89583
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:right;">
+116
+</td>
+<td style="text-align:right;">
+1023.354
+</td>
+<td style="text-align:right;">
+796.4698
+</td>
+<td style="text-align:right;">
+1463.887
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="consumption-analysing-deviation-from-normal" class="section level2">
+<h2><span class="header-section-number">3.2</span> Consumption: Analysing deviation from 'normal'</h2>
 <p>Several <a href="https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606">articles</a> and <a href="https://twitter.com/DrIAGWilson/status/1255100828781883394">analyses</a> have suggested that demand (and thus generation) patterns have shifted so that <a href="http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html">weekdays have become more like weekends</a>.</p>
 <div id="overall-trends" class="section level3">
-<h3><span class="header-section-number">3.1.1</span> Overall trends</h3>
-<p>Figure <a href="#fig:TheilSenGWhPlot">3.1</a> uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) .</p>
+<h3><span class="header-section-number">3.2.1</span> Overall trends</h3>
+<p>Figure <a href="#fig:TheilSenGWhPlot">3.6</a> uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by peak period (07:00 - 08:30 and 16:00 - 20:00) .</p>
 <p>These plots show that there has been a steady decline of ~ 0.4 - 0.5 GW mean half hourly generation (and thus demand) per year since 2016 in each time period. The substantial below-trend fall in generation during lockdown in early Spring 2020 is clear, especailly for the morning peak, day-time and, to a lesser extent, evening peak periods. There appears to have been a smaller below-trend reduction at other times as we would expect. We can also see a notable drop in generation in late 2015 which was <a href="https://www.metoffice.gov.uk/binaries/content/assets/metofficegovuk/pdf/weather/learn-about/uk-past-events/state-of-uk-climate/mo-state-of-uk-climate-2015-v3.pdf">unusually warm and wet</a>.</p>
 <blockquote>
 <p>use mean of half-hourly GWh otherwise the periods with more half-hours tend to visually dominate</p>
@@ -1158,7 +2818,7 @@ Figure 2.6: halfhourly mean GWh by season in 2019
 <div class="figure"><span id="fig:TheilSenGWhPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/TheilSenGWhPlot-1.png" alt="Theil-Sen plot of mean half-hourly generation per month since 2016-01-01" width="672" />
 <p class="caption">
-Figure 3.1: Theil-Sen plot of mean half-hourly generation per month since 2016-01-01
+Figure 3.6: Theil-Sen plot of mean half-hourly generation per month since 2016-01-01
 </p>
 </div>
 <pre><code>## png 
@@ -1627,58 +3287,58 @@ Jun 2020
 <p><img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/theilSenGWhDoWPlot-1.png" width="672" /></p>
 </div>
 <div id="half-hourly-patterns" class="section level3">
-<h3><span class="header-section-number">3.1.2</span> Half hourly patterns</h3>
-<p>Figure <a href="#fig:recentDateTimeGWhPlot">3.2</a> shows total half-hourly generation since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<h3><span class="header-section-number">3.2.2</span> Half hourly patterns</h3>
+<p>Figure <a href="#fig:recentDateTimeGWhPlot">3.7</a> shows total half-hourly generation since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:recentDateTimeGWhPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/recentDateTimeGWhPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.2: Half-hourly generation, UK (recent)
+Figure 3.7: Half-hourly generation, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:recentHalfHourlyProfileGWhPlot">3.3</a> shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.</p>
+<p>Figure <a href="#fig:recentHalfHourlyProfileGWhPlot">3.8</a> shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.</p>
 <div class="figure"><span id="fig:recentHalfHourlyProfileGWhPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/recentHalfHourlyProfileGWhPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.3: Half-hourly generation, UK (recent)
+Figure 3.8: Half-hourly generation, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:makeWeekDayGWhPlot">3.4</a> shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.</p>
+<p>Figure <a href="#fig:makeWeekDayGWhPlot">3.9</a> shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.</p>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <div class="figure"><span id="fig:makeWeekDayGWhPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/makeWeekDayGWhPlot-1.png" alt="Half-hourly GWh" width="672" />
 <p class="caption">
-Figure 3.4: Half-hourly GWh
+Figure 3.9: Half-hourly GWh
 </p>
 </div>
-<p>Figure <a href="#fig:makeWeekdayTimeGWhPlot">3.5</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
-<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure <a href="#fig:makeWeekdayTimeGWhPlot">3.10</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
+<pre><code>## Saving 6 x 5 in image</code></pre>
 <div class="figure"><span id="fig:makeWeekdayTimeGWhPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/makeWeekdayTimeGWhPlot-1.png" alt="% half-hourly GWh" width="672" />
 <p class="caption">
-Figure 3.5: % half-hourly GWh
+Figure 3.10: % half-hourly GWh
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationGWhDetailed">3.6</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from 2018 onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure <a href="#fig:TheilSenGWhPlot">3.1</a>. The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.</p>
+<p>Figure <a href="#fig:timeVariationGWhDetailed">3.11</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the same period in all years from 2018 onwards. It is interesting to note that the twin peak demand periods have been maintained during lockdown but they are considerably lower although we should expect some 'natural' reduction due to the overall downward generation trend shown in Figure <a href="#fig:TheilSenGWhPlot">3.6</a>. The lower middle monthly plot suggests that while lockdown caused a considerable drop in generation, this difference is now starting to converge on 'normal' seasonal demand levels.</p>
 <pre><code>## Warning: removing 192 missing rows due to plotPeriodDetailed</code></pre>
 <div class="figure"><span id="fig:timeVariationGWhDetailed"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/timeVariationGWhDetailed-1.png" alt="timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
 <p class="caption">
-Figure 3.6: timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
+Figure 3.11: timeVariation plots for half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
 </p>
 </div>
 <p>Repeat but less detail.</p>
 <div class="figure"><span id="fig:timeVariationGWh"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/timeVariationGWh-1.png" alt="timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to 2020-06-30" width="672" />
 <p class="caption">
-Figure 3.7: timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to 2020-06-30
+Figure 3.12: timeVariation plots for half-hourly GWh generation comparing pre/lockdown 2020 up to 2020-06-30
 </p>
 </div>
 <pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
-<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu. 
-## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 05:52:30&quot; &quot;2018-06-27 11:45:00&quot; &quot;2018-09-23 04:58:47&quot; &quot;2019-06-23 17:37:30&quot; 
-##                  Max. 
-## &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 05:52:30&quot; &quot;2018-06-27 11:45:00&quot; &quot;2018-09-23 04:58:47&quot; 
+##               3rd Qu.                  Max. 
+## &quot;2019-06-23 17:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
 <pre><code>## Confirming dates plotted: dateFixed</code></pre>
 <pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 ## &quot;2020-01-02&quot; &quot;2020-02-15&quot; &quot;2020-03-30&quot; &quot;2020-03-30&quot; &quot;2020-05-13&quot; &quot;2020-06-29&quot;</code></pre>
@@ -1692,18 +3352,18 @@ Figure 3.7: timeVariation plots for half-hourly GWh generation comparing pre/loc
 ##   2</code></pre>
 <pre><code>## png 
 ##   2</code></pre>
-<p>Figure <a href="#fig:timeVariationGWhNormalised">3.8</a> is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal <em>shape</em> of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure <a href="#fig:timeVariationGWh">3.7</a>).</p>
+<p>Figure <a href="#fig:timeVariationGWhNormalised">3.13</a> is a similar plot but in this case the generation is normalised within each period to enable clarification of changes in the temporal <em>shape</em> of demand rather than changes in the overall level. As we can see the normalised plots indicate that the relative temporal distribution of generation (demand) is very similar between each period. The shape of demand is therefore relatively unchanged, but it's level is distinctly lower (Figure <a href="#fig:timeVariationGWh">3.12</a>).</p>
 <div class="figure"><span id="fig:timeVariationGWhNormalised"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/timeVariationGWhNormalised-1.png" alt="timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018" width="672" />
 <p class="caption">
-Figure 3.8: timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
+Figure 3.13: timeVariation plots for normalised half-hourly GW generation comparing pre/lockdown 2020 with the same months in previous years starting in 2018
 </p>
 </div>
 </div>
 <div id="daily-patterns" class="section level3">
-<h3><span class="header-section-number">3.1.3</span> Daily patterns</h3>
+<h3><span class="header-section-number">3.2.3</span> Daily patterns</h3>
 <p>For this analysis we have shifted the dates for the comparison years to ensure that weekdays and weekends align in each year of data but this does <strong>not</strong> mean that Easter is the same weekend across the comparison periods nor that Bank Holidays (e.g. VE day 2020) are consistent.</p>
-<p>Figure <a href="#fig:compareDailyGWhPlot">3.9</a> shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure <a href="#fig:timeVariationGWh">3.7</a>, lockdown clearly reduced demand below the seasonal trend as Figure <a href="#fig:TheilSenGWhPlot">3.1</a> suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure <a href="#fig:timeVariationGWh">3.7</a>).</p>
+<p>Figure <a href="#fig:compareDailyGWhPlot">3.14</a> shows the most recent mean daily half-hourly GW compared to the same day in previous years. As hinted by Figure <a href="#fig:timeVariationGWh">3.12</a>, lockdown clearly reduced demand below the seasonal trend as Figure <a href="#fig:TheilSenGWhPlot">3.6</a> suggested and also levels of demand are now starting to converge on the seasonal trend (c.f. Figure <a href="#fig:timeVariationGWh">3.12</a>).</p>
 <blockquote>
 <p>Beware temperature differences - need to control for heating degree days as 2020 was a <em>very</em> warm spring</p>
 </blockquote>
@@ -1714,34 +3374,34 @@ Figure 3.8: timeVariation plots for normalised half-hourly GW generation compari
 <div class="figure"><span id="fig:compareDailyGWhPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/compareDailyGWhPlot-1.png" alt="Comparative daily mean half-hour generation levels 2020 vs pre-2020" width="672" />
 <p class="caption">
-Figure 3.9: Comparative daily mean half-hour generation levels 2020 vs pre-2020
+Figure 3.14: Comparative daily mean half-hour generation levels 2020 vs pre-2020
 </p>
 </div>
-<p>Figure <a href="#fig:compareDailyGWhpcPlot">3.10</a> shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.</p>
+<p>Figure <a href="#fig:compareDailyGWhpcPlot">3.15</a> shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.</p>
 <pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <div class="figure"><span id="fig:compareDailyGWhpcPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/compareDailyGWhpcPlot-1.png" alt="Percentage difference in mean generation levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.10: Percentage difference in mean generation levels 2020 vs pre 2020
+Figure 3.15: Percentage difference in mean generation levels 2020 vs pre 2020
 </p>
 </div>
-<p>Figure <a href="#fig:peakyTest">3.11</a> shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less 'peaky' than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.</p>
+<p>Figure <a href="#fig:peakyTest">3.16</a> shows the trend in the ratio between maximum and minimum half-hourly generation by day. This shows that 2020 was already less 'peaky' than previous years with a lower ratio between maximum and minimum generation on most days. This appear to have amplified in the first week or so of UK lockdown with a further reduction in the ratio but this has not been sustained over time with greater variance as we move into May 2020.</p>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:peakyTest"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/peakyTest-1.png" alt="Ratio of maximum to minimum generation per day" width="672" />
 <p class="caption">
-Figure 3.11: Ratio of maximum to minimum generation per day
+Figure 3.16: Ratio of maximum to minimum generation per day
 </p>
 </div>
 </div>
 <div id="weekly-patterns" class="section level3">
-<h3><span class="header-section-number">3.1.4</span> Weekly patterns</h3>
+<h3><span class="header-section-number">3.2.4</span> Weekly patterns</h3>
 <p>tbc</p>
 </div>
 </div>
 <div id="carbon-intensity-analysing-deviation-from-normal" class="section level2">
-<h2><span class="header-section-number">3.2</span> Carbon Intensity: Analysing deviation from 'normal'</h2>
+<h2><span class="header-section-number">3.3</span> Carbon Intensity: Analysing deviation from 'normal'</h2>
 <p>There are two aspects to this. The first is <code>carbon intensity</code> which is driven by the mix of fuels being used to generate electricity at any given time. The second is the total greenhouse gasses emitted which is, obviously, the intensity * the volume. Given the slight uncertainty over units (see Section <a href="#data">2</a>) we assume this is <code>GENERATION</code> * <code>CARBON_INTENSITY</code>.</p>
 <p>Clearly the first of these is driven by the mix of fuels and in the UK this reflects a complex dynamic system of availability of renewables, price, interconnect and demand. To some extent we would expect that lower overall demand should (but not <a href="https://www.nationalgrideso.com/news/our-electricity-greener-lockdown">always</a>) increase the share of renewables. However other factors are also at play:</p>
 <ul>
@@ -1750,8 +3410,8 @@ Figure 3.11: Ratio of maximum to minimum generation per day
 <li>low periods of demand might <a href="https://www.nationalgrideso.com/news/our-electricity-greener-lockdown">require system services</a> from higher carbon generation</li>
 </ul>
 <div id="overall-trends-1" class="section level3">
-<h3><span class="header-section-number">3.2.1</span> Overall trends</h3>
-<p>Figure <a href="#fig:TheilSenCIPlot">3.12</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demand period. Again Table <a href="#tab:TheilSenCIPlot">3.3</a> indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period in all time periods. However it is also noticeable that mean carbon intensity has marginally increased above trend in the months of lockdown.</p>
+<h3><span class="header-section-number">3.3.1</span> Overall trends</h3>
+<p>Figure <a href="#fig:TheilSenCIPlot">3.17</a> agin uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demand period. Again Table <a href="#tab:TheilSenCIPlot">3.3</a> indicates the years over which the trend is calculated. This plot shows that carbon intensity has fallen by around 40 kg CO2e/MWh per year over the time period in all time periods. However it is also noticeable that mean carbon intensity has marginally increased above trend in the months of lockdown.</p>
 <pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
@@ -1760,7 +3420,7 @@ Figure 3.11: Ratio of maximum to minimum generation per day
 <div class="figure"><span id="fig:TheilSenCIPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/TheilSenCIPlot-1.png" alt="Theil-Sen plot of mean half-hourly carbon intensity per month since 2016-01-01" width="672" />
 <p class="caption">
-Figure 3.12: Theil-Sen plot of mean half-hourly carbon intensity per month since 2016-01-01
+Figure 3.17: Theil-Sen plot of mean half-hourly carbon intensity per month since 2016-01-01
 </p>
 </div>
 <table class="table" style="margin-left: auto; margin-right: auto;">
@@ -2226,50 +3886,50 @@ Jun 2020
 <p><img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/theilSenCIDoWPlot-1.png" width="672" /></p>
 </div>
 <div id="half-hourly-patterns-1" class="section level3">
-<h3><span class="header-section-number">3.2.2</span> Half-hourly patterns</h3>
-<p>Figure <a href="#fig:recentDateTimeCIPlot">3.13</a> shows half-hourly carbon intensity since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<h3><span class="header-section-number">3.3.2</span> Half-hourly patterns</h3>
+<p>Figure <a href="#fig:recentDateTimeCIPlot">3.18</a> shows half-hourly carbon intensity since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:recentDateTimeCIPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/recentDateTimeCIPlot-1.png" alt="Half-hourly CO2e emissions, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.13: Half-hourly CO2e emissions, UK (recent)
+Figure 3.18: Half-hourly CO2e emissions, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:recentHalfHourlyProfileCIPlot">3.14</a> shows the daily carbon intensity profiles over time for each day of the week.</p>
+<p>Figure <a href="#fig:recentHalfHourlyProfileCIPlot">3.19</a> shows the daily carbon intensity profiles over time for each day of the week.</p>
 <div class="figure"><span id="fig:recentHalfHourlyProfileCIPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/recentHalfHourlyProfileCIPlot-1.png" alt="Half-hourly generation, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.14: Half-hourly generation, UK (recent)
+Figure 3.19: Half-hourly generation, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:makeWeekDayCIPlot">3.15</a> shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.</p>
+<p>Figure <a href="#fig:makeWeekDayCIPlot">3.20</a> shows the mean half-hourly carbon intensity per day. Need to bear in mind the trends identified above.</p>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <div class="figure"><span id="fig:makeWeekDayCIPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/makeWeekDayCIPlot-1.png" alt="half-hourly CI" width="672" />
 <p class="caption">
-Figure 3.15: half-hourly CI
+Figure 3.20: half-hourly CI
 </p>
 </div>
-<p>Figure <a href="#fig:makeWeekdayTimeCIplot">3.16</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
-<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure <a href="#fig:makeWeekdayTimeCIplot">3.21</a> shows the mean half-hourly carbon intensity per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
+<pre><code>## Saving 6 x 5 in image</code></pre>
 <div class="figure"><span id="fig:makeWeekdayTimeCIplot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/makeWeekdayTimeCIplot-1.png" alt="% half-hourly CI" width="672" />
 <p class="caption">
-Figure 3.16: % half-hourly CI
+Figure 3.21: % half-hourly CI
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationCI">3.17</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.</p>
+<p>Figure <a href="#fig:timeVariationCI">3.22</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. This plot is not particularly informative since we now CI is already lower in 2020 than previous years and we would expect it to fall during the spring as solar generation increases its contributon. The lockdown phases will also be affected by small numbers of highly windy days.</p>
 <div class="figure"><span id="fig:timeVariationCI"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/timeVariationCI-1.png" alt="timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to 2020-06-30" width="672" />
 <p class="caption">
-Figure 3.17: timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to 2020-06-30
+Figure 3.22: timeVariation plots for half-hourly carbon intensity comparing lockdown 2020 up to 2020-06-30
 </p>
 </div>
 <pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
-<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu. 
-## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 05:52:30&quot; &quot;2018-06-27 11:45:00&quot; &quot;2018-09-23 04:58:47&quot; &quot;2019-06-23 17:37:30&quot; 
-##                  Max. 
-## &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 05:52:30&quot; &quot;2018-06-27 11:45:00&quot; &quot;2018-09-23 04:58:47&quot; 
+##               3rd Qu.                  Max. 
+## &quot;2019-06-23 17:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
 <pre><code>## Confirming dates plotted: dateFixed</code></pre>
 <pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 ## &quot;2020-01-02&quot; &quot;2020-02-15&quot; &quot;2020-03-30&quot; &quot;2020-03-30&quot; &quot;2020-05-13&quot; &quot;2020-06-29&quot;</code></pre>
@@ -2285,8 +3945,8 @@ Figure 3.17: timeVariation plots for half-hourly carbon intensity comparing lock
 ##   2</code></pre>
 </div>
 <div id="daily-patterns-1" class="section level3">
-<h3><span class="header-section-number">3.2.3</span> Daily patterns</h3>
-<p>Figure <a href="#fig:compareDailyCIPlot">3.18</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure <a href="#fig:TheilSenCIPlot">3.12</a>, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<h3><span class="header-section-number">3.3.3</span> Daily patterns</h3>
+<p>Figure <a href="#fig:compareDailyCIPlot">3.23</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As we would expect given Figure <a href="#fig:TheilSenCIPlot">3.17</a>, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;
@@ -2294,30 +3954,30 @@ Figure 3.17: timeVariation plots for half-hourly carbon intensity comparing lock
 <div class="figure"><span id="fig:compareDailyCIPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/compareDailyCIPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.18: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+Figure 3.23: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
 </p>
 </div>
-<p>Figure <a href="#fig:compareDailyCIpcPlot">3.19</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<p>Figure <a href="#fig:compareDailyCIpcPlot">3.24</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <div class="figure"><span id="fig:compareDailyCIpcPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/compareDailyCIpcPlot-1.png" alt="Percentage difference in mean carbon intensity levels 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.19: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
+Figure 3.24: Percentage difference in mean carbon intensity levels 2020 vs pre 2020
 </p>
 </div>
 </div>
 <div id="weekly-patterns-1" class="section level3">
-<h3><span class="header-section-number">3.2.4</span> Weekly patterns</h3>
+<h3><span class="header-section-number">3.3.4</span> Weekly patterns</h3>
 <p>tbc</p>
 </div>
 </div>
 <div id="carbon-emissions-total-analysing-deviation-from-normal" class="section level2">
-<h2><span class="header-section-number">3.3</span> Carbon emissions (total): Analysing deviation from 'normal'</h2>
+<h2><span class="header-section-number">3.4</span> Carbon emissions (total): Analysing deviation from 'normal'</h2>
 <p>In this section we use our calculation of total CO2e emitted per half hour (see Section <a href="#genData">2.1</a>) to analyse the changes in total CO2e emitted which is, after all, what we are mostly interested in from a climate change point of view. Remember that this value is driven <em>both</em> by total generation (demand) <em>and</em> carbon intensity. As we saw above, these are not always tightly correlated.</p>
 <div id="overall-trends-2" class="section level3">
-<h3><span class="header-section-number">3.3.1</span> Overall trends</h3>
-<p>Figure <a href="#fig:TheilSenC02eTPlot">3.20</a> again uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table <a href="#tab:TheilSenC02eTPlot">3.5</a> indicates the years over which the trend is calculated.</p>
+<h3><span class="header-section-number">3.4.1</span> Overall trends</h3>
+<p>Figure <a href="#fig:TheilSenC02eTPlot">3.25</a> again uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot but this time for mean half-hourly carbon intensity by peak demnand period. Again Table <a href="#tab:TheilSenC02eTPlot">3.5</a> indicates the years over which the trend is calculated.</p>
 <p>This plot shows that total CO2e emissions intensity has fallen by a half-hourly mean of ~600-800 tonnes of CO2e over the time period. However there is some variation around this trend with apparently slightly above trend emissions in the evening peak period during April and May 2020 noticeable despite the almost complete absence of coal generation during this period (see Annex, Figure <a href="#fig:fuelTrendPlots"><strong>??</strong></a>).</p>
 <pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
 ## [1] &quot;Taking bootstrap samples. Please wait.&quot;
@@ -2327,7 +3987,7 @@ Figure 3.19: Percentage difference in mean carbon intensity levels 2020 vs pre 2
 <div class="figure"><span id="fig:TheilSenC02eTPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/TheilSenC02eTPlot-1.png" alt="Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2016-01-01" width="672" />
 <p class="caption">
-Figure 3.20: Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2016-01-01
+Figure 3.25: Theil-Sen plot of mean half-hourly kg CO2e emissions per month since 2016-01-01
 </p>
 </div>
 <pre><code>## png 
@@ -2793,50 +4453,50 @@ Jun 2020
 <p><img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/theilSenCO2eDoWPlot-1.png" width="672" /></p>
 </div>
 <div id="half-hourly-patterns-2" class="section level3">
-<h3><span class="header-section-number">3.3.2</span> Half-hourly patterns</h3>
-<p>Figure <a href="#fig:recentDateTimeC02ekgPlot">3.21</a> shows total half-hourly CO2e emissions since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
+<h3><span class="header-section-number">3.4.2</span> Half-hourly patterns</h3>
+<p>Figure <a href="#fig:recentDateTimeC02ekgPlot">3.26</a> shows total half-hourly CO2e emissions since 2020-02-01. Overall generation has fallen as we would expect given the season (less heating and lighting required) and weekdays are indeed less easy to distinguish from weekends.</p>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
 <div class="figure"><span id="fig:recentDateTimeC02ekgPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/recentDateTimeC02ekgPlot-1.png" alt="Half-hourly total CO2e emissions, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.21: Half-hourly total CO2e emissions, UK (recent)
+Figure 3.26: Half-hourly total CO2e emissions, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:recentHalfHourlyProfileC02ekgPlot">3.22</a> shows the daily CO2e emissions profiles over time for each day of the week since 2020-02-01.</p>
+<p>Figure <a href="#fig:recentHalfHourlyProfileC02ekgPlot">3.27</a> shows the daily CO2e emissions profiles over time for each day of the week since 2020-02-01.</p>
 <div class="figure"><span id="fig:recentHalfHourlyProfileC02ekgPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/recentHalfHourlyProfileC02ekgPlot-1.png" alt="Half-hourly CO2e emissions, UK (recent)" width="672" />
 <p class="caption">
-Figure 3.22: Half-hourly CO2e emissions, UK (recent)
+Figure 3.27: Half-hourly CO2e emissions, UK (recent)
 </p>
 </div>
-<p>Figure <a href="#fig:makeWeekDayCO2eTPlot">3.23</a> shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.</p>
+<p>Figure <a href="#fig:makeWeekDayCO2eTPlot">3.28</a> shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.</p>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <div class="figure"><span id="fig:makeWeekDayCO2eTPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/makeWeekDayCO2eTPlot-1.png" alt="half-hourly CO2e" width="672" />
 <p class="caption">
-Figure 3.23: half-hourly CO2e
+Figure 3.28: half-hourly CO2e
 </p>
 </div>
-<p>Figure <a href="#fig:makeWeekdayTimeCO2eTplot">3.24</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
-<pre><code>## Saving 9 x 5 in image</code></pre>
+<p>Figure <a href="#fig:makeWeekdayTimeCO2eTplot">3.29</a> shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.</p>
+<pre><code>## Saving 6 x 5 in image</code></pre>
 <div class="figure"><span id="fig:makeWeekdayTimeCO2eTplot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/makeWeekdayTimeCO2eTplot-1.png" alt="% half-hourly CO2e" width="672" />
 <p class="caption">
-Figure 3.24: % half-hourly CO2e
+Figure 3.29: % half-hourly CO2e
 </p>
 </div>
-<p>Figure <a href="#fig:timeVariationCO2e">3.25</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.</p>
+<p>Figure <a href="#fig:timeVariationCO2e">3.30</a> shows the difference between hourly and weekday patterns for lockdown 2020 and the previous year(s) starting from January 2018. Again, due to the downward trends we have already identified, we would expect total CO2e emissions to be lower during 2020 and also to fall during the spring as solar generation increases its contributon.</p>
 <div class="figure"><span id="fig:timeVariationCO2e"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/timeVariationCO2e-1.png" alt="timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018" width="672" />
 <p class="caption">
-Figure 3.25: timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018
+Figure 3.30: timeVariation plots for half-hourly CO2e comparing lockdown 2020 with pre-lockdown starting in 2018
 </p>
 </div>
 <pre><code>## Confirming dates plotted: date (as set for openair)</code></pre>
-<pre><code>##                  Min.               1st Qu.                Median                  Mean               3rd Qu. 
-## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 05:52:30&quot; &quot;2018-06-27 11:45:00&quot; &quot;2018-09-23 04:58:47&quot; &quot;2019-06-23 17:37:30&quot; 
-##                  Max. 
-## &quot;2020-06-18 23:30:00&quot;</code></pre>
+<pre><code>##                  Min.               1st Qu.                Median                  Mean 
+## &quot;2017-01-05 00:00:00&quot; &quot;2017-07-01 05:52:30&quot; &quot;2018-06-27 11:45:00&quot; &quot;2018-09-23 04:58:47&quot; 
+##               3rd Qu.                  Max. 
+## &quot;2019-06-23 17:37:30&quot; &quot;2020-06-18 23:30:00&quot;</code></pre>
 <pre><code>## Confirming dates plotted: dateFixed</code></pre>
 <pre><code>##         Min.      1st Qu.       Median         Mean      3rd Qu.         Max. 
 ## &quot;2020-01-02&quot; &quot;2020-02-15&quot; &quot;2020-03-30&quot; &quot;2020-03-30&quot; &quot;2020-05-13&quot; &quot;2020-06-29&quot;</code></pre>
@@ -2852,8 +4512,8 @@ Figure 3.25: timeVariation plots for half-hourly CO2e comparing lockdown 2020 wi
 ##   2</code></pre>
 </div>
 <div id="daily-patterns-2" class="section level3">
-<h3><span class="header-section-number">3.3.3</span> Daily patterns</h3>
-<p>Figure <a href="#fig:compareDailyCO2ekgPlot">3.26</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<h3><span class="header-section-number">3.4.3</span> Daily patterns</h3>
+<p>Figure <a href="#fig:compareDailyCO2ekgPlot">3.31</a> shows the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <blockquote>
 <p>check y axis</p>
 </blockquote>
@@ -2864,21 +4524,21 @@ Figure 3.25: timeVariation plots for half-hourly CO2e comparing lockdown 2020 wi
 <div class="figure"><span id="fig:compareDailyCO2ekgPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/compareDailyCO2ekgPlot-1.png" alt="Mean half-hourly total CO2e by day, 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.26: Mean half-hourly total CO2e by day, 2020 vs pre 2020
+Figure 3.31: Mean half-hourly total CO2e by day, 2020 vs pre 2020
 </p>
 </div>
-<p>Figure <a href="#fig:compareDailyC02ekgpcPlot">3.27</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
+<p>Figure <a href="#fig:compareDailyC02ekgpcPlot">3.32</a> shows the percentage difference between the mean half-hourly carbon intensity per day in 2020 and the pre 2020 average for the same day. As expected, 2020 was already considerably lower than the average of previous years but this is not necessarily sustained through lockdown although the affects of weather on solar and wind availability need to be taken in to account.</p>
 <pre><code>## Warning: Ignoring unknown parameters: yMin, yMax</code></pre>
 <pre><code>## Saving 9 x 5 in image</code></pre>
 <div class="figure"><span id="fig:compareDailyC02ekgpcPlot"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/compareDailyC02ekgpcPlot-1.png" alt="Percentage difference in mean half-hourly CO2e 2020 vs pre 2020" width="672" />
 <p class="caption">
-Figure 3.27: Percentage difference in mean half-hourly CO2e 2020 vs pre 2020
+Figure 3.32: Percentage difference in mean half-hourly CO2e 2020 vs pre 2020
 </p>
 </div>
 </div>
 <div id="weekly-patterns-2" class="section level3">
-<h3><span class="header-section-number">3.3.4</span> Weekly patterns</h3>
+<h3><span class="header-section-number">3.4.4</span> Weekly patterns</h3>
 <p>tbc</p>
 </div>
 </div>
@@ -2990,7 +4650,7 @@ Number of rows
 Number of columns
 </td>
 <td style="text-align:left;">
-52
+53
 </td>
 </tr>
 <tr>
@@ -3036,7 +4696,7 @@ difftime
 factor
 </td>
 <td style="text-align:left;">
-3
+4
 </td>
 </tr>
 <tr>
@@ -3323,6 +4983,26 @@ FALSE
 </td>
 <td style="text-align:left;">
 Spr: 22080, Win: 20208, Sum: 18528, Aut: 17472
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+wkday
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+Sun: 11184, Mon: 11184, Tue: 11184, Wed: 11184
 </td>
 </tr>
 <tr>
@@ -6036,7 +7716,7 @@ N obs
 </tbody>
 </table>
 <p>Figure <a href="#fig:fuelTrendPlots"><strong>??</strong></a> shows mean half-hourly generation per month by fuel together with a smoothed trend line. Note that these values are <em>not</em> de-seasoned.</p>
-<p>Clearly some of these trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to <a href="#fig:compareDailyGWhPlot">3.9</a>.</p>
+<p>Clearly some of these trends are non-monotonic and so are poorly represented by the Theil-Sen function. The next set of plots repeat this analysis using openair's smoothTrend plot which implemets a GAM-based method similar to <a href="#fig:compareDailyGWhPlot">3.14</a>.</p>
 <div class="figure"><span id="fig:smoothTrendPlots1"></span>
 <img src="covidLockdown_UK_upTo_2020-06-30_files/figure-html/smoothTrendPlots-1.png" alt="Trend plots of mean half-hourly fuel use per month since 2016-01-01" width="672" />
 <p class="caption">
@@ -6128,7 +7808,7 @@ Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generatio
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">7</span> Runtime</h1>
-<p>Analysis completed in 235.21 seconds ( 3.92 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
+<p>Analysis completed in 267.54 seconds ( 4.46 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">8</span> R environment</h1>
@@ -6171,21 +7851,25 @@ Figure 6.21: Box &amp; whiskers plots of carbon intensity over time by generatio
 ## [11] gridCarbon_0.1.0  here_0.1         
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] httr_1.4.1          maps_3.3.0          tidyr_1.1.0         jsonlite_1.6        viridisLite_0.3.0  
-##  [6] splines_3.6.0       assertthat_0.2.0    highr_0.7           latticeExtra_0.6-28 base64url_1.4      
-## [11] yaml_2.2.0          progress_1.2.2      pillar_1.4.4        backports_1.1.3     lattice_0.20-38    
-## [16] glue_1.4.1          digest_0.6.25       RColorBrewer_1.1-2  rvest_0.3.5         colorspace_1.4-0   
-## [21] htmltools_0.3.6     Matrix_1.2-17       pkgconfig_2.0.2     bookdown_0.19       purrr_0.3.4        
-## [26] scales_1.0.0        webshot_0.5.2       tibble_3.0.1        mgcv_1.8-28         txtq_0.2.0         
-## [31] generics_0.0.2      ellipsis_0.3.1      withr_2.1.2         repr_1.1.0          hexbin_1.27.2      
-## [36] cli_2.0.2           magrittr_1.5        crayon_1.3.4        evaluate_0.14       storr_1.2.1        
-## [41] fansi_0.4.0         nlme_3.1-139        MASS_7.3-51.4       forcats_0.5.0       xml2_1.3.2         
-## [46] tools_3.6.0         prettyunits_1.0.2   lifecycle_0.2.0     stringr_1.4.0       munsell_0.5.0      
-## [51] cluster_2.0.8       compiler_3.6.0      rlang_0.4.6         grid_3.6.0          rstudioapi_0.11    
-## [56] igraph_1.2.2        base64enc_0.1-3     labeling_0.3        rmarkdown_2.2       gtable_0.2.0       
-## [61] R6_2.3.0            knitr_1.28          dplyr_1.0.0         utf8_1.1.4          filelock_1.0.2     
-## [66] rprojroot_1.3-2     readr_1.3.1         stringi_1.2.4       parallel_3.6.0      Rcpp_1.0.1         
-## [71] vctrs_0.3.1         mapproj_1.2.7       tidyselect_1.1.0    xfun_0.14</code></pre>
+##  [1] Rcpp_1.0.1          txtq_0.2.0          lattice_0.20-38     tidyr_1.1.0        
+##  [5] prettyunits_1.0.2   assertthat_0.2.0    rprojroot_1.3-2     digest_0.6.25      
+##  [9] utf8_1.1.4          R6_2.3.0            repr_1.1.0          backports_1.1.3    
+## [13] evaluate_0.14       highr_0.7           httr_1.4.1          pillar_1.4.4       
+## [17] rlang_0.4.6         progress_1.2.2      rstudioapi_0.11     hexbin_1.27.2      
+## [21] Matrix_1.2-17       rmarkdown_2.2       labeling_0.3        splines_3.6.0      
+## [25] webshot_0.5.2       readr_1.3.1         stringr_1.4.0       igraph_1.2.2       
+## [29] munsell_0.5.0       compiler_3.6.0      xfun_0.14           pkgconfig_2.0.2    
+## [33] base64enc_0.1-3     mgcv_1.8-28         htmltools_0.3.6     tidyselect_1.1.0   
+## [37] tibble_3.0.1        bookdown_0.19       fansi_0.4.0         viridisLite_0.3.0  
+## [41] crayon_1.3.4        dplyr_1.0.0         withr_2.1.2         MASS_7.3-51.4      
+## [45] grid_3.6.0          nlme_3.1-139        jsonlite_1.6        gtable_0.2.0       
+## [49] lifecycle_0.2.0     magrittr_1.5        storr_1.2.1         scales_1.0.0       
+## [53] cli_2.0.2           stringi_1.2.4       mapproj_1.2.7       latticeExtra_0.6-28
+## [57] xml2_1.3.2          ellipsis_0.3.1      filelock_1.0.2      generics_0.0.2     
+## [61] vctrs_0.3.1         RColorBrewer_1.1-2  tools_3.6.0         forcats_0.5.0      
+## [65] glue_1.4.1          purrr_0.3.4         maps_3.3.0          parallel_3.6.0     
+## [69] yaml_2.2.0          colorspace_1.4-0    cluster_2.0.8       base64url_1.4      
+## [73] rvest_0.3.5         knitr_1.28</code></pre>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">

@@ -402,6 +402,50 @@ ggplot2::ggsave(filename = "UK_meanGWhBySeason_2019.png", path = here::here("doc
 p
 ```
 
+Find highs and lows. Good for a story
+
+```{r findMaxMin}
+gridGenDT[, wkday := lubridate::wday(obsDate, label = TRUE)]
+bottomGWh <- head(gridGenDT[, .(rDateTimeUTC, wkday, consGWh, 
+                                CARBON_INTENSITY,
+                                C02e_T)][order(consGWh)],10)
+kableExtra::kable(bottomGWh, cpation = "Lowest GWh half hour occured on...") %>%
+  kable_styling()
+
+bottomCI <- head(gridGenDT[, .(rDateTimeUTC, wkday, consGWh, 
+                                CARBON_INTENSITY,
+                                C02e_T)][order(CARBON_INTENSITY)],10)
+kableExtra::kable(bottomCI, cpation = "Lowest CI half hour occured on...") %>%
+  kable_styling()
+
+bottomCO2e <- head(gridGenDT[, .(rDateTimeUTC, wkday, consGWh, 
+                                CARBON_INTENSITY,
+                                C02e_T)][order(C02e_T)],10)
+kableExtra::kable(bottomCO2e, cpation = "Lowest CI half hour occured on...") %>%
+  kable_styling()
+```
+
+```{r findDailyMaxMin}
+dailyDT <- gridGenDT[, .(meanGWh = mean(consGWh),
+                         minGWh = min(consGWh),
+                         maxGWh = max(consGWh),
+                         meanCI = mean(CARBON_INTENSITY),
+                         minCI = min(CARBON_INTENSITY),
+                         maxCI = max(CARBON_INTENSITY),
+                         meanCO2eT = mean(C02e_T),
+                         minCO2eT = min(C02e_T),
+                         maxCO2eT = max(C02e_T)
+                         ), keyby = .(obsDate)]
+
+kableExtra::kable(head(dailyDT[order(minGWh)],10), cpation = "Lowest GWh half hour occured on...") %>%
+  kable_styling()
+
+kableExtra::kable(head(dailyDT[order(minCI)],10), cpation = "Lowest CI half hour occured on...") %>%
+  kable_styling()
+
+kableExtra::kable(head(dailyDT[order(minCO2eT)],10), cpation = "Lowest CO2e half hour occured on...") %>%
+  kable_styling()
+```
 
 ## Consumption: Analysing deviation from 'normal' 
 
@@ -536,12 +580,16 @@ thisMonth <- lubridate::month(today())
 Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayGWhPlot, fig.cap="Half-hourly GWh"}
-dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < localParams$toDate]
+todDT <- alignedGridGenDT[dateFixed >= as.Date("2020-02-01") & 
+                                               dateFixed <= localParams$toDate]
 yVar <- "consGWh"
 yLab <- "GWh"
 xVar <- "wkdayFixed"
-p <- gridCarbon::makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yLab, yDiv = 1)
+p <- gridCarbon::makeWeekdayPlot(todDT, 
+                                 xVar = xVar, 
+                                 yVar = yVar, 
+                                 yLab = yLab, 
+                                 yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
                   path = here::here("docs", "uk", "plots"), 
@@ -554,11 +602,14 @@ Figure \@ref(fig:makeWeekdayTimeGWhPlot) shows the mean half-hourly CO2e per hal
 
 ```{r makeWeekdayTimeGWhPlot, fig.cap="% half-hourly GWh"}
 
-p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+p <- makeWeekdayTimePlot(todDT, 
+                         yVar = yVar,  
+                         yForm = "prop",
+                         yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
                   path = here::here("docs","uk","plots"), 
-                  plot = p, width = 9, units = "in")
+                  plot = p, width = 6, units = "in")
 p
 ```
 
@@ -651,6 +702,7 @@ ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh.png"),
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
+
 ```
 
 Figure \@ref(fig:compareDailyGWhpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
@@ -811,30 +863,39 @@ p <- drake::readd(recentHalfHourlyProfileCIPlot)
 p
 ```
 
-Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
+Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly carbon intensity per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayCIPlot, fig.cap="half-hourly CI"}
-dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < localParams$toDate]
+
+todDT <- alignedGridGenDT[dateFixed >= as.Date("2020-02-01") & 
+                                               dateFixed <= localParams$toDate]
 yVar <- "CARBON_INTENSITY"
+yLab <- "g CO2e/kWh"
 xVar <- "wkdayFixed"
-p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "g C02e/kWh", yDiv = 1)
+p <- gridCarbon::makeWeekdayPlot(todDT, 
+                                 xVar = xVar, 
+                                 yVar = yVar, 
+                                 yLab = yLab, 
+                                 yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs","uk","plots"), 
+                  path = here::here("docs", "uk", "plots"), 
                   plot = p, width = 9, units = "in")
 p
+
 ```
 
-Figure \@ref(fig:makeWeekdayTimeCIplot) shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
+Figure \@ref(fig:makeWeekdayTimeCIplot) shows the mean half-hourly carbon intensity per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
 
 ```{r makeWeekdayTimeCIplot, fig.cap="% half-hourly CI"}
 
-p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+p <- makeWeekdayTimePlot(todDT, yVar = yVar,  
+                         yForm = "prop",
+                         yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
                   path = here::here("docs","uk","plots"), 
-                  plot = p, width = 9, units = "in")
+                  plot = p, width = 6, units = "in")
 p
 ```
 
@@ -1001,14 +1062,19 @@ p
 Figure \@ref(fig:makeWeekDayCO2eTPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayCO2eTPlot, fig.cap="half-hourly CO2e"}
-dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < localParams$toDate]
+todDT <- alignedGridGenDT[dateFixed >= as.Date("2020-02-01") & 
+                                               dateFixed <= localParams$toDate]
 yVar <- "C02e_T"
+yLab <- "kT CO2e"
 xVar <- "wkdayFixed"
-p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "C02e (kT)", yDiv = 1000)
+p <- gridCarbon::makeWeekdayPlot(todDT, 
+                                 xVar = xVar, 
+                                 yVar = yVar, 
+                                 yLab = yLab, 
+                                 yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs","uk","plots"), 
+                  path = here::here("docs", "uk", "plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -1017,11 +1083,18 @@ Figure \@ref(fig:makeWeekdayTimeCO2eTplot) shows the mean half-hourly CO2e per h
 
 ```{r makeWeekdayTimeCO2eTplot, fig.cap="% half-hourly CO2e"}
 
-p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+yVar <- "C02e_T"
+yLab <- "kT CO2e"
+
+p <- makeWeekdayTimePlot(todDT, 
+                         yVar = yVar, 
+                         yForm = "prop",
+                         yLab = yLab, 
+                         yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
                   path = here::here("docs","uk","plots"), 
-                  plot = p, width = 9, units = "in")
+                  plot = p, width = 6, units = "in")
 p
 ```
 
