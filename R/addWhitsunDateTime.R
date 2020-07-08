@@ -1,4 +1,5 @@
-#' \code{addWhitsunDate} adds extended weekend shading and label for UK Whit Sunday (late spring bank holiday) where x axis is a date. Should work in any time-zone
+#' \code{addWhitsunDate} adds extended weekend shading and label for UK Whit Sunday (late spring bank holiday) 
+#' where x axis is a dateTime. Should work in any time-zone
 #'
 #' @param p the plot to add them to
 #' @param yLoc the reltative height of the label (so you can stagger them on a plot)
@@ -7,9 +8,9 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #'
-addWhitsunDate <- function(p, yLoc, yMin, yMax){
-  p <- p + annotate("rect", xmin = as.Date("2020-05-25"),
-           xmax = as.Date("2020-05-26"), # 3 day weekend starting Saturday (in UK)
+addWhitsunDateTime <- function(p, yLoc, yMin, yMax){
+  p <- p + annotate("rect", xmin = as.Date("2020-05-25 00:00:00"),
+           xmax = as.Date("2020-05-25 23:59:59"), # 3 day weekend starting Saturday (in UK)
            ymin = yMin, ymax = yMax,
            alpha = 0.5, fill = gcParams$weFill) +
     annotate("text", x = as.Date("2020-05-25"),

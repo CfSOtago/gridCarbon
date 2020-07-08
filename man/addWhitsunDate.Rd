@@ -4,10 +4,12 @@
 \alias{addWhitsunDate}
 \title{\code{addWhitsunDate} adds extended weekend shading and label for UK Whit Sunday (late spring bank holiday) where x axis is a date. Should work in any time-zone}
 \usage{
-addWhitsunDate(p, yMin, yMax)
+addWhitsunDate(p, yLoc, yMin, yMax)
 }
 \arguments{
 \item{p}{the plot to add them to}
+
+\item{yLoc}{the reltative height of the label (so you can stagger them on a plot)}
 
 \item{yMin}{the smallest y value}
 
