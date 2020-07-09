@@ -1,6 +1,6 @@
 #' Load the pre-downloaded UK ESO embedded generation files in to a data.table
 #'
-#' \code{loadEmbeddedGenData} returns a dt with a proper rDateTimeUTC added & set to London tzone.
+#' \code{loadUKEmbeddedGenData} returns a dt with a proper rDateTimeUTC added & set to London tzone.
 #'
 #' @param path the folder to look in for the data
 #' @param fromYear the year to start from (needs to be in the data file names - you did name them sensibly, yes?)
@@ -11,12 +11,14 @@
 #' @export
 #' @family data
 #'
-loadEmbeddedGenData <- function(path, fromYear, toDate, update){
+loadUKEmbeddedGenData <- function(path, fromYear, toDate, update){
   # update = dummy used to force re-load
   # lists files within a folder (path) & loads
   # should be only 1 file so just load it
-  # path <- gcParams$ukData
-  filesToGet <- list.files(paste0(path, "/embeddedGen/processed/yearly/"), ".csv.gz", full.names = TRUE) # get list of files already downloaded & converted to long form
+  # path <- repoParams$ukNonGridDataLoc
+  path <- paste0(path, "processed/yearly/")
+  message("Checking: ", path)
+  filesToGet <- list.files(path, ".csv.gz", full.names = TRUE) # get list of files already downloaded & converted to long form
   l <- lapply(filesToGet, data.table::fread) # very fast data loading :-)
   dt <- data.table::rbindlist(l, fill = TRUE) # rbind them
   

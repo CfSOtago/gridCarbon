@@ -25,10 +25,12 @@ makeOutcomes <- function(dt){
   return(dt)
 }
 
-gridGenData <- gridCarbon::loadUKESOYearlyGenData(path = paste0(repoParams$ukGridDataLoc, "processed/yearly/"), # from where?
+gridGenData <- gridCarbon::loadUKESOYearlyGenData(path = repoParams$ukGridDataLoc, # from where?
                                      fromYear = localParams$fromYear, # from what date?
                                      toDate = localParams$toDate # to when?
                                      )
+embeddedGenData <- gridCarbon::loadUKEmbeddedGenData(path = repoParams$ukNonGridDataLoc,
+                                                    toDate = localParams$toDate,update)
 derivedGridGenData <- makeOutcomes(gridGenData)
 alignedGridGenData <- gridCarbon::alignDates(derivedGridGenData, 
                                 dateTime = "rDateTimeUTC",
@@ -40,13 +42,9 @@ recentDateTimeGWhPlot <- createRecentDateTimePlot(derivedGridGenData,
                                   yCap = "GWh",
                                   yDiv = 1,
                                   lockDownStart = repoParams$UKlockDownStartDateTime,
-                                  lockDownEnd = repoParams$UKlockDownEndDateTime)
+                                  lockDownEnd = repoParams$UKlockDownEndDateTime
+                                  )
 
-recentHalfHourlyProfileGWhPlot <- createRecentHalfHourlyProfilePlot(derivedGridGenData,
-                                                                    dateTime = "rDateTimeUTC",
-                                                                    yVar = "consGWh",
-                                                                    yCap = "GWh",
-                                                                    yDiv = 1)
 
 compareDailyGWhPlot <- createDailyMeanComparePlot(alignedGridGenData,
                                                  yVar = "consGWh",
@@ -55,13 +53,7 @@ compareDailyGWhPlot <- createDailyMeanComparePlot(alignedGridGenData,
                                                  form = "step", # default
                                                  lockDownStart = repoParams$UKlockDownStartDate,
                                                  lockDownEnd = repoParams$UKlockDownEndDate
-)
+                                                 )
+compareDailyGWhPlot
 
-compareDailyGWhpcPlot <- createDailyPcComparePlot(alignedGridGenData,
-                                                 yVar = "consGWh",
-                                                 yCap = "% difference",
-                                                 lockDownStart = repoParams$UKlockDownStartDate,
-                                                 lockDownEnd = repoParams$UKlockDownEndDate
-)
-
-
+tables()
