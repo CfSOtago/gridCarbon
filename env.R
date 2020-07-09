@@ -7,108 +7,112 @@ library(here)
 
 # Package parameters ----
 
-gcParams <- list() # params holder as a list. Sooooo much easier with tab complete
+repoParams <- list() # params holder as a list. Sooooo much easier with tab complete
 
-gcParams$repoLoc <- here::here() # try not to use this, use here() instead
+repoParams$repoLoc <- here::here() # try not to use this, use here() instead
 
 # Data ----
 # attempt to guess the platform & user
-gcParams$info <- Sys.info()
-gcParams$sysname <- gcParams$info[[1]]
-gcParams$nodename <- gcParams$info[[4]]
-gcParams$login <- gcParams$info[[6]]
-gcParams$user <- gcParams$info[[7]]
+repoParams$info <- Sys.info()
+repoParams$sysname <- repoParams$info[[1]]
+repoParams$nodename <- repoParams$info[[4]]
+repoParams$login <- repoParams$info[[6]]
+repoParams$user <- repoParams$info[[7]]
 
-gcParams$nzData <- "No idea, you need to edit env.R so I can find it!"
-gcParams$ukData <- "No idea, you need to edit env.R so I can find it!"
+repoParams$nzData <- "No idea, you need to edit env.R so I can find it!"
+repoParams$ukData <- "No idea, you need to edit env.R so I can find it!"
 
 # > Set data path ----
-if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & 
-   gcParams$sysname == "Linux"){ # Otago CS RStudio server
+if((repoParams$user == "dataknut" | repoParams$user == "carsten" ) & 
+   repoParams$sysname == "Linux"){ # Otago CS RStudio server
   
-  gcParams$GreenGrid <- path.expand("~/greenGridData/")
-  gcParams$GreenGridData <- path.expand("~/greenGridData/cleanData/safe/")
-  gcParams$censusData <- path.expand("~/greenGridData/externalData/nzCensus/") # fix for your platform
-  gcParams$gxpData <- path.expand("~/greenGridData/externalData/EA_GXP_Data/") # fix for your platform
-  gcParams$nzGridDataLoc <- paste0(gcParams$GreenGrid, 
+  repoParams$GreenGrid <- path.expand("~/greenGridData/")
+  repoParams$GreenGridData <- path.expand("~/greenGridData/cleanData/safe/")
+  repoParams$censusData <- path.expand("~/greenGridData/externalData/nzCensus/") # fix for your platform
+  repoParams$gxpData <- path.expand("~/greenGridData/externalData/EA_GXP_Data/") # fix for your platform
+  repoParams$nzGridDataLoc <- paste0(repoParams$GreenGrid, 
                                  "externalData/EA_Generation_Data/")
-  gcParams$nzNonGridDataLoc <- paste0(gcParams$GreenGrid, 
+  repoParams$nzNonGridDataLoc <- paste0(repoParams$GreenGrid, 
                                     "externalData/EA_Embedded_Generation_Data/")
-  gcParams$nzData <- gcParams$GreenGridData
-  gcParams$ukData <- path.expand("not set")
+  repoParams$nzData <- repoParams$GreenGridData
 }
-if(gcParams$user == "ben" & gcParams$sysname == "Darwin"){
+if(repoParams$user == "ben" & repoParams$sysname == "Darwin"){
   # Ben's laptop
-  gcParams$GreenGrid <- path.expand("~/Data/NZ_GREENGrid/")
-  gcParams$GreenGridData <- path.expand("~/Data/NZ_GREENGrid/safe/")
-  gcParams$censusData <- path.expand("~/Data/NZ_Census/") # fix for your platform
-  gcParams$gxpData <- path.expand("~/Data/NZ_EA_EMI/gxp/") # fix for your platform
-  gcParams$nzGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Generation_Data/")
-  gcParams$nzNonGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
-  gcParams$nzData <- gcParams$GreenGridData
+  repoParams$GreenGrid <- path.expand("~/Data/NZ_GREENGrid/")
+  repoParams$GreenGridData <- path.expand("~/Data/NZ_GREENGrid/safe/")
+  repoParams$censusData <- path.expand("~/Data/NZ_Census/") # fix for your platform
+  repoParams$gxpData <- path.expand("~/Data/NZ_EA_EMI/gxp/") # fix for your platform
+  repoParams$nzGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Generation_Data/")
+  repoParams$nzNonGridDataLoc <- path.expand("~/Data/NZ_EA_EMI/EA_Embedded_Generation_Data/")
+  repoParams$nzData <- repoParams$GreenGridData
+  
+  repoParams$ukData <- path.expand("~/Data/UK_National_Grid/")
+  repoParams$ukGridDataLoc <- path.expand(paste0(repoParams$ukData, "gridGen/"))
+  repoParams$ukNonGridDataLoc <- path.expand(paste0(repoParams$ukData, "embeddedGen/"))
+  
 }
-if(gcParams$user == "carsten.dortans" & gcParams$sysname == "Darwin"){
+if(repoParams$user == "carsten.dortans" & repoParams$sysname == "Darwin"){
   # Carsten's laptop
-  gcParams$GreenGridData <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/cleanData/safe/")
-  gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$GreenGridData, 
+  repoParams$GreenGridData <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/cleanData/safe/")
+  repoParams$nzGridDataLoc <- path.expand(paste0(repoParams$GreenGridData, 
                                                "/EA_Generation_Data/"))
-  gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$GreenGridData, 
+  repoParams$nzNonGridDataLoc <- path.expand(paste0(repoParams$GreenGridData, 
                                                   "/EA_Embedded_Generation_Data/"))
-  gcParams$nzData <- gcParams$GreenGridData
+  repoParams$nzData <- repoParams$GreenGridData
 }
-if(gcParams$user == "ba1e12" & gcParams$sysname == "Linux" & gcParams$nodename == "srv02405"){
+if(repoParams$user == "ba1e12" & repoParams$sysname == "Linux" & repoParams$nodename == "srv02405"){
   # UoS RStudio server
-  gcParams$ukData <- path.expand("/mnt/SERG_data/UK_National_Grid")
-  gcParams$ukGridDataLoc <- path.expand(paste0(gcParams$ukData, "/EA_Generation_Data/"))
-  gcParams$ukNonGridDataLoc <- path.expand(paste0(gcParams$ukData, "EA_Embedded_Generation_Data/"))
-  gcParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
-  gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Generation_Data/"))
-  gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Embedded_Generation_Data/"))
-  gcParams$nzGxpDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_GXP_Data/"))
+  repoParams$ukData <- path.expand("/mnt/SERG_data/UK_National_Grid")
+  repoParams$ukGridDataLoc <- path.expand(paste0(repoParams$ukData, "/gridGen/"))
+  repoParams$ukNonGridDataLoc <- path.expand(paste0(repoParams$ukData, "/embeddedGen/"))
+  repoParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
+  repoParams$nzGridDataLoc <- path.expand(paste0(repoParams$nzData, "/EA_Generation_Data/"))
+  repoParams$nzNonGridDataLoc <- path.expand(paste0(repoParams$nzData, "/EA_Embedded_Generation_Data/"))
+  repoParams$nzGxpDataLoc <- path.expand(paste0(repoParams$nzData, "/EA_GXP_Data/"))
 }
 
 # > Misc data ----
-gcParams$bytesToMb <- 0.000001
+repoParams$bytesToMb <- 0.000001
 
 # > lockdown dates ----
 # set values for annotations
-gcParams$UKlockDownStartDate <- as.Date("2020-03-24")
-gcParams$UKlockDownStartDateTime <- lubridate::as_datetime("2020-03-23 23:59:00")
-gcParams$UKlockDownRelaxDate_1 <- as.Date("2020-05-11") # BJ speech 10th May
-gcParams$UKlockDownRelaxDateTime_1 <- lubridate::as_datetime("2020-05-10 23:59:00")
-gcParams$UKlockDownEndDate <- lubridate::today() # for plots
-gcParams$UKlockDownEndDateTime <- lubridate::now()
+repoParams$UKlockDownStartDate <- as.Date("2020-03-24")
+repoParams$UKlockDownStartDateTime <- lubridate::as_datetime("2020-03-23 23:59:00")
+repoParams$UKlockDownRelaxDate_1 <- as.Date("2020-05-11") # BJ speech 10th May
+repoParams$UKlockDownRelaxDateTime_1 <- lubridate::as_datetime("2020-05-10 23:59:00")
+repoParams$UKlockDownEndDate <- lubridate::today() # for plots
+repoParams$UKlockDownEndDateTime <- lubridate::now()
 
-gcParams$NZLevel4StartDate <- as.Date("2020-03-26")
-gcParams$NZLevel4StartDateTime <- lubridate::as_datetime("2020-03-25 23:59:00")
-gcParams$NZLevel3StartDate <- as.Date("2020-04-27")
-gcParams$NZLevel3StartDateTime <- lubridate::as_datetime("2020-04-27 23:59:00")
-gcParams$NZLevel2StartDate <- as.Date("2020-05-13")
-gcParams$NZLevel2StartDateTime <- lubridate::as_datetime("2020-05-13 23:59:00")
-gcParams$NZlockDownEndDate <- as.Date("2020-06-08") # for plots
-gcParams$NZlockDownEndDateTime <- lubridate::as_datetime("2020-06-08 23:59:00")
+repoParams$NZLevel4StartDate <- as.Date("2020-03-26")
+repoParams$NZLevel4StartDateTime <- lubridate::as_datetime("2020-03-25 23:59:00")
+repoParams$NZLevel3StartDate <- as.Date("2020-04-27")
+repoParams$NZLevel3StartDateTime <- lubridate::as_datetime("2020-04-27 23:59:00")
+repoParams$NZLevel2StartDate <- as.Date("2020-05-13")
+repoParams$NZLevel2StartDateTime <- lubridate::as_datetime("2020-05-13 23:59:00")
+repoParams$NZlockDownEndDate <- as.Date("2020-06-08") # for plots
+repoParams$NZlockDownEndDateTime <- lubridate::as_datetime("2020-06-08 23:59:00")
 
 # For .Rmd ----
 # > Default yaml for Rmd ----
-gcParams$pubLoc <- "[Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/), University of Otago: Dunedin"
-gcParams$Authors <- "Anderson, B., Dortans, C."
+repoParams$pubLoc <- "[Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/), University of Otago: Dunedin"
+repoParams$Authors <- "Anderson, B., Dortans, C."
 
-gcParams$myAlpha <- 0.1
-gcParams$vLineAlpha <- 0.4
-gcParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
-gcParams$myTextSize <- 4
+repoParams$myAlpha <- 0.1
+repoParams$vLineAlpha <- 0.4
+repoParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+repoParams$myTextSize <- 4
 
-gcParams$weAlpha <- 0.3 # weekend shaded rects on plots
-gcParams$weFill <- "grey50"
-gcParams$labelPos <- 0.9
+repoParams$weAlpha <- 0.3 # weekend shaded rects on plots
+repoParams$weFill <- "grey50"
+repoParams$labelPos <- 0.9
 
 # > Rmd includes ----
-gcParams$licenseCCBY <- paste0(here::here(), "/includes/licenseCCBY.Rmd")
-gcParams$support <- paste0(here::here(), "/includes/supportGeneric.Rmd")
-gcParams$history <- paste0(here::here(), "/includes/historyGeneric.Rmd")
-gcParams$citation <- paste0(here::here(), "/includes/citationGeneric.Rmd")
-gcParams$citationUoS <- paste0(here::here(), "/includes/citationUoS.Rmd")
+repoParams$licenseCCBY <- paste0(here::here(), "/includes/licenseCCBY.Rmd")
+repoParams$support <- paste0(here::here(), "/includes/supportGeneric.Rmd")
+repoParams$history <- paste0(here::here(), "/includes/historyGeneric.Rmd")
+repoParams$citation <- paste0(here::here(), "/includes/citationGeneric.Rmd")
+repoParams$citationUoS <- paste0(here::here(), "/includes/citationUoS.Rmd")
 
-message("We're ", gcParams$user, " using " , gcParams$sysname, " on ", gcParams$nodename)
-message("NZ data path : ", gcParams$nzData)
-message("UK data path : ", gcParams$ukData)
+message("We're ", repoParams$user, " using " , repoParams$sysname, " on ", repoParams$nodename)
+message("NZ data path : ", repoParams$nzData)
+message("UK data path : ", repoParams$ukData)
