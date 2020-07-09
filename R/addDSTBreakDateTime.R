@@ -8,7 +8,7 @@
 #'
 addDSTBreakDateTime <- function(p, yMin, yMax){
   p <- p + annotate("text", x = as.Date("2020-03-29 02:00:00"),
-             y = yMax*0.05, # avoids other labels
+             y = yMin*1.05, # avoids other labels
              label = "DST break 2020")  +
     geom_vline(xintercept = as.Date("2020-03-29 02:00:00"),
                yMin = yMin,

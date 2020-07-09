@@ -17,14 +17,14 @@
 #' @export
 #' @family plot
 #'
-createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd){
+createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd, recentCutDate){
   # assumes the base gridGen half-hourly data
   # assumes we want mean of half-hourly obs
   dt[, dateTimeVar := get(dateTime)]
   dt[, obsDate := lubridate::date(dateTimeVar)]
   dt[, wkdayObs := lubridate::wday(dateTimeVar, label = TRUE)]
   plotDT <- dt[obsDate <= lubridate::today() & 
-                 obsDate >= localParams$recentCutDate # otherwise we get the whole year 
+                 obsDate >= recentCutDate # otherwise we get the whole year 
                ]
   plotDT[, yVals := get(yVar)/yDiv] # do this here so min/max work]
   # make plot - adds annotations
@@ -38,9 +38,7 @@ createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDow
     geom_point() +
     scale_x_datetime(date_breaks = "7 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
-    labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                          "\n", localParams$loessCap),
-         x = "Time",
+    labs(x = "Time",
          y = yCap) +
     theme(legend.position = "bottom") + 
     geom_smooth(aes(colour = NULL), method = "loess") +

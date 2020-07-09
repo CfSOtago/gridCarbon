@@ -12,6 +12,7 @@
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = 1
 #' @param lockDownStart date for start of lockdown rectangle annotation
 #' @param lockDownEnd date for end of lockdown rectangle annotation
+#' @param comparePlotCut start date to cut the plot (default 2020-01-01)
 #' 
 #' @import lubridate
 #' @import data.table
@@ -19,11 +20,12 @@
 #' @export
 #' @family plot
 #'
-createDailyMeanComparePlot <- function(dt, yVar, yCap, form = "step", yDiv = 1, lockDownStart, lockDownEnd){
+createDailyMeanComparePlot <- function(dt, yVar, yCap, form = "step", yDiv = 1, 
+                                       lockDownStart, lockDownEnd, 
+                                       comparePlotCut = as.Date("2020-01-01")){
   # assumes the dateFixed half-hourly data
   # assumes we want mean of half-hourly obs
-  plotDT <- dt[dateFixed <= lubridate::today() & 
-                 dateFixed >= localParams$comparePlotCut, # otherwise we get the whole year 
+  plotDT <- dt[dateFixed >= comparePlotCut & dateFixed <= lubridate::today(), # otherwise we get the whole year 
                .(yMean = mean(get(yVar))/yDiv, # do this here so min/max work
                  nObs = .N
                ),
