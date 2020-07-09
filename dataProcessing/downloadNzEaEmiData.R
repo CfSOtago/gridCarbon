@@ -80,6 +80,8 @@ embMetaDataDT <- drake::readd(embMetaData)
 skimr::skim(embMetaDataDT)
 skimr::skim(gridMetaDataDT)
 
+message("gridGen data to: ", max(embMetaDataDT$dateTo))
+message("embeddedGen data to: ", max(gridMetaDataDT$dateTo))
 
 # Finish off ----
 
