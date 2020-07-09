@@ -3,7 +3,6 @@
 export(addDSTBreakDate)
 export(addDSTBreakDateTime)
 export(addLockdownRect)
-export(addNZSeason)
 export(addSeason)
 export(addVeDayDate)
 export(addVeDayDateTime)
