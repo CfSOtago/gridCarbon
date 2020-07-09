@@ -6,11 +6,12 @@
 #' @param yMax the largest y value#' 
 #' @param fill fill colour (grey50)
 #' @param alpha alpha value (0.5)
+#' @param labelPos relative position of label (0.9)
 #' 
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} 
 #' @export
 #'
-addWeekendRectsDateTime <- function(p, yMin, yMax, alpha = 0.5, fill = "grey50"){
+addWeekendRectsDateTime <- function(p, yMin, yMax, alpha = 0.5, fill = "grey50", labelPos = 0.95){
   p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-07 00:00:00"),
                     xmax = lubridate::as_datetime("2020-03-08 23:59:59"),
                     ymin = yMin, ymax = yMax,
@@ -36,7 +37,7 @@ addWeekendRectsDateTime <- function(p, yMin, yMax, alpha = 0.5, fill = "grey50")
              ymin = yMin, ymax = yMax,
              alpha = alpha, fill = fill) +
     annotate("text", x = lubridate::as_datetime("2020-04-10 00:00:00"),
-             y = yMax*gcParams$labelPos,
+             y = yMax*labelPos,
              label = "Easter 2020") + # Easter
     annotate("rect", xmin = lubridate::as_datetime("2020-04-18 00:00:00"),
              xmax = lubridate::as_datetime("2020-04-19 23:59:59"),

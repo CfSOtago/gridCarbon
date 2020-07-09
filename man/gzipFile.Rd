@@ -18,7 +18,6 @@ gzipFile(f)
 \seealso{
 Other utils: 
 \code{\link{addLockdownRect}()},
-\code{\link{addNZSeason}()},
 \code{\link{addSeason}()},
 \code{\link{alignDates}()},
 \code{\link{getDuration}()},

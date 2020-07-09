@@ -14,13 +14,13 @@
 loadUKESOYearlyGenData <- function(path, fromYear, toDate, update){
   # update = dummy used to force re-load
   # lists files within a folder (path) & loads fromYear
-  dataLoc <- paste0(path,"/gridGen/processed/yearly/")
-  filesToDateDT <- data.table::as.data.table(list.files(dataLoc,
+  message("Checking: ", path)
+  filesToDateDT <- data.table::as.data.table(list.files(path,
                                                         ".csv.gz")) # get list of files already downloaded & converted to long form
   filesToDateDT[, file := V1]
   filesToDateDT[, c("year", "name") := data.table::tstrsplit(file, split = "_")]
   filesToDateDT[, year := as.numeric(year)]
-  filesToDateDT[, fullPath := paste0(dataLoc, file)]
+  filesToDateDT[, fullPath := paste0(path, file)]
   filesToGet <- filesToDateDT[year >= fromYear, # to reduce files loaded
                               fullPath]
   message("Loading files >= ", fromYear)

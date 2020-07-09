@@ -9,7 +9,9 @@ createRecentHalfHourlyProfilePlot(
   dateTime = "rDateTimeUTC",
   yVar,
   yCap,
-  yDiv = 1
+  yDiv = 1,
+  start = as.Date("2020-01-01"),
+  end = lubridate::today()
 )
 }
 \arguments{
@@ -20,6 +22,10 @@ createRecentHalfHourlyProfilePlot(
 \item{yCap}{the caption for the y axis}
 
 \item{yDiv}{the value you want to divide yVar by to make the y axis more sensible. Default = `1`}
+
+\item{start}{start date of plot}
+
+\item{end}{end date of plot}
 
 \item{dateTimeVar}{the dateTime variable to use (allows for aligned dateTimes etc). Default = `rDateTimeUTC`}
 }

@@ -6,10 +6,12 @@
 #' @param yMax the largest y value
 #' @param fill fill colour (grey50)
 #' @param alpha alpha value (0.3)
+#' @param labelPos relative position of label (0.9)
+#' 
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #'
-addWeekendRectsDate <- function(p, yMin, yMax, fill = "grey50", alpha = 0.3){
+addWeekendRectsDate <- function(p, yMin, yMax, fill = "grey50", alpha = 0.3, labelPos = 0.9){
   p <- p + annotate("rect", xmin = as.Date("2020-03-07"),
                     xmax = as.Date("2020-03-09"),
                     ymin = yMin, ymax = yMax,
@@ -35,7 +37,7 @@ addWeekendRectsDate <- function(p, yMin, yMax, fill = "grey50", alpha = 0.3){
              ymin = yMin, ymax = yMax,
              alpha = alpha, fill = fill) +
     annotate("text", x = as.Date("2020-04-10"),
-             y = yMax*gcParams$labelPos,
+             y = yMax*labelPos,
              label = "Easter 2020") + # Easter
     annotate("rect", xmin = as.Date("2020-04-18"),
              xmax = as.Date("2020-04-20"),

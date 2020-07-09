@@ -1,7 +1,0 @@
-You may not be reading the most recent version of this report. Please check:
-
-  * the github [R code repository](https://github.com/CfSOtago/gridCarbon);
-  * our [issues list](https://github.com/CfSOtago/gridCarbon/issues) for any unfixed problems; 
-  * our [project publictions](https://cfsotago.github.io/gridCarbon/);
-
-We do not 'support' the code but if you notice a problem please check the [issues](https://github.com/CfSOtago/gridCarbon/issues) on our [repo](https://github.com/CfSOtago/gridCarbon) and if it doesn't already exist, please open a new one.

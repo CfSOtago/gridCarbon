@@ -5,7 +5,7 @@
 \title{\code{addWhitsunDate} adds extended weekend shading and label for UK Whit Sunday (late spring bank holiday) 
 where x axis is a dateTime. Should work in any time-zone}
 \usage{
-addWhitsunDateTime(p, yLoc, yMin, yMax)
+addWhitsunDateTime(p, yLoc, yMin, yMax, fill = "grey50", alpha = 0.5)
 }
 \arguments{
 \item{p}{the plot to add them to}
@@ -15,6 +15,10 @@ addWhitsunDateTime(p, yLoc, yMin, yMax)
 \item{yMin}{the smallest y value}
 
 \item{yMax}{the largest y value}
+
+\item{fill}{fill colour (grey50)}
+
+\item{alpha}{alpha value (0.5)}
 }
 \description{
 \code{addWhitsunDate} adds extended weekend shading and label for UK Whit Sunday (late spring bank holiday) 

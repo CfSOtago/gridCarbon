@@ -5,19 +5,32 @@
 \title{\code{addWeekendRectsDateTime} adds rectangles around the weekends from March 2020 onwards
 to plots where the x-axis is a dateTime.}
 \usage{
-addWeekendRectsDateTime(p, yMin, yMax)
+addWeekendRectsDateTime(
+  p,
+  yMin,
+  yMax,
+  alpha = 0.5,
+  fill = "grey50",
+  labelPos = 0.95
+)
 }
 \arguments{
 \item{p}{the plot to add them to}
 
 \item{yMin}{the smallest y value}
 
-\item{yMax}{the largest y value}
+\item{yMax}{the largest y value#'}
+
+\item{alpha}{alpha value (0.5)}
+
+\item{fill}{fill colour (grey50)}
+
+\item{labelPos}{relative position of label (0.9)}
 }
 \description{
 \code{addWeekendRectsDateTime} adds rectangles around the weekends from March 2020 onwards
 to plots where the x-axis is a dateTime.
 }
 \author{
-Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
+Ben Anderson, \email{b.anderson@soton.ac.uk}
 }

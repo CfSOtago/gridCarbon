@@ -55,7 +55,6 @@ Other grid:
 \code{\link{saveUkGridESO}()}
 
 Other NZ: 
-\code{\link{addNZSeason}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},

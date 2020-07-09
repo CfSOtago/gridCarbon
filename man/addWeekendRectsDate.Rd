@@ -5,7 +5,14 @@
 \title{\code{addWeekendRectsDate} adds rectangles around the weekends from March 2020 onwards
 to plots where the x-axis is a date. Should work in any time-zone}
 \usage{
-addWeekendRectsDate(p, yMin, yMax)
+addWeekendRectsDate(
+  p,
+  yMin,
+  yMax,
+  fill = "grey50",
+  alpha = 0.3,
+  labelPos = 0.9
+)
 }
 \arguments{
 \item{p}{the plot to add them to}
@@ -13,6 +20,12 @@ addWeekendRectsDate(p, yMin, yMax)
 \item{yMin}{the smallest y value}
 
 \item{yMax}{the largest y value}
+
+\item{fill}{fill colour (grey50)}
+
+\item{alpha}{alpha value (0.3)}
+
+\item{labelPos}{relative position of label (0.9)}
 }
 \description{
 \code{addWeekendRectsDate} adds rectangles around the weekends from March 2020 onwards

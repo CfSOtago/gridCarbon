@@ -48,7 +48,6 @@ Other embedded:
 \code{\link{saveUkEmbeddedESO}()}
 
 Other NZ: 
-\code{\link{addNZSeason}()},
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
 \code{\link{cleanNZGxpEA}()},

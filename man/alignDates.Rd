@@ -50,7 +50,6 @@ Other data:
 
 Other utils: 
 \code{\link{addLockdownRect}()},
-\code{\link{addNZSeason}()},
 \code{\link{addSeason}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},

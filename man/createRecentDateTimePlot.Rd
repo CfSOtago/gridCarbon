@@ -11,7 +11,9 @@ createRecentDateTimePlot(
   yCap,
   yDiv = 1,
   lockDownStart,
-  lockDownEnd
+  lockDownEnd,
+  start = as.Date("2020-01-01"),
+  end = lubridate::today()
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ createRecentDateTimePlot(
 \item{lockDownStart}{date for start of lockdown rectangle annotation}
 
 \item{lockDownEnd}{date for end of lockdown rectangle annotation}
+
+\item{start}{the start date for the plot}
+
+\item{end}{end date for the plot}
 }
 \description{
 `createRecentDateTimePlot` returns a plot which plots yVar by dateTime and adds lockdown annotations.  This assumes users pass in the aligned-date data (`dateFixed`).

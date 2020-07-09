@@ -57,15 +57,15 @@ plan <- drake::drake_plan(
                                          update), # returns data as data.table
   cleanGridGenData = gridCarbon::cleanUkGridESO(gridGenData), # returns clean data.table
   saveResultGrid = gridCarbon::saveUkGridESO(cleanGridGenData, 
-                                             path = gcParams$ukData), # doesn't return anything
+                                             path = repoParams$ukGridDataLoc), # doesn't return anything
   # embedded
   # if this breaks check the url is still current
   embeddedGenData = gridCarbon::getUkEmbeddedESO(localParams$embeddedUrl, 
                                                  update), # returns latest data update as data.table
   cleanEmbeddedGenData = gridCarbon::cleanUkEmbeddedESO(embeddedGenData, 
-                                                        path = gcParams$ukData), # needs a path as it uses newly updated data
+                                                        path = repoParams$ukNonGridDataLoc), # needs a path as it uses newly updated data
   saveResultEmbedded = gridCarbon::saveUkEmbeddedESO(cleanEmbeddedGenData,
-                                                     path = gcParams$ukData) # adds the latest update to what we already have (removes duplicates obvs)
+                                                     path = repoParams$ukNonGridDataLoc) # adds the latest update to what we already have (removes duplicates obvs)
 )
 
 # > run drake plan ----

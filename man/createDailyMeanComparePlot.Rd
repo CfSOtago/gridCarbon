@@ -11,7 +11,8 @@ createDailyMeanComparePlot(
   form = "step",
   yDiv = 1,
   lockDownStart,
-  lockDownEnd
+  lockDownEnd,
+  comparePlotCut = as.Date("2020-01-01")
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ createDailyMeanComparePlot(
 \item{lockDownStart}{date for start of lockdown rectangle annotation}
 
 \item{lockDownEnd}{date for end of lockdown rectangle annotation}
+
+\item{comparePlotCut}{start date to cut the plot (default 2020-01-01)}
 }
 \description{
 `createDailyMeanComparePlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 

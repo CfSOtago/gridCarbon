@@ -5,7 +5,7 @@
 \title{\code{addVeDayDateTime} adds extended weekend shading and label for VE day 2020 where x axis is a dateTime. 
 Should work in any time-zone.}
 \usage{
-addVeDayDateTime(p, yLoc, yMin, yMax)
+addVeDayDateTime(p, yLoc, yMin, yMax, fill = "grey50", alpha = 0.3)
 }
 \arguments{
 \item{p}{the plot to add them to}
@@ -14,7 +14,11 @@ addVeDayDateTime(p, yLoc, yMin, yMax)
 
 \item{yMin}{the smallest y value}
 
-\item{yMax}{the largest y value}
+\item{yMax}{the largest y value#'}
+
+\item{fill}{fill colour (grey50)}
+
+\item{alpha}{alpha value (0.3)}
 }
 \description{
 \code{addVeDayDateTime} adds extended weekend shading and label for VE day 2020 where x axis is a dateTime. 

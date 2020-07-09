@@ -7,6 +7,8 @@
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = `1`
+#' @param start start date of plot
+#' @param end end date of plot
 #' 
 #' @import lubridate
 #' @import data.table
@@ -15,15 +17,22 @@
 #' @export
 #' @family plot
 #'
-createRecentHalfHourlyProfilePlot <- function(dt, dateTime = "rDateTimeUTC", yVar, yCap, yDiv = 1){
+createRecentHalfHourlyProfilePlot <- function(dt, dateTime = "rDateTimeUTC", 
+                                              yVar, yCap, yDiv = 1, 
+                                              start = as.Date("2020-01-01"), end = lubridate::today()){
   # assumes the base gridGen half-hourly data
   # assumes we want mean of half-hourly obs
+  # dt <- derivedGridGenData
+  # dateTime <- "rDateTimeUTC"
+  # yVar <- "consGWh"
+  # yCap <- "GWh"
+  # yDiv <- 1
   dt[, dateTimeVar := get(dateTime)]
   dt[, obsDate := lubridate::date(dateTimeVar)]
   dt[, wkdayObs := lubridate::wday(dateTimeVar, label = TRUE)]
   dt[, rTime := hms::as_hms(dateTimeVar)]
-  plotDT <- dt[obsDate <= lubridate::today() & 
-                 obsDate >= localParams$recentCutDate # otherwise we get the whole year 
+  plotDT <- dt[obsDate >= start & obsDate <= end 
+                  # otherwise we get the whole year 
                ]
   plotDT[, yVals := get(yVar)/yDiv] # do this here so min/max work]
   

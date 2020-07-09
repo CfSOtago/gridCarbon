@@ -18,6 +18,8 @@
 createDailyPcComparePlot <- function(dt, yVar, yCap, lockDownStart, lockDownEnd){
   # assumes the dateFixed half-hourly data
   # assumes we want mean of half-hourly obs
+  #yVar = "consGWh",
+  #yCap = "% difference",
   dt <- dt[dateFixed <= lubridate::today() & 
                  dateFixed >= localParams$comparePlotCutDate] # make this lopnger to get a sense of trend
   dt[, compareVar := get(yVar)]
@@ -34,9 +36,9 @@ createDailyPcComparePlot <- function(dt, yVar, yCap, lockDownStart, lockDownEnd)
   plotDT[, pos := ifelse(pcDiffMean > 0 , "Pos", "Neg")] # want to colour the line sections - how?
   # final plot - adds annotations
   # use means for consistency with comparison plots where we use WHO thresholds (means)
-  yMin <- min(plotDT$pcDiffMean)
+  yMin <- min(plotDT$pcDiffMean, na.rm = TRUE)
   print(paste0("Max drop %:", round(yMin)))
-  yMax <- max(plotDT$pcDiffMean)
+  yMax <- max(plotDT$pcDiffMean, na.rm = TRUE)
   print(paste0("Max increase %:", round(yMax)))
   p <- ggplot2::ggplot(plotDT, aes(x = dateFixed, y = pcDiffMean 
                                    #color = pos, group=NA)

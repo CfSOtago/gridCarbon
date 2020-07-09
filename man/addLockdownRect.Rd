@@ -6,7 +6,17 @@
 where the x-axis is a date or datetime. Be sure to specify from & to as dates if the plot x-axis is
 a date and as dateTimes if it is a dateTime. Otherwise ggplot will throw a date_trans error.}
 \usage{
-addLockdownRect(p, from, to, label, yMin, yMax)
+addLockdownRect(
+  p,
+  from,
+  to,
+  label,
+  yMin,
+  yMax,
+  alpha = 0.1,
+  fill = "grey50",
+  colour = "red"
+)
 }
 \arguments{
 \item{p}{the plot to add them to}
@@ -20,6 +30,12 @@ addLockdownRect(p, from, to, label, yMin, yMax)
 \item{yMin}{the smallest y value}
 
 \item{yMax}{the largest y value}
+
+\item{alpha}{- alpha value for the rect (0.1)}
+
+\item{fill}{- fill  for the rect (grey50)}
+
+\item{colour}{- line colour  for the rect (red)}
 }
 \description{
 \code{addLockdownRect} adds rectangles around the periods specified as dates or date times on a plot
@@ -36,7 +52,6 @@ Other plot:
 \code{\link{makeWeekdayTimePlot}()}
 
 Other utils: 
-\code{\link{addNZSeason}()},
 \code{\link{addSeason}()},
 \code{\link{alignDates}()},
 \code{\link{getDuration}()},

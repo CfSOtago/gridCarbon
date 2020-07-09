@@ -18,8 +18,8 @@
 #'
 cleanUkEmbeddedESO <- function(dt, path){
   # get the old data & any we just added
-  #path <- gcParams$ukData
-  oldFiles <- list.files(paste0(path, "/embeddedGen/raw/"), pattern = "DemandData", # manually downloaded
+  #path <- repoParams$ukNonGridDataLoc
+  oldFiles <- list.files(paste0(path, "/raw/"), pattern = "DemandData", # manually downloaded
                          full.names = TRUE) 
   l <- lapply(oldFiles, data.table::fread) # very fast data loading :-)
   oldDT <- data.table::rbindlist(l, fill = TRUE) # rbind them

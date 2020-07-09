@@ -9,8 +9,8 @@
 #' @family uk
 #' 
 saveUkGridESO <- function(dt,path){
-  # localParams$rawUkEsoDataPath
-  of <- paste0(path,"/gridGen/raw/latest_ukGridEsoGen.csv") # we don't add a date to this to prevent bloat
+  # repoParams$ukGridDataLoc
+  of <- paste0(path,"raw/latest_ukGridEsoGen.csv") # we don't add a date to this to prevent bloat
   data.table::fwrite(dt, of)
   cmd <- paste0("gzip -f ", of)
   message("Gzip file: ", of)
@@ -22,7 +22,7 @@ saveUkGridESO <- function(dt,path){
   for(y in years){ # save as yearly files
     yearDT <- dt[year == y]
     # localParams$processedUkEsoDataPath
-    of <- paste0(path,"/gridGen/processed/yearly/",y,"_ukGridEsoGen.csv")
+    of <- paste0(path,"processed/yearly/",y,"_ukGridEsoGen.csv")
     data.table::fwrite(yearDT, of)
     cmd <- paste0("gzip -f ", of)
     message("Gzip file: ", of)

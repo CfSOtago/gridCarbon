@@ -9,6 +9,8 @@
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = `1`
 #' @param lockDownStart date for start of lockdown rectangle annotation
 #' @param lockDownEnd date for end of lockdown rectangle annotation
+#' @param start the start date for the plot
+#' @param end end date for the plot
 #' 
 #' @import lubridate
 #' @import ggplot2
@@ -17,14 +19,14 @@
 #' @export
 #' @family plot
 #'
-createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd, recentCutDate){
+createRecentDateTimePlot <- function(dt, dateTime, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd, 
+                                     start = as.Date("2020-01-01"), end = lubridate::today()){
   # assumes the base gridGen half-hourly data
   # assumes we want mean of half-hourly obs
   dt[, dateTimeVar := get(dateTime)]
   dt[, obsDate := lubridate::date(dateTimeVar)]
   dt[, wkdayObs := lubridate::wday(dateTimeVar, label = TRUE)]
-  plotDT <- dt[obsDate <= lubridate::today() & 
-                 obsDate >= recentCutDate # otherwise we get the whole year 
+  plotDT <- dt[obsDate >= start & obsDate <= end # otherwise we get the whole year 
                ]
   plotDT[, yVals := get(yVar)/yDiv] # do this here so min/max work]
   # make plot - adds annotations
