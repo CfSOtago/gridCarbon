@@ -80,6 +80,8 @@ embMetaDataDT <- drake::readd(embMetaData)
 skimr::skim(embMetaDataDT)
 skimr::skim(gridMetaDataDT)
 
+summary(embMetaDataDT)
+summary(gridMetaDataDT)
 
 # Finish off ----
 
