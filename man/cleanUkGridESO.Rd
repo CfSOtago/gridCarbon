@@ -32,7 +32,6 @@ Other data:
 \code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
-\code{\link{makeUkGridESOYearlyData}()},
 \code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
@@ -40,8 +39,27 @@ Other data:
 \code{\link{saveUkGridESO}()},
 \code{\link{setEmbeddedGenTimePeriod}()},
 \code{\link{setGridGenTimePeriod}()}
+
+Other grid: 
+\code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
+\code{\link{getNZEmbData}()},
+\code{\link{getNZGridEA}()},
+\code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
+\code{\link{makeNZYearlyData}()},
+\code{\link{saveUkGridESO}()}
+
+Other uk: 
+\code{\link{cleanUkEmbeddedESO}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{saveUkEmbeddedESO}()},
+\code{\link{saveUkGridESO}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
 \concept{data}
+\concept{grid}
+\concept{uk}

@@ -37,7 +37,6 @@ Other data:
 \code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
-\code{\link{makeUkGridESOYearlyData}()},
 \code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
@@ -49,11 +48,13 @@ Other data:
 Other grid: 
 \code{\link{cleanNZGridEA}()},
 \code{\link{cleanNZGxpEA}()},
+\code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZGridMeta}()},
 \code{\link{getNZGxpEA}()},
 \code{\link{getNZGxpMeta}()},
-\code{\link{makeNZYearlyData}()}
+\code{\link{makeNZYearlyData}()},
+\code{\link{saveUkGridESO}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},

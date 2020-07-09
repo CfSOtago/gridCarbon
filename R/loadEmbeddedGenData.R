@@ -15,8 +15,8 @@ loadEmbeddedGenData <- function(path, fromYear, toDate, update){
   # update = dummy used to force re-load
   # lists files within a folder (path) & loads
   # should be only 1 file so just load it
-  # path <- localParams$embeddedDataLoc
-  filesToGet <- list.files(path, ".csv.gz", full.names = TRUE) # get list of files already downloaded & converted to long form
+  # path <- gcParams$ukData
+  filesToGet <- list.files(paste0(path, "/embeddedGen/processed/yearly/"), ".csv.gz", full.names = TRUE) # get list of files already downloaded & converted to long form
   l <- lapply(filesToGet, data.table::fread) # very fast data loading :-)
   dt <- data.table::rbindlist(l, fill = TRUE) # rbind them
   
