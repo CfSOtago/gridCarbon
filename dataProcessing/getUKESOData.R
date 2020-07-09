@@ -24,7 +24,7 @@ reqLibs <- c("data.table", # data munching
 gridCarbon::loadLibraries(reqLibs)
 
 # Parameters ----
-update <- "yep" # doesn't matter what this is but to force an update, edit it :-)
+update <- "yes" # doesn't matter what this is but to force an update, edit it :-)
 
 #source(paste0(here::here(), "/env.R")) # gcParams - just in case not already loaded by grifCarbon (should be)
 
@@ -57,12 +57,15 @@ startTime <- proc.time()
 # drake plan ----
 plan <- drake::drake_plan(
   # grid
-  gridGenData = gridCarbon::getUkGridESO(localParams$gridUrl, update), # returns data as data.table
+  gridGenData = gridCarbon::getUkGridESO(localParams$gridUrl, 
+                                         update), # returns data as data.table
   cleanGridGenData = gridCarbon::cleanUkGridESO(gridGenData), # returns clean data.table
-  saveResultGrid = gridCarbon::saveUkGridESO(cleanGridGenData, localParams$rawUkGridGenPath), # doesn't return anything
+  saveResultGrid = gridCarbon::saveUkGridESO(cleanGridGenData, 
+                                             localParams$rawUkGridGenPath), # doesn't return anything
   # embedded
   # if this breaks check the url is still current
-  embeddedGenData = gridCarbon::getUkEmbeddedESO(localParams$embeddedUrl, update), # returns latest data update as data.table
+  embeddedGenData = gridCarbon::getUkEmbeddedESO(localParams$embeddedUrl, 
+                                                 update), # returns latest data update as data.table
   cleanEmbeddedGenData = gridCarbon::cleanUkEmbeddedESO(embeddedGenData, 
                                                         rawPath = localParams$rawUkEmbeddedGenPath), 
   saveResultEmbedded = gridCarbon::saveUkEmbeddedESO(cleanEmbeddedGenData,

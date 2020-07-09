@@ -1,0 +1,389 @@
+---
+params:
+  subtitle: ""
+  title: ""
+  authors: ""
+title: '`r params$title`'
+subtitle: '`r params$subtitle`'
+author: '`r params$authors`'
+date: 'Last run at: `r Sys.time()`'
+output:
+  bookdown::html_document2:
+    self_contained: false
+    fig_caption: yes
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    toc_float: TRUE
+  bookdown::pdf_document2:
+    fig_caption: yes
+    number_sections: yes
+  bookdown::word_document2:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    fig_width: 5
+always_allow_html: yes
+bibliography: '`r paste0(here::here(), "/bibliography.bib")`'
+---
+
+```{r knitrSetup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+```
+
+
+```{r codeSetup, include=FALSE}
+# Set start time ----
+startTime <- proc.time()
+# Local parameters ----
+b2Kb <- 1024 #http://whatsabyte.com/P1/byteconverter.htm
+b2Mb <- 1048576
+plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
+
+library(gridCarbon)
+# Packages used in the report ----
+rmdLibs <- c("ggplot2", # plots
+          "kableExtra", # fancy tables
+          #"openair" # air qual plots re-purposed, fails as needs latticeExtra which needs R (≥ 3.6.0) https://cran.r-project.org/web/packages/latticeExtra/index.html
+          "lubridate" # dates
+          )
+gridCarbon::loadLibraries(rmdLibs)
+
+# Local parameters ----
+localParams$lockDownStartDate <- as.Date("2020-03-25")
+localParams$lockDownStartDateTime <- lubridate::as_datetime("2020-03-25 23:59:00")
+localParams$lockDownEndDate <- lubridate::today()
+localParams$lockDownEndDateTime <- lubridate::now()
+
+localParams$recentCutDate <- as.Date("2020-03-01")
+
+localParams$comparePlotCutDate <- as.Date("2020-02-01")
+
+localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
+localParams$lockdownCap <- "\nColoured rectangle = NZ covid lockdown to date"
+localParams$weekendCap <- "\nShaded rectangle = weekends"
+localParams$noThresh <- "\nNo specified WHO threshold"
+
+localParams$myAlpha <- 0.1
+localParams$vLineAlpha <- 0.4
+localParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+localParams$myTextSize <- 4
+
+# Local functions ----
+addLockdownDate <- function(p){
+  # assumes p has x = obsDate
+  p <- p + annotate("rect", xmin = localParams$lockDownStartDate,
+             xmax = localParams$lockDownEndDate, 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol)
+  return(p)
+}
+addLockdownDateTime <- function(p){
+  # assumes p has x = obsDateTime
+  p <- p + annotate("rect", xmin = localParams$lockDownStartDateTime,
+             xmax = localParams$lockDownEndDateTime, 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol) 
+    
+  return(p)
+}
+
+# only makes sense to use these for x axis covering March onwards
+localParams$weAlpha <- 0.3
+localParams$weFill <- "grey50"
+
+```
+
+\newpage
+
+# About
+
+## Citation
+
+```{r citation, child=gcParams$citation}
+```
+
+## Report circulation
+
+ * Public – this report is intended for publication
+
+## Code
+
+All code used to create this report is available from:
+
+ * https://github.com/CfSOtago/gridCarbon
+
+## License {#license}
+
+```{r ccby license, child=gcParams$licenseCCBY}
+```
+
+## History
+
+```{r history, child=gcParams$history}
+```
+ * this [report's edit history](https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/)
+ 
+## Support
+
+```{r generic support, child=gcParams$support}
+```
+ * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson);
+ * The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)
+ 
+\newpage
+
+# Introduction
+
+As in other countried COVID19 lockdown in NZ has reportedly lead to changes in electricity demand. In other work we examine national level change. Here we examine the spatial distribution of that change using grid export flow data for the `r uniqueN(aggDT$POC)` grid supply/exit points in New Zealand.
+
+# Data
+
+The data is grid supply point export data in MWh per half hour obtained from the New Zealand `r localParams$dataSource` (`r localParams$dataSourceURL`).
+
+Table \@ref(tab:testMWh) shows the POCs with the highest mean half hourly flows. As we would expect TWI2201 (Tiwai) is substantially higher than all others. The next highest (ISL0661, Islington) which is in eastern Christchurch but appears to have a 'normal' demand profile (see \@ref(ISL0661)).
+
+```{r testMWh, fig.cap="Grid export over time"}
+t <- cleanGxpDT[!is.na(kWh), .(meanMWh = mean(kWh/1000),
+                      sumMWh = sum(kWh/1000),
+                      sdMWh = sd(kWh/1000)), 
+                  keyby = .(POC, NWK_Code)][order(-meanMWh)]
+
+setkey(t, POC, NWK_Code)
+desc <- unique(gxpLutDT[, .(POC = `POC code`, Description, NWK_Code = `Network participant`)])
+setkey(desc, POC, NWK_Code)
+t <- desc[t]
+t <- t[order(-meanMWh)]
+top <- head(t, 10)
+kableExtra::kable(top, caption = "Highest flows (ordered by meanMWh") %>%
+  kable_styling()
+
+POCfilter <- 'POC == "TWI2201" | POC = "ISL0661"'
+```
+
+```{r tilePlot, fig.cap="Flow trends by POC"}
+dateLab <- "Date"
+plotDT <- cleanGxpDT[, .(meanMWh = mean(kWh/1000),
+                      sumMWh = sum(kWh/1000),
+                      sdMWh = sd(kWh/1000)), 
+                  keyby = .(rDate, POC)]
+plotDT[, dow := lubridate::wday(rDate, label = TRUE)]
+
+p <- ggplot2::ggplot(plotDT[rDate > as.Date("2020-01-01")], 
+                     aes(x = rDate, y = POC, fill = meanMWh)) +
+  geom_tile() +
+  scale_fill_viridis_c("MWh") +
+  theme(legend.position = "bottom") + 
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  #scale_y_log10() +
+  #facet_grid(peakPeriod ~ .) +
+  geom_vline(xintercept = gcParams$NZLevel4StartDate) +
+  labs(x = dateLab,
+         y = "Mean half hourly GWh",
+       caption = paste0("Ref line = NZ Level 4 lockdown start",
+                        "\nData source:", localParams$dataSource,
+                        "\nPlot by @dataknut @energyOtago @energySoton")
+       )
+
+# yMax <- max(plotDT$meanGW)
+# yMin <- min(plotDT$meanGW)
+# p <- addLockdownRect(p, 
+#                 from = gcParams$UKlockDownStartDate, 
+#                 to = gcParams$UKlockDownEndDate, 
+#                 yMin = yMin, yMax = yMax)
+p
+ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhGxpTrends.png"), 
+                height = 10, width = 10, units = "in",
+                p)
+
+
+```
+
+Quite tricky to make anything of that. Still dominated by a few POCs. Try log()
+
+```{r logTile}
+p <- ggplot2::ggplot(plotDT[rDate > as.Date("2020-01-01")], 
+                     aes(x = rDate, y = POC, fill = log(meanMWh))) +
+  geom_tile() +
+  scale_fill_viridis_c("MWh") +
+  theme(legend.position = "bottom") + 
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  #scale_y_log10() +
+  #facet_grid(peakPeriod ~ .) +
+  geom_vline(xintercept = gcParams$NZLevel4StartDate) +
+  labs(x = dateLab,
+         y = "Mean half hourly GWh",
+       caption = paste0("Ref line = NZ Level 4 lockdown start",
+                        "\nData source:", localParams$dataSource,
+                        "\nPlot by @dataknut @energyOtago @energySoton")
+       )
+
+p
+ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_logMWhGxpTrends.png"), 
+                height = 10, width = 10, units = "in",
+                p)
+```
+
+So that didn't work too well either. Try a semi-map plot using geo from the look up table.
+
+
+```{r gxpGeo}
+gxpLutDT <- data.table::fread(paste0(gcParams$nzGxpDataLoc, "/Network_supply_points_table_20191021154036.csv"))
+
+gxpLutDT[, POC := `POC code`]
+gxpLutDT[, northing := `NZTM northing`]
+gxpLutDT[, easting := `NZTM easting`]
+
+geoPOC <- gxpLutDT[, .(easting = mean(easting),
+                       northing = mean(northing), 
+                       nPOCEntries = .N), keyby = .(POC)]
+setkey(geoPOC, POC)
+setkey(cleanGxpDT, POC)
+
+mDT <- geoPOC[, .(POC, easting, northing)][cleanGxpDT]
+
+plotDT <- mDT[!is.na(kWh), .(meanMWh = mean(kWh/1000)), keyby = .(POC, easting, northing)]
+
+ggplot2::ggplot(plotDT, aes(x = easting, y = northing, colour = meanMWh)) +
+  geom_point() +
+  scale_colour_viridis_c()
+```
+
+Try again but exclude TWI2201 (Tiwai)
+
+```{r restrictedMap}
+ggplot2::ggplot(plotDT[POC != "TWI2201"], aes(x = easting, 
+                                              y = northing, 
+                                              colour = meanMWh, 
+                                              size = meanMWh/1000), 
+                alpha = 0.5) +
+  geom_point() +
+  scale_colour_viridis_c(name = "MWh") +
+  scale_size(name = "GWh")
+```
+
+Try again excluding TWI2201 (Tiwai) and rolling an animation.
+
+```{r restrictedMapAnim}
+plotDT <- mDT[!is.na(kWh), .(meanMWh = mean(kWh/1000)), keyby = .(POC, rDate, easting, northing)]
+
+p <- ggplot2::ggplot(plotDT[POC != "TWI2201"], aes(x = easting, 
+                                                   y = northing, 
+                                                   colour = meanMWh,
+                                                   size = meanMWh/1000)) +
+  geom_point() +
+  scale_colour_viridis_c()
+
+library(gganimate)
+p1 <- p  + transition_states(states = rDate, 
+                                  transition_length = 4, 
+                                  state_length = 1) +
+  labs(title = "GWh per day : {closest_state}")
+
+p2 <- p + transition_reveal(rDate) + 
+    ease_aes('cubic-in-out')
+
+# all of these fail on UoS RStudio server
+
+#rendering the animation for gif
+final_p1 <- gganimate::animate(p1,fps = 20)
+final_p2 <- gganimate::animate(p2,fps = 20)
+
+#rendering the animation for mp4
+gganimate::animate(p2,fps = 20, renderer = ffmpeg_renderer())
+
+#saving the animation
+anim_save("gxpAnimation",animation=final_p2)
+
+```
+
+# Annex
+
+## Tiwai profile
+
+```{r tiwai2019BySeason}
+testPOC <- function(poc){
+  plotDT <- cleanGxpDT[POC == poc & year == 2019, .(meanMWh = mean(kWh/1000)), 
+                     keyby = .(rDate, hms)]
+
+ggplot2::ggplot(plotDT, aes(x = rDate, y = hms, fill = meanMWh)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  scale_x_date(date_breaks = "7 days", date_labels =  "%a %d %b")  +
+    theme(axis.text.x=element_text(angle=90, hjust=1, size = 5)) +
+    labs(x = "Date",
+         y = "Time") +  
+    theme(legend.position="bottom") 
+
+plotDT <- cleanGxpDT[POC == "TWI2201" & year == 2019, .(meanMWh = mean(kWh/1000)), 
+                     keyby = .(season, hms)]
+
+ggplot2::ggplot(plotDT, aes(x = hms, y = meanMWh, colour = season)) +
+  geom_line()
+}
+
+
+```
+
+## Islington profile {#ISL0661}
+
+This looks like a nomral shape so we should probably keep it.
+
+```{r tiwai2019BySeason}
+plotDT <- cleanGxpDT[POC == "ISL0661" & year == 2019, .(meanMWh = mean(kWh/1000)), 
+                     keyby = .(rDate, hms)]
+
+ggplot2::ggplot(plotDT, aes(x = lubridate::as_date(rDate), y = hms, fill = meanMWh)) +
+  geom_tile() +
+  scale_fill_viridis_c() +
+  scale_x_date(date_breaks = "7 days", date_labels =  "%a %d %b")  +
+    theme(axis.text.x=element_text(angle=90, hjust=1, size = 5)) +
+    labs(x = "Date",
+         y = "Time") +  
+    theme(legend.position="bottom") 
+
+plotDT <- cleanGxpDT[POC == "ISL0661" & year == 2019, .(meanMWh = mean(kWh/1000)), 
+                     keyby = .(season, hms)]
+
+ggplot2::ggplot(plotDT, aes(x = hms, y = meanMWh, colour = season)) +
+  geom_line()
+
+```
+
+# Runtime
+
+```{r check runtime, include=FALSE}
+t <- proc.time() - startTime
+elapsed <- t[[3]]
+```
+
+Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` minutes) using [knitr](https://cran.r-project.org/package=knitr) in [RStudio](http://www.rstudio.com) with `r R.version.string` running on `r R.version$platform`.
+
+# R environment
+
+## R packages used
+
+ * base R [@baseR]
+ * bookdown [@bookdown]
+ * data.table [@data.table]
+ * ggplot2 [@ggplot2]
+ * kableExtra [@kableExtra]
+ * knitr [@knitr]
+ * lubridate [@lubridate]
+ * rmarkdown [@rmarkdown]
+
+## Session info
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+
+# References

@@ -24,12 +24,15 @@ The data.table to align *must* have a dateTime variable (bu tyou can tell it whi
 Other data: 
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{cleanUkEmbeddedESO}()},
 \code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{getUkEmbeddedESO}()},
 \code{\link{getUkGridESO}()},
 \code{\link{loadEmbeddedGenData}()},
@@ -49,6 +52,7 @@ Other data:
 Other utils: 
 \code{\link{addLockdownRect}()},
 \code{\link{addNZSeason}()},
+\code{\link{addSeason}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
 \code{\link{loadLibraries}()},

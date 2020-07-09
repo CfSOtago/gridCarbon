@@ -1,0 +1,1618 @@
+---
+params:
+  subtitle: ""
+  title: ""
+  authors: ""
+title: '`r params$title`'
+subtitle: '`r params$subtitle`'
+author: '`r params$authors`'
+date: 'Last run at: `r Sys.time()`'
+output:
+  bookdown::html_document2:
+    self_contained: false
+    fig_caption: yes
+    code_folding: hide
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    toc_float: TRUE
+  bookdown::pdf_document2:
+    fig_caption: yes
+    number_sections: yes
+  bookdown::word_document2:
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
+    toc_depth: 2
+    fig_width: 5
+always_allow_html: yes
+bibliography: '`r paste0(here::here(), "/bibliography.bib")`'
+---
+
+```{r knitrSetup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+```
+
+
+```{r codeSetup, include=FALSE}
+# Set start time ----
+startTime <- proc.time()
+# Local parameters ----
+b2Kb <- 1024 #http://whatsabyte.com/P1/byteconverter.htm
+b2Mb <- 1048576
+plotLoc <- paste0(gcParams$repoLoc, "/docs/plots/") # where to put the plots
+
+library(gridCarbon)
+# Packages used in the report ----
+rmdLibs <- c("ggplot2", # plots
+          "kableExtra", # fancy tables
+          #"openair" # air qual plots re-purposed, fails as needs latticeExtra which needs R (≥ 3.6.0) https://cran.r-project.org/web/packages/latticeExtra/index.html
+          "lubridate" # dates
+          )
+gridCarbon::loadLibraries(rmdLibs)
+
+# Local parameters ----
+localParams$lockDownStartDate <- as.Date("2020-03-25")
+localParams$lockDownStartDateTime <- lubridate::as_datetime("2020-03-25 23:59:00")
+localParams$lockDownEndDate <- lubridate::today()
+localParams$lockDownEndDateTime <- lubridate::now()
+
+localParams$recentCutDate <- as.Date("2020-03-01")
+
+localParams$comparePlotCutDate <- as.Date("2020-02-01")
+
+localParams$gamCap <- "Trend line = Generalized additive model (gam) with integrated smoothness estimation"
+localParams$lockdownCap <- "\nColoured rectangle = NZ covid lockdown to date"
+localParams$weekendCap <- "\nShaded rectangle = weekends"
+localParams$noThresh <- "\nNo specified WHO threshold"
+
+localParams$myAlpha <- 0.1
+localParams$vLineAlpha <- 0.4
+localParams$vLineCol <- "red" # http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+localParams$myTextSize <- 4
+
+# Local functions ----
+addLockdownDate <- function(p){
+  # assumes p has x = obsDate
+  p <- p + annotate("rect", xmin = localParams$lockDownStartDate,
+             xmax = localParams$lockDownEndDate, 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol)
+  return(p)
+}
+addLockdownDateTime <- function(p){
+  # assumes p has x = obsDateTime
+  p <- p + annotate("rect", xmin = localParams$lockDownStartDateTime,
+             xmax = localParams$lockDownEndDateTime, 
+             ymin = yMin, ymax = yMax, 
+             alpha = localParams$myAlpha, 
+             fill = localParams$vLineCol, 
+             colour = localParams$vLineCol) 
+    
+  return(p)
+}
+
+# only makes sense to use these for x axis covering March onwards
+localParams$weAlpha <- 0.3
+localParams$weFill <- "grey50"
+addWeekendsDate <- function(p){
+  p <- p + annotate("rect", xmin = as.Date("2020-03-07"),
+                    xmax = as.Date("2020-03-08"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-03-14"),
+                    xmax = as.Date("2020-03-15"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-03-21"),
+                    xmax = as.Date("2020-03-22"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-03-28"),
+                    xmax = as.Date("2020-03-29"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-04-04"),
+                    xmax = as.Date("2020-04-05"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = as.Date("2020-04-10"),
+                    xmax = as.Date("2020-04-13"), # Easter
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  return(p)
+}
+
+addWeekendsDateTime <- function(p){
+   p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-07 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-08 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-14 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-15 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-21 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-22 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-03-28 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-03-29 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-04-04 00:00:00"),
+                    xmax = lubridate::as_datetime("2020-04-05 23:59:59"),
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill) 
+  p <- p + annotate("rect", xmin = as_datetime("2020-04-10 00:00:00"),
+                    xmax = as_datetime("2020-04-13 23:59:59"), # Easter
+                    ymin = yMin, ymax = yMax,
+                    alpha = localParams$weAlpha, fill = localParams$weFill)
+  return(p)
+}
+```
+
+\newpage
+
+# About
+
+## Citation
+
+```{r citation, child=gcParams$citation}
+```
+
+## Report circulation
+
+ * Public – this report is intended for publication
+
+## Code
+
+All code used to create this report is available from:
+
+ * https://github.com/CfSOtago/gridCarbon
+
+## License {#license}
+
+```{r ccby license, child=gcParams$licenseCCBY}
+```
+
+## History
+
+```{r history, child=gcParams$history}
+```
+ * this [report's edit history](https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/)
+ 
+## Support
+
+```{r generic support, child=gcParams$support}
+```
+ * The European Union via [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/), a Marie Skłodowska-Curie [Global Fellowship](https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton’s [Sustainable Energy Research Group](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2019-2020) (Anderson);
+ * The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)
+ 
+\newpage
+
+# Introduction
+
+Building on [@khan_analysis_2018], we are interested in GHG emissions from the NZ electricity generation over time. We are especially interested in how this might change during the NZ covid-19 lockdown period (`r localParams$lockDownStart` to `r localParams$lockDownEnd`).
+
+We use two different GHG emissions indicators:
+
+ * % of total generation in a halfhour which was 'low emissions' where this is defined as wind + solar + hydro
+ * Calculated CO2e emissions per half hour (not yet implemented)
+
+# Data
+
+## Wholesale generation data
+
+Essentially 'grid' generation from major power stations of various kinds. Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/` and pre-processed.
+
+```{r testGrid}
+h <- head(allGridDT)
+
+kableExtra::kable(h, caption = "Grid gen data (first 6 rows)") %>%
+  kable_styling()
+```
+
+```{r testFuels}
+peakDefs <- "Morning: 07:00 - 08:30; Evening: 16:00 - 20:00"
+
+fuelsDT <- allGridDT[, .(MWh = sum(kWh)/1000),keyby = .(rDateTimeNZT, rDate, Fuel_Code)]
+
+fuelsDT[, year := lubridate::year(rDateTimeNZT)]
+fuelsDT[, month := lubridate::month(rDateTimeNZT)]
+fuelsDT[, yearMonth := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
+
+# m[, plotDate := lubridate::ymd(paste(year,"-", month, "-01"))] # fix
+fuelsDT[, q := quarter(rDateTimeNZT)]
+fuelsDT[, quarter := lubridate::ymd(paste(year,"-", q, "-01"))]
+fuelsDT[, obsDate := as.Date(rDateTimeNZT)]
+
+fuelsDT <- gridCarbon::setPeakPeriod(fuelsDT, dateTime = "rDateTimeNZT")
+
+dateLab <- "Date"
+plotDT <- fuelsDT[, .(meanMWh = mean(MWh),
+                      sumMWh = sum(MWh)), 
+                  keyby = .(obsDate, Fuel_Code, peakPeriod)]
+plotDT[, dow := lubridate::wday(obsDate, label = TRUE)]
+
+# s.d
+plotDT[, .(sd = sd(meanMWh)), keyby = .(Fuel_Code)]
+plotDT[, Fuel_Code := factor(Fuel_Code,
+                             levels = c("Hydro", "Gas","Coal", "Wind", "Wood",
+                                           "Diesel", "Geo")
+                                )] # re-order factors so 'baseload' is at the bottom
+
+plotDT[, wday := ifelse(dow == "Sat" | dow == "Sun", "Weekend", "Weekday")]
+
+p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
+                     aes(x = obsDate, y = meanMWh/1000, 
+                         colour = Fuel_Code, shape = wday)) +
+  geom_point(position="stack") +
+  geom_line(aes(shape = NULL), position="stack") + # 1 line not 2 per fuel
+  scale_shape_discrete(name="Day") +
+  scale_color_viridis_d("Fuel") +
+  theme(legend.position = "bottom") + 
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  #scale_y_log10() +
+  facet_grid(peakPeriod ~ .) +
+  geom_vline(xintercept = gcParams$NZLevel4StartDate) +
+  labs(x = dateLab,
+         y = "Mean half hourly GWh (stacked) via",
+       caption = paste0("Ref line = NZ Level 4 lockdown start",
+                        "\nPeak definitions: ", peakDefs,
+                        "\nData source: NZ Electricity Authority, plot by @dataknut @energyOtago @energySoton")
+       )
+
+# yMax <- max(plotDT$meanGW)
+# yMin <- min(plotDT$meanGW)
+# p <- addLockdownRect(p, 
+#                 from = gcParams$UKlockDownStartDate, 
+#                 to = gcParams$UKlockDownEndDate, 
+#                 yMin = yMin, yMax = yMax)
+p
+ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhFuelsTrendsStacked.png"), 
+                height = 10, width = 10, units = "in",
+                p)
+
+p <- ggplot2::ggplot(plotDT[obsDate > as.Date("2020-01-01")], 
+                     aes(x = obsDate, y = meanMWh/1000, 
+                         colour = Fuel_Code, shape = wday)) +
+  geom_point() +
+  geom_line(aes(shape = NULL)) + # 1 line not 2 per fuel
+  scale_shape_discrete(name="Day") +
+  scale_color_viridis_d("Fuel") +
+  theme(legend.position = "bottom") + 
+  scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
+  theme(axis.text.x=element_text(angle=90, hjust=1)) +
+  #scale_y_log10() +
+  facet_grid(peakPeriod ~ .) +
+  geom_vline(xintercept = gcParams$NZLevel4StartDate) +
+  labs(x = dateLab,
+         y = "Mean half hourly GWh",
+       caption = paste0("Ref line = NZ Level 4 lockdown start",
+                        "\nPeak definitions: ", peakDefs,
+                        "\nData source: NZ Electricity Authority, plot by @dataknut @energyOtago @energySoton")
+       )
+
+# yMax <- max(plotDT$meanGW)
+# yMin <- min(plotDT$meanGW)
+# p <- addLockdownRect(p, 
+#                 from = gcParams$UKlockDownStartDate, 
+#                 to = gcParams$UKlockDownEndDate, 
+#                 yMin = yMin, yMax = yMax)
+p
+
+ggplot2::ggsave(here::here("docs", "nz", "plots", "NZ_MWhFuelsTrendsNonStacked.png"), 
+                height = 10, width = 10, units = "in",
+                p)
+```
+
+## Embedded generation data
+
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points (GXP). Data downloaded from `https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation` and pre-processed.
+
+```{r headEmbedded}
+h <- head(allEmbeddedDT)
+
+kableExtra::kable(h, caption = "Embedded gen data (first 6 rows)") %>%
+  kable_styling()
+```
+
+
+```{r testEmbedded}
+allEmbeddedDT[, year := lubridate::year(rDate)]
+st <- allEmbeddedDT[, .(sumkWh = sum(kWh, na.rm = TRUE),
+                        nObs = .N), keyby = .(Flow_Direction, year)]
+
+rt <- data.table::dcast(st, year ~ Flow_Direction,  value.var = c("sumkWh", "nObs"))
+
+kableExtra::kable(rt, caption = "Mean kWh by flow direction") %>%
+  kable_styling()
+```
+
+Not entirely sure what these codes mean yet. Limited [guidance](https://forum.emi.ea.govt.nz/thread/grid-export-and-embedded-generation-data) available? TBC
+
+> For now embedded generation data is _not_ included in the following analysis.
+
+# Background trends and patterns
+
+Demand profiles by season
+
+```{r kWhBySeason2019}
+allGridDT <- gridCarbon::addNZSeason(allGridDT, date = "rDate")
+MWhDT <- allGridDT[, .(MWh = sum(kWh/1000)), keyby = .(rDateTimeNZT, rTime, season, year)]
+
+plotDT <- MWhDT[year == 2019, .(meanMWh = mean(MWh)), keyby = .(rTime, season)]
+
+p <- ggplot2::ggplot(plotDT, aes(x = rTime, y = meanMWh/1000, colour = season)) +
+  geom_step() +
+  theme(legend.position="bottom") +
+  scale_color_discrete(name="Season") +
+  labs(x = "Time",
+       y = "Mean GWh",
+       caption = "Year: 2019\nData source: NZ Electricity Authority")
+
+ggplot2::ggsave(filename = "NZ_GWhBySeason_2019.png",
+                plot = p,
+                path = here::here("docs", "nz","plots"))
+p
+```
+
+
+```{r theilSenMWh}
+MWhDT <- gridCarbon::setPeakPeriod(MWhDT, dateTime = "rDateTimeNZT")
+MWhDT[, date := rDateTimeNZT] # for theilsen
+oaMWh <- openair::TheilSen(MWhDT, "MWh", 
+                  ylab = "MWh", deseason = TRUE,
+                  xlab = "Year",
+                  date.format = "%Y",
+                  date.breaks = 4,
+                  type = c("peakPeriod"), layout = c(5,1))
+p <- oaMWh$plot
+png(filename=here::here("docs/nz/plots/openAir_NZ_TheilSenMWhPlot.png"), 
+    width = 960, units = "px")
+# dpi = 600, width = 13.333, height = 7.5, units = "in"
+plot(p)
+dev.off()
+
+t <- MWhDT[, .("Mean GWh" = mean(MWh/1000),
+                   "N obs" = .N), keyby = .(year, peakPeriod)]
+
+t <- dcast(t, year ~ peakPeriod, value.var = "Mean GWh")
+
+kableExtra::kable(t, caption = "Mean half-hourly GWh by year and peak period - 2020 incomplete", digits = 2) %>%
+  kable_styling()
+
+```
+
+
+# Analysis (think this section needs some structure/sub-headings!)
+
+In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 2020 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 28 This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.
+
+All non-essential busineeses are closed and staff is asked to work from home. This analysis aims to provide insights on developments in electriicty generation. Essential research questions company this research:
+
+* To what extent has electricity generation shown deviation of 'normal' generation patterns during the level four alert?
+
+* Has the composition of fuel sources supplying electriicty demand in New Zealand changed during the level four alert?
+
+* Has the level four alert impacted greenhouse-gas emissions associated with electriicty generation?
+
+```{r lockdownMethodology, eval=FALSE}
+
+# 1. Select relevant years/months
+  # -> What do we want to find out? 
+   # Reduction in generation (this requires ex ante/post ante data)
+   # Changes in the feed-in of embedded generation
+   # Changes in GhG emissions
+
+# 2. Aggregate data by fuel and time
+# 3. Link GhG emissions to generation data
+# 4. Output of tables/plots embedded in text
+
+```
+
+```{r lockdown1SelectData, include=FALSE}
+# Selects relevant months of 2020, 2019, 2018
+selectDT <- allGridDT[month >= 1 & 
+                      month <= 4 &
+                      year == 2020 |
+                        
+                      month >= 1 & 
+                      month <= 4 &
+                      year == 2019 |
+                        
+                      month >= 1 & 
+                      month <= 4 &
+                      year == 2018]
+
+#Building means by Fuel_Code, rDateTimeNZT, Time_Period, rMonth
+shortDT <- selectDT[, . (meankWh = mean(kWh),
+                         sumkWh = sum(kWh),
+                        nObs = .N), # number of obs - will show you how rare coal is :-)
+                    keyby= .(Fuel_Code, rDateTimeNZT, Time_Period, rMonth, year)]
+#This won't build means by month - it will build them by rDateTimeNZT as rMonth is constant for each rDateTimeNZT
+
+
+#This shows us how many obs there are for each Fuel_Code. There might be an easier way to do it?
+plotDT <- shortDT[year==2020]
+x2 <- by(plotDT$nObs, plotDT$Fuel_Code, sum)
+do.call(rbind,as.list(x2))# Clearly hydro dominates
+```
+
+
+```{r nobsTable}
+#Put this into a table for visualisation
+kableExtra::kable(head(x2), col.names = "nObs", caption = "Number of observations by fuel") %>%
+                    kable_styling()
+```
+We extracted electricity generation data from /INSERT DATES/. Table \@ref(tab:nobsTable) shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel. 
+
+```{r lockdowncalc}
+
+#Let us try to avoid confusion with kWh and convert it to power MW....
+shortDT <- shortDT[, meanMW := (meankWh*2)/1000]
+shortDT <- shortDT[, sumMW := (sumkWh*2)/1000]
+
+kableExtra::kable(head(shortDT), caption = "Example summary data") %>%
+                    kable_styling()
+```
+Table \@ref(tab:lockdowncalc) shows exemplary data of our data extraction. In addition, Figure \@ref(fig:plotgeneration1) pictures total generation (this is the sum for each fuel type for all generatinfg plants and all trading periods). Hydro had the highest power output in January and February. Geothermnal was used for base load and an increase in Gas output is viible for the second half of February. Wind intermittently generated while Coal was occasionally integrated. Wood and Diesel did not contribute much in January and February.
+
+
+```{r plotgeneration1, fig.cap= "Total generation by fuel"}
+
+#Changing order in plot
+
+shortDT$Fuel_Code <- factor(shortDT$Fuel_Code, levels = c("Hydro","Geo",
+                                                    "Gas", "Wind", "Coal", "Wood", "Diesel"))
+
+plotDT <- shortDT[year==2020]
+
+legend_title <- "Type of Fuel"
+myPlotSum <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT)) +
+  geom_line(aes(y = sumMW, colour = Fuel_Code))+
+  geom_smooth(aes(y= sumMW, colour = Fuel_Code))+
+  theme(legend.position="bottom")+
+  scale_color_manual(legend_title, values = c('Hydro'='blue','Coal'='grey', 'Wind'='green', 'Wood'='brown', 'Diesel'='yellow', 'Gas'='purple', 'Geo'='red'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Time', y='Power (MW)', caption = "Smoothed fit line via gam") 
+myPlotSum
+
+
+
+
+
+```
+
+```{r totalgen, warning=FALSE, message=FALSE}
+
+# Here we attempt to compare total generation over time. Monthly/weekly granularity
+# Challenge: Match Monday with Monday and have the same number of days for comparison
+
+#We might need to dcast now...
+
+recastDT <- dcast(shortDT,
+           rDateTimeNZT + Time_Period + rMonth + year  ~ Fuel_Code, 
+           fun = mean, # won't do anything as we should just have 1 value?
+           value.var = "sumMW")
+
+# Adding a weekday column
+recastDT <- recastDT[, weekdays:= wday(rDateTimeNZT, label = TRUE)]
+#Adding date column
+recastDT[, date := lubridate::as_date(rDateTimeNZT)]
+
+
+
+recastDT <- recastDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(rDateTimeNZT)]
+
+
+# Let us create a daily mean too
+recast_d_meanDT <- recastDT[, .(Hydro = mean(Hydro),
+                                Geo = mean(Geo),
+                                Gas = mean(Gas),
+                                Wind = mean(Wind),
+                                Coal = mean(Coal),
+                                Wood = mean(Wood),
+                                Diesel = mean(Diesel),
+                        nObs = .N), # number of obs - will show you how rare coal is :-)
+                        keyby= .(date, year,rMonth)]
+
+recast_d_meanDT <- recast_d_meanDT[, totalMW := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(date)]
+recast_d_meanDT <- recast_d_meanDT[, totalMW18_19 := Coal+Diesel+Gas+Geo+Hydro+Wind+Wood, keyby =.(date)]
+
+
+```
+
+Figure \@ref(fig:fourmonthsplot) shows total generation for the first four months of 2020. A red box indicates the alert level four period.
+
+```{r fourmonths}
+
+plotDT <- recastDT[year==2020]
+plotDT <- plotDT[ !(rMonth %in% c(NA))]
+
+```
+
+```{r fourmonthsplot, fig.cap="Four months of total generation for 2020"}
+
+#This shows us the selected weeks for January and February
+legend_title <- "Month"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= rDateTimeNZT )) +
+  geom_line(aes(y = totalMW, colour = rMonth))+
+  geom_smooth(aes(y=totalMW, colour=NULL))+
+  scale_color_manual(legend_title, values = c('Jan'='#A9DFBF','Feb'='#FAD7A0', 'Mar'='#AED6F1', 'Apr' ='#F5B7B1'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as_datetime("2020-03-25 00:15:00"), 
+                xmax = as_datetime("2020-04-27 23:45:00"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  theme(legend.position="bottom")+
+  labs(x='Date', y='Power (MW)', caption = "Smoothed fit line via gam") 
+  #facet_grid(rMonth ~ .)
+myPlotTot
+
+of <- paste0(here::here("docs","nz", "plots", "NZ_TotalElectricityGeneration.jpeg"))
+ggplot2::ggsave(of, myPlotTot, 
+                dpi = 600, width = 13.333, height = 7.5, units = "in")
+```
+
+```{r annualcomparision}
+
+#Now we woild like to compare the first four months of 2020 with the previous years. Challenge lining up Monday with Monday etc. 
+
+                            #2020
+plotDT <- recastDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
+                     
+                   date >= "2020-04-01"&
+                   date <= "2020-04-21"|
+                     
+                          #2019     
+                   date >= "2019-01-09"&
+                   date <= "2019-01-29"|
+                     
+                   date >= "2019-02-06"&
+                   date <= "2019-02-26"|
+                     
+                   date >= "2019-03-05"&
+                   date <= "2019-03-25"|
+                     
+                   date >= "2019-04-03"&
+                   date <= "2019-04-23"| 
+                     
+                          #2018
+                   date >= "2018-01-10"&
+                   date <= "2018-01-30"|
+                     
+                   date >= "2018-02-07"&
+                   date <= "2018-02-27"|
+                     
+                   date >= "2018-03-06"&
+                   date <= "2018-03-26"|
+                     
+                   date >= "2018-04-04"&
+                   date <= "2018-04-24"]
+
+# Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
+
+# Applying the same overlaying method on three years now...
+
+select <- plotDT[year==2020]
+
+data1 <- data.table(`2020`=numeric())
+data1 <-data1[, .(`2020` = ifelse(plotDT$year == "2020" , plotDT$totalMW, NA ))]
+data1 <-data1[!is.na(data1$`2020`)]
+
+data2 <- data.table(`2019`=numeric())
+data2 <-data2[, .(`2019` = ifelse(plotDT$year == "2019" , plotDT$totalMW, NA ))]
+data2 <-data2[!is.na(data2$`2019`)]
+
+data3 <- data.table(`2018`=numeric())
+data3 <-data3[, .(`2018` = ifelse(plotDT$year == "2018" , plotDT$totalMW, NA ))]
+data3 <-data3[!is.na(data3$`2018`)]
+
+data1 <- data1[, `2019` := data2$`2019`]
+data1 <- data1[, `2018` := data3$`2018`]
+data1 <- data1[, ID := .I]
+data1 <- data1[, date := select$date]
+data1 <- data1[, dateTime := select$rDateTimeNZT]
+data1 <- data1[, rMonth := select$rMonth]
+
+```
+
+In order to provide information on how generation changed over time it is helpful to compare it with previous years. Twenty matching weekdays were extracted for January to March for 2020, 2019, and 2018. We would like to make sure that the weekdays really 'match up'. Figure \@ref(fig:checkplot) shows twenty days of extracted data for the three years for March We see that the weekdays match up.
+
+```{r checkplot, fig.cap="Twenty days of total generation for March by year"}
+
+#Do the weekdays really match up?
+
+plotDT <- data1[ date >= "2020-04-01"&
+                   date <= "2020-04-21"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+  geom_line(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2019`, colour = "2019"))+ 
+   geom_line(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  theme(legend.position="bottom")+
+  labs(x='Extracted days for April', y='Power (MW)')+
+  scale_x_datetime(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+ # geom_rect(data = data.frame(rMonth = "Mar"), 
+  #          aes(xmin = as_datetime("2020-03-25 00:15:00"), 
+   #             xmax = as_datetime("2020-03-30 23:45:00"), 
+    #            ymin = -Inf, ymax = Inf), 
+     #       alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.datetime("2020-04-01 00:15:00"), 
+    #            xmax = as.datetime("2020-04-21 23:45:00"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
+
+myPlotTot
+
+#ggsave("Twenty days of April total generation.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
+
+```
+Figure \@ref(fig:closeupplot) shows a close-up for one day in March for the three years. We see that on this particular Saturdays during the lockdown period the morning peak was shifted towards mid-day. Total generation at morning peak dropped by 11% compared to previous years. Interestingly, the evening peak reached almost the same total generation despite the lockdown but was shifted by one hour. 
+
+```{r closeupplot, fig.cap="Total generation over time for the third Saturday in April by year "}
+
+# Does tht timing of demand change too?
+
+plotDT <- data1[date == "2020-04-16"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+  geom_line(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2019`, colour = "2019"))+ 
+   geom_line(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Third Saturday of April', y='Power (MW)')+
+  theme(legend.position="bottom")+
+  scale_x_datetime(date_breaks = '1 hour',
+               #minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%H')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+```
+
+```{r dmeancomparison}
+# How would that look like for daily means for Jan-Apr?
+
+
+                            #2020
+plotDT <- recast_d_meanDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
+                     
+                   date >= "2020-04-01"&
+                   date <= "2020-04-21"|
+                     
+                          #2019     
+                   date >= "2019-01-09"&
+                   date <= "2019-01-29"|
+                     
+                   date >= "2019-02-06"&
+                   date <= "2019-02-26"|
+                     
+                   date >= "2019-03-05"&
+                   date <= "2019-03-25"|
+                     
+                   date >= "2019-04-03"&
+                   date <= "2019-04-23"| 
+                     
+                          #2018
+                   date >= "2018-01-10"&
+                   date <= "2018-01-30"|
+                     
+                   date >= "2018-02-07"&
+                   date <= "2018-02-27"|
+                     
+                   date >= "2018-03-06"&
+                   date <= "2018-03-26"|
+                     
+                   date >= "2018-04-04"&
+                   date <= "2018-04-24"]
+
+# Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
+
+# Applying the same overlaying method on three years now...
+
+select <- plotDT[year==2020]
+
+data1 <- data.table(`2020`=numeric())
+data1 <-data1[, .(`2020` = ifelse(plotDT$year == "2020" , plotDT$totalMW, NA ))]
+data1 <-data1[!is.na(data1$`2020`)]
+
+data2 <- data.table(`2019`=numeric())
+data2 <-data2[, .(`2019` = ifelse(plotDT$year == "2019" , plotDT$totalMW, NA ))]
+data2 <-data2[!is.na(data2$`2019`)]
+
+data3 <- data.table(`2018`=numeric())
+data3 <-data3[, .(`2018` = ifelse(plotDT$year == "2018" , plotDT$totalMW, NA ))]
+data3 <-data3[!is.na(data3$`2018`)]
+
+data1 <- data1[, `2019` := data2$`2019`]
+data1 <- data1[, `2018` := data3$`2018`]
+data1 <- data1[, ID := .I]
+data1 <- data1[, date := select$date]
+data1 <- data1[, rMonth := select$rMonth]
+
+data1 <- data1[, `2018-2019` := (`2019` + `2018`)/2] #Used for a refernce period
+data1 <- data1[, `PerDiff` := (1-(`2018-2019` / `2020`))*100] #Used for a differnece in %
+
+#data1 <- data1[, dateTime := select$rDateTimeNZT]
+
+```
+A less distorted view on total generation data is provided in Figure \@ref(fig:dailymeanplot). Instead of 15-minute granularity data daily means represent ttoal generation. We can see how close the analysed years were togetehr before the lockdowm and as the lockdown starts a large rop in generation occurs. 
+
+```{r dailymeanplot, fig.cap="Daily mean generation by year for March"}
+
+
+#Do the weekdays really match up?
+
+plotDT <- data1[date >= "2020-03-10"&
+                   date <= "2020-03-30"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
+  geom_line(aes(y=`2020`, colour = "2020"))+
+  geom_point(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2019`, colour = "2019"))+
+  geom_point(aes(y=`2019`, colour = "2019"))+
+   geom_line(aes(y=`2018`, colour = "2018"))+
+  geom_point(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for March', y='Daily mean power (MW)')+
+  theme(legend.position="bottom")+
+  scale_x_date(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as.Date("2020-03-25"), 
+                xmax = as.Date("2020-03-30"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.Date("2020-04-01"), 
+    #            xmax = as.Date("2020-04-21"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
+
+myPlotTot
+
+
+```
+
+```{r annualcomparisonplot, fig.cap="Three years with each 20 days of data for January and February so far", include=FALSE, eval=FALSE}
+
+#Do we need this plot? Probably not! Especially not with the misleading smoothed line. Better use either facet grid for each month or plot each month seperately.
+
+
+#This shows us the selected weeks for January and February
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(data1, aes(x= date)) +
+  geom_smooth(aes(y=`2020`, colour = "2020"))+
+  geom_smooth(aes(y=`2019`, colour = "2019"))+
+  geom_smooth(aes(y=`2018`, colour = "2018"))+
+  #geom_line(aes(y=`2020`, colour = "2020"))+
+  #geom_line(aes(y=`2019`, colour = "2019"))+ 
+  #geom_line(aes(y=`2018`, colour = "2018"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB',`2019`='#229954', `2018`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Day and Month', y='Power (MW)', caption = "Smoothed fit line via gam")
+  #scale_x_date(#date_breaks = 'day',
+               #minor_breaks = 'day',
+               #date_labels = '%b %a')+
+               #date_labels  ='%b %n %a')
+#limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+
+#yMax <- max(plotDT$totalMW)
+#yMin <- min(plotDT$totalMW)
+#addLockdownDateTime(myPlotTot) # adds annotations, needs yMax & yMin to get the box right
+
+myPlotTot
+
+# date_labels = '%b %d\n%a')+
+
+```
+A mean over 2018 and 2019 data was compared with 2020 in Figure \@ref(fig:dailymeanplot2). In addition, previous months were considered in this plot as well and show that the variation apparent during the lockdown period is significant between the two reference periods. 
+
+Figure \@ref(fig:dailyperdiffplot) highlights the percentage difference between 2020 and the reference period of 2018-2019. On a daily mean granularity, generation dropped by over 15% during the lockdown period. 
+
+
+
+
+```{r dailymeanplot2, fig.cap="Daily mean total generation for 2020 and reference period by month"}
+
+plotDT <- data1
+
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
+  geom_line(aes(y=`2020`, colour = "2020"))+
+  geom_point(aes(y=`2020`, colour = "2020"))+
+   geom_line(aes(y=`2018-2019`, colour = "2018-2019"))+
+  geom_point(aes(y=`2018-2019`, colour = "2018-2019"))+
+  scale_color_manual(legend_title, values = c(`2020`='#3498DB', `2018-2019`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for January-March', y='Daily mean power (MW)')+
+  scale_x_date(date_breaks = '5 days',
+               minor_breaks = '1 day',
+              # date_labels = '%b %a')+
+               date_labels  ='%a')+
+  facet_grid(cols = vars(rMonth), scales = "free")+
+  theme(legend.position="bottom")+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as.Date("2020-03-25"), 
+                xmax = as.Date("2020-03-30"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  #geom_rect(data = data.frame(rMonth = "Apr"), 
+   #         aes(xmin = as.Date("2020-04-01"), 
+    #            xmax = as.Date("2020-04-21"), 
+     #           ymin = -Inf, ymax = Inf), 
+      #      alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  
+
+myPlotTot
+
+```
+```{r dailyperdiffplot, fig.cap="Percentage difference in daily mean between 2018-2019 and 2020"}
+
+plotDT <- data1
+
+
+# lockdown start: 2020-03-26
+# lockdown end: 2020-04-28
+
+#Once we have April data we can add the red box for April. Just reverse the #. This is only possible for the extracted days and not for the whole lockdown period
+
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= date)) +
+  geom_step(aes(y=`PerDiff`))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for January-April', y='Percentage difference')+
+  scale_x_date(date_breaks = '5 days',
+               minor_breaks = '1 day',
+               date_labels  ='%a')+
+  facet_grid(cols = vars(rMonth), scales = "free")+
+  geom_hline(yintercept=0, linetype="dashed")+
+  theme(legend.position="bottom")+
+  geom_rect(data = data.frame(rMonth = "Mar"), 
+            aes(xmin = as.Date("2020-03-25"), 
+                xmax = as.Date("2020-03-30"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)+
+  geom_rect(data = data.frame(rMonth = "Apr"), 
+            aes(xmin = as.Date("2020-04-01"), 
+                xmax = as.Date("2020-04-21"), 
+                ymin = -Inf, ymax = Inf), 
+            alpha = localParams$myAlpha, fill= localParams$vLineCol, colour = localParams$vLineCol, inherit.aes = FALSE)
+  
+
+myPlotTot
+
+#ggsave("Percentage difference in daily mean between 2018-2019 and 2020.jpeg", dpi = 600, width = 13.333, height = 7.5, #units = "in")
+
+
+
+```
+
+```{r weekdaymean}
+
+#This code calculates the mean for weekdays/non-weekdays for pre-lockdown and lockdown time
+
+                            #2020
+plotDT <- recastDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
+                     
+                   date >= "2020-04-01"&
+                   date <= "2020-04-21"]
+
+plotDT <- plotDT[, time := hms::as.hms(rDateTimeNZT)]
+
+#Calcuclating mean
+
+plotDT <- plotDT[, weekday:= ifelse(`weekdays` == "Mon"|
+                                   `weekdays` == "Tue"|
+                                   `weekdays` == "Wed"|
+                                   `weekdays` == "Thu"|
+                                   `weekdays` == "Fri",
+                                   "yes", "no")]
+
+plotDT <- plotDT[, lockdown:= ifelse(`date` >= "2020-03-25"& date <=
+                                   "2020-04-27", "yes", "no")]
+
+
+plotDT <- plotDT[, .(meanMW= mean(totalMW)), keyby =. (time, weekday, lockdown, Time_Period)]
+
+timeDT <-copy(plotDT)
+timeDT[, c("weekday","Time_Period","lockdown","meanMW"):=NULL]
+timeDT<-unique(timeDT)
+
+
+                 
+#plotDT <- unique(plotDT)   
+
+
+
+data1 <- data.table(`lockdown`=numeric())
+data1 <-data1[, .(`lockdown` = ifelse(plotDT$weekday == "no"&plotDT$lockdown=="yes" , plotDT$meanMW, NA ))]
+data1 <-data1[!is.na(data1$`lockdown`)]
+
+data2 <- data.table(`prelockdown`=numeric())
+data2 <-data2[, .(`prelockdown` = ifelse(plotDT$weekday == "no"& plotDT$lockdown=="no", plotDT$meanMW, NA ))]
+data2 <-data2[!is.na(data2$`prelockdown`)]
+
+
+data1 <- data1[, `prelockdown` := data2$`prelockdown`]
+data1 <- data1[, `time` := timeDT$`time`]
+data1 <- data1[, ID := .I]
+                
+
+```
+
+```{r test}
+
+legend_title <- "Period"
+myPlotTot <- ggplot2::ggplot(data1, aes(x= time)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+   geom_line(aes(y=`lockdown`, colour = "lockdown"))+
+   geom_line(aes(y=`prelockdown`, colour = "prelockdown"))+ 
+  scale_color_manual(legend_title, values = c(`lockdown`='red',`prelockdown`='blue'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Time', y='Power (MW)')+
+  theme(legend.position="bottom")
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+myPlotTot
+
+#ggsave("Weekend mean total generation for lockdown and prelockdown.jpeg", dpi = 600, width = 13.333, height = 7.5, units = "in")
+
+```
+
+```{r whatisnext}
+
+#Next we want to find out what happened on a time_period average for three weeks. Furthermore we would like to find out how the generation composition by fuel source might have changed in the two months. Some fun for tomorrow :)
+
+#Is there variation by fuel type in the months and years? Use facet grid to compare fuel type for the extracted days...
+# we need to compare Feb/March 2020 with the mean for Feb/March in previous years, also allowing for different temperatures etc?
+
+```
+
+Seems to break
+
+```{r fuelcomparison, eval=FALSE}
+                            #2020
+plotDT <- recastDT[date >= "2020-01-08"&
+                   date <= "2020-01-28"|
+                     
+                   date >= "2020-02-05"&
+                   date <= "2020-02-25"|
+                     
+                   date >= "2020-03-10"&
+                   date <= "2020-03-30"|
+                     
+                  # date >= "2020-04-01"&
+                  # date <= "2020-04-21"|
+                     
+                          #2019     
+                   date >= "2019-01-09"&
+                   date <= "2019-01-29"|
+                     
+                   date >= "2019-02-06"&
+                   date <= "2019-02-26"|
+                     
+                   date >= "2019-03-05"&
+                   date <= "2019-03-25"|
+                     
+                  # date >= "2019-04-03"&
+                  # date <= "2019-04-23"| 
+                     
+                          #2018
+                   date >= "2018-01-10"&
+                   date <= "2018-01-30"|
+                     
+                   date >= "2018-02-07"&
+                   date <= "2018-02-27"|
+                     
+                   date >= "2018-03-06"&
+                   date <= "2018-03-26"]
+                     
+                  # date >= "2018-04-04"&
+                  # date <= "2018-04-24"]
+
+# Remember that we do not have March and April data for 2020 yet so we have to leave these dates out for now 
+
+selectyearDT <- plotDT[year==2020]
+
+hydro20 <- data.table(`H20`=numeric())
+hydro20 <-hydro20[, .(`H20` = ifelse(plotDT$year == "2020" , plotDT$Hydro, NA ))]
+hydro20 <-hydro20[!is.na(hydro20$`H20`)]
+
+hydro19  <- data.table(`H19`=numeric())
+hydro19 <-hydro19[, .(`H19` = ifelse(plotDT$year == "2019" , plotDT$Hydro, NA ))]
+hydro19 <-hydro19[!is.na(hydro19$`H19`)]
+
+hydro18  <- data.table(`H18`=numeric())
+hydro18 <-hydro18[, .(`H18` = ifelse(plotDT$year == "2018" , plotDT$Hydro, NA ))]
+hydro18 <-hydro18[!is.na(hydro18$`H18`)]
+
+
+geo20 <- data.table(`Ge20`=numeric())
+geo20 <-geo20[, .(`Ge20` = ifelse(plotDT$year == "2020" , plotDT$Geo, NA ))]
+geo20 <-geo20[!is.na(geo20$`Ge20`)]
+
+geo19 <- data.table(`Ge19`=numeric())
+geo19 <-geo19[, .(`Ge19` = ifelse(plotDT$year == "2019" , plotDT$Geo, NA ))]
+geo19 <-geo19[!is.na(geo19$`Ge19`)]
+
+geo18 <- data.table(`Ge18`=numeric())
+geo18 <-geo18[, .(`Ge18` = ifelse(plotDT$year == "2018" , plotDT$Geo, NA ))]
+geo18 <-geo18[!is.na(geo18$`Ge18`)]
+
+
+gas20 <- data.table(`Ga20`=numeric())
+gas20 <-gas20[, .(`Ga20` = ifelse(plotDT$year == "2020" , plotDT$Gas, NA ))]
+gas20 <-gas20[!is.na(gas20$`Ga20`)]
+
+gas19 <- data.table(`Ga19`=numeric())
+gas19 <-gas19[, .(`Ga19` = ifelse(plotDT$year == "2019" , plotDT$Gas, NA ))]
+gas19 <-gas19[!is.na(gas19$`Ga19`)]
+
+gas18 <- data.table(`Ga18`=numeric())
+gas18 <-gas18[, .(`Ga18` = ifelse(plotDT$year == "2018" , plotDT$Gas, NA ))]
+gas18 <-gas18[!is.na(gas18$`Ga18`)]
+
+
+wind20 <- data.table(`Wi20`=numeric())
+wind20 <-wind20[, .(`Wi20` = ifelse(plotDT$year == "2020" , plotDT$Wind, NA ))]
+wind20 <-wind20[!is.na(wind20$`Wi20`)]
+
+wind19 <- data.table(`Wi19`=numeric())
+wind19 <-wind19[, .(`Wi19` = ifelse(plotDT$year == "2019" , plotDT$Wind, NA ))]
+wind19 <-wind19[!is.na(wind19$`Wi19`)]
+
+wind18 <- data.table(`Wi18`=numeric())
+wind18 <-wind18[, .(`Wi18` = ifelse(plotDT$year == "2018" , plotDT$Wind, NA ))]
+wind18 <-wind18[!is.na(wind18$`Wi18`)]
+
+
+coal20 <- data.table(`C20`=numeric())
+coal20 <-coal20[, .(`C20` = ifelse(plotDT$year == "2020" , plotDT$Coal, NA ))]
+coal20 <-coal20[!is.na(coal20$`C20`)]
+
+coal19 <- data.table(`C19`=numeric())
+coal19 <-coal19[, .(`C19` = ifelse(plotDT$year == "2019" , plotDT$Coal, NA ))]
+coal19 <-coal19[!is.na(coal19$`C19`)]
+
+coal18 <- data.table(`C18`=numeric())
+coal18 <-coal18[, .(`C18` = ifelse(plotDT$year == "2018" , plotDT$Coal, NA ))]
+coal18 <-coal18[!is.na(coal18$`C18`)]
+
+
+wood20 <- data.table(`Wo20`=numeric())
+wood20 <-wood20[, .(`Wo20` = ifelse(plotDT$year == "2020" , plotDT$Wood, NA ))]
+wood20 <-wood20[!is.na(wood20$`Wo20`)]
+
+wood19 <- data.table(`Wo19`=numeric())
+wood19 <-wood19[, .(`Wo19` = ifelse(plotDT$year == "2019" , plotDT$Wood, NA ))]
+wood19 <-wood19[!is.na(wood19$`Wo19`)]
+
+wood18 <- data.table(`Wo18`=numeric())
+wood18 <-wood18[, .(`Wo18` = ifelse(plotDT$year == "2018" , plotDT$Wood, NA ))]
+wood18 <-wood18[!is.na(wood18$`Wo18`)]
+
+diesel20 <- data.table(`D20`=numeric())
+diesel20 <-diesel20[, .(`D20` = ifelse(plotDT$year == "2020" , plotDT$Diesel, NA ))]
+diesel20 <-diesel20[!is.na(diesel20$`D20`)]
+
+diesel19 <- data.table(`D19`=numeric())
+diesel19 <-diesel19[, .(`D19` = ifelse(plotDT$year == "2019" , plotDT$Diesel, NA ))]
+diesel19 <-diesel19[!is.na(diesel19$`D19`)]
+
+diesel18 <- data.table(`D18`=numeric())
+diesel18 <-diesel18[, .(`D18` = ifelse(plotDT$year == "2018" , plotDT$Diesel, NA ))]
+diesel18 <-diesel18[!is.na(diesel18$`D18`)]
+
+# Putting the DTs togetehr
+
+
+data1 <- data.table()
+
+data1 <- data1[, `hydro20` := hydro20$H20]
+data1 <- data1[, `hydro19` := hydro19$`H19`]
+data1 <- data1[, `hydro18` := hydro18$`H18`]
+
+data1 <- data1[, `geo20` := geo20$`Ge20`]
+data1 <- data1[, `geo19` := geo19$`Ge19`]
+data1 <- data1[, `geo18` := geo18$`Ge18`]
+
+data1 <- data1[, `gas20` := gas20$`Ga20`]
+data1 <- data1[, `gas19` := gas19$`Ga19`]
+data1 <- data1[, `gas18` := gas18$`Ga18`]
+
+data1 <- data1[, `wind20` := wind20$`Wi20`]
+data1 <- data1[, `wind19` := wind19$`Wi19`]
+data1 <- data1[, `wind18` := wind18$`Wi18`]
+
+data1 <- data1[, `coal20` := coal20$`C20`]
+data1 <- data1[, `coal19` := coal19$`C19`]
+data1 <- data1[, `coal18` := coal18$`C18`]
+
+data1 <- data1[, `wood20` := wood20$`Wo20`]
+data1 <- data1[, `wood19` := wood19$`Wo19`]
+data1 <- data1[, `wood18` := wood18$`Wo18`]
+
+data1 <- data1[, `diesel20` := diesel20$`D20`]
+data1 <- data1[, `diesel19` := diesel19$`D19`]
+data1 <- data1[, `diesel18` := diesel18$`D18`]
+
+
+
+data1 <- data1[, date := selectyearDT$date]
+data1 <- data1[, dateTime := selectyearDT$rDateTimeNZT]
+data1 <- data1[, rMonth := selectyearDT$rMonth]
+
+```
+
+This also breaks?
+
+```{r coalplot, eval = FALSE, fig.cap="Total generation for coal by year and month"}
+
+plotDT <- data1[date >= "2020-03-10"&
+                   date <= "2020-03-30"]
+
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+   geom_line(aes(y=`hydro20`, colour = "hydro20"))+
+   geom_line(aes(y=`hydro19`, colour = "hydro19"))+ 
+   geom_line(aes(y=`hydro18`, colour = "hydro18"))+
+  theme(legend.position="bottom")+
+  scale_color_manual(legend_title, values = c(`hydro20`='#3498DB',`hydro19`='#229954', `hydro18`='#CA6F1E'))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for March', y='Power (MW)')+
+ # facet_grid(date ~ .) +
+  scale_x_datetime(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+
+#myPlotTot
+
+#Perhaps it is easier if we gather?
+
+
+
+summaryDT = melt(data1, id.vars = c("date", "dateTime", "rMonth"),
+                measure.vars = c("hydro20", "hydro19", "hydro18",
+                                 "geo20", "geo19", "geo18",
+                                 "gas20", "gas19", "gas18",
+                                 "wind20", "wind19","wind18",
+                                 "coal20", "coal19", "coal18",
+                                 "wood20", "wood19", "wood18",
+                                 "diesel20","diesel19", "diesel20"))
+
+summaryDT <- summaryDT[, Fuel_Code := NA]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="hydro20"|variable=="hydro19"|variable=="hydro18", "Hydro", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="geo20"|variable=="geo19"|variable=="geo18", "Geo", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="gas20"|variable=="gas19"|variable=="gas18", "Gas", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="wind20"|variable=="wind19"|variable=="wind18", "Wind", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="coal20"|variable=="coal19"|variable=="coal18", "Coal", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="wood20"|variable=="wood19"|variable=="wood18", "Wood", Fuel_Code)]
+summaryDT <- summaryDT[, Fuel_Code:= ifelse(variable=="diesel20"|variable=="diesel19"|variable=="diesel18", "Diesel", Fuel_Code)]
+
+
+summaryDT <- setnames(summaryDT, old=c("variable"), new=c("year"))
+
+
+plotDT <- summaryDT[Fuel_Code=="Coal"]
+
+legend_title <- "Year"
+myPlotTot <- ggplot2::ggplot(plotDT, aes(x= dateTime)) +
+  #geom_smooth(aes(y=`2020`, colour = "2020"))+
+  #geom_smooth(aes(y=`2019`, colour = "2019"))+
+  #geom_smooth(aes(y=`2018`, colour = "2018"))+
+   geom_line(aes(y=`value`, colour=`year`))+
+  theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for February', y='Power (MW)')+
+  theme(legend.position="bottom")+
+ facet_grid(vars(Fuel_Code), vars(rMonth), scales = "free")+
+ scale_color_manual(legend_title, values = c("coal20"='#3498DB',"coal19"='#229954', "coal18"='#CA6F1E', labels =c("a", "b", "c")))+
+ theme(axis.text.x = element_text(colour = "black"),
+        axis.text.y = element_text(colour ="black"))+
+  labs(x='Extracted days for March', y='Power (MW)')+
+  scale_x_datetime(date_breaks = '3 days',
+               minor_breaks = 'day',
+              # date_labels = '%b %a')+
+               date_labels  ='%n %a')
+  #limits = as.Date(c('2020-01-08','2020-01-13')))
+  #scale_y_continuous( limits = c(3014,5866))
+myPlotTot
+
+
+```
+
+# Experiments with openair
+
+[openair](https://davidcarslaw.github.io/openair/) is an R package designed for air quality analysis but it has some useful plots that we can make use of.
+
+For example, Figure \@ref(fig:TheilSenGWPlot) uses the openair `TheilSen()` function [@openair] to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by weekdays and weekend days. These plots show that there has been a steady decline in generation (and thus demand) over the period.
+
+> currently fails as openair needs latticeExtra which needs R (≥ 3.6.0) 
+
+```{r TheilSenGWPlot, eval=FALSE, fig.cap=paste0("Theil-Sen plot of mean half-hourly generation per month since ", min(allGridDT$rDateTimeNZTUTC))}
+
+# currently fails on Uni Otago RStudio server as openair needs latticeExtra which needs R (≥ 3.6.0) 
+# https://cran.r-project.org/web/packages/latticeExtra/index.html
+
+library(openair)
+allGridDT[, rDateTimeNZTNZT := lubridate::as_datetime(rDateTimeNZTOrig)]
+allGridDT[, rDateTimeNZTNZT := lubridate::force_tz(tzone = "Pacific/Auckland")] # just in case we're doing this elsewhere
+
+plotDT <- allGridDT[, .(sumMWh = sum(kWh)/1000), keyby = .(rDateTimeNZTNZT)]
+plotDT[, date := as.Date(rDateTimeNZTOrig)]  # set date to date for this one
+openair::TheilSen(plotDT, "sumMWh", 
+                  ylab = "MWh", deseason = TRUE, 
+                  type = c("weekend"), layout = c(1,2))
+t <- plotDT[, .("Mean MWh" = mean(sumMWh),
+                   "N obs" = .N), keyby = .(year)]
+kableExtra::kable(t, caption = "Mean half-hourly MWh by year") %>%
+  kable_styling()
+```
+
+# Annexes
+
+## Wholesale generation data ('grid')
+
+```{r skimGrid}
+skimr::skim(allGridDT)
+```
+
+## Embedded generation data ('nongrid')
+
+```{r skimNonGrid}
+skimr::skim(allEmbeddedDT)
+```
+
+## Conversion factors
+
+## Heat pump imact simple simulation
+
+Create an animation of a simulation of flattening peak. 
+
+We use GREEN Grid heat pump data to calculate the mean kW per half hour.
+```{r loadHeatPump}
+hpDT <- data.table::fread("/mnt/SERG_data/NZ_GREENGrid/safe/1min/dataExtracts/Heat_Pump_2015-04-01_2016-03-31_observations.csv.gz")
+hpDT[, r_dateTimeLubridated := lubridate::as_datetime(r_dateTime)]
+hpDT[, rDateTimeNZT := lubridate::with_tz(r_dateTimeLubridated, tzone = "Pacific/Auckland")]
+
+hpDT[, obsDate := as.Date(rDateTimeNZT)]
+hpDT <- addSeason(hpDT, h = "S", date = "obsDate")
+hpDT[, year := lubridate::year(rDateTimeNZT)]
+hpDT[, hms:= hms::as_hms(rDateTimeNZT)]
+hpDT[, halfHour:= hms::trunc_hms(hms, 30*60)]
+
+h <- head(hpDT[,.(r_dateTime, r_dateTimeLubridated, rDateTimeNZT, halfHour)])
+h
+
+#uniqueN(hpDT$halfHour)
+hpDT[, .(minTime = min(hms),
+         maxTime = max(hms)),
+     keyby = .(halfHour)]
+
+
+baselineDT <- hpDT[, .(meankW = mean(powerW/1000)), keyby = .(year, season, halfHour)]
+
+
+# check plot
+ggplot2::ggplot(baselineDT[year == 2015], aes(x = halfHour, y = meankW, colour = season)) +
+  geom_line() +
+  facet_grid(year ~ .) +
+  labs(x = "Time",
+       y = "Mean kW",
+       caption = "Data: NZ GREEN Grid households")
+```
+
+which suggests ~0.6 kW power in the morning peak and 0.5 in the evening. Perhaps people light woodburners in the evening?
+
+BRANZ HCS 2015:
+ * 40% owner-occupiers have HPs
+ * 25% rentals
+
+NZ Census:
+ * 64% X m owner-occupied -> 1,228,500
+ * 32% Y m rentals -> 609,700
+ * 4% (?) rent-free -> 65,200 (we treat these as owned)
+
+https://www.stats.govt.nz/information-releases/dwelling-and-household-estimates-september-2019-quarter
+
+
+First we inflate it by adding 1 kW heat pump per house - which we assume needs 0.5 kWh per half hour. For 2 million households. That +1 GWh :-)
+
+```{r kWhWinterSimulation}
+nOwner <- 1228500 + 65200 # owned + rent free
+nRenter <- 609700 # rented
+hpsOwner <- 0.4 * nOwner
+hpsRenter <- 0.25 * nRenter
+
+
+
+baselineDT[, hpCurrentMeanMW := ((meankW * hpsOwner) + (meankW * hpsRenter))/1000]
+baselineDT[, hpCurrentMeanMWh := hpCurrentMeanMW/2]
+
+# model to 100%
+newHPsOwner <- nOwner * (1-0.4) # 40% already have them
+newHPsRenter <- nRenter * (1-0.25) # 40% already have them
+
+baselineDT[, hpFutureMeanMW := ((meankW * nOwner) + (meankW * nRenter))/1000]
+baselineDT[, hpFutureMeanMWh := hpFutureMeanMW/2]
+
+p <- ggplot2::ggplot(baselineDT[year == 2015], aes(x = halfHour, y = hpCurrentMeanMWh, colour = season)) +
+  geom_step() +
+  theme(legend.position="bottom") +
+  scale_color_discrete(name="Season") +
+  labs(x = "Time",
+       y = "Mean MWh (heat pumps)",
+       caption = "Year: 2019\nData source: NZ GREEN Grid")
+
+p
+```
+
+```{r buildHPModel}
+MWhDT[, halfHour := hms::trunc_hms(hms, 30*60)]
+gridDT <- MWhDT[, .(meanMWh = mean(MWh)), keyby = .(halfHour, season, year)]
+
+ggplot2::ggplot(gridDT[year == 2017], aes(x = halfHour, y = meanMWh, colour = season)) +
+  geom_line() +
+  facet_grid(year ~ .) +
+  labs(x = "Time",
+       y = "MWh (total)",
+       caption = "Data: NZ Electricity Authority")
+
+# just take winter
+winter2017DT <- gridDT[year == 2017 & season == "Winter"]
+winter2017DT[, model := "2017 generation"]
+setkey(winter2017DT, halfHour, season, year)
+
+winterHpCurrentDT <- baselineDT[year == 2015 & season == "Winter", .(year, meanMWh = hpCurrentMeanMWh, 
+                                                                     halfHour, season)]
+winterHpCurrentDT[, year := 2017] # fix
+winterHpCurrentDT[, model := "Modelled Heat pump (2017)"]
+
+winterHpFutureDT <- baselineDT[year == 2015 & season == "Winter", .(year, hpFutureMeanMWh, 
+                                                                     halfHour, season)]
+winterHpFutureDT[, year := 2017] # fix
+setkey(winterHpFutureDT, halfHour, season, year)
+winterHpFutureDT <- winterHpFutureDT[winter2017DT]
+winterHpFutureDT[, meanMWh := hpFutureMeanMWh + meanMWh]
+winterHpFutureDT[, model := "100% heat pump"]
+
+modelDT <- rbind(winter2017DT[, .(year, halfHour, season, meanMWh, model)],
+                 winterHpCurrentDT[, .(year, halfHour, season, meanMWh, model)],
+                 winterHpFutureDT[, .(year, halfHour, season, meanMWh, model)])
+                 
+ggplot2::ggplot(modelDT[year == 2017], aes(x = halfHour, y = meanMWh/1000, colour = model)) +
+  geom_line() +
+  facet_grid(year ~ season) +
+  scale_color_discrete(name="Model") +
+  labs(x = "Time",
+       y = "GWh (total)",
+       caption = "Data: NZ Electricity Authority, NZ GREEN Grid households, \nNZ Census 2018, BRANZ HCS 2015")
+
+```
+
+
+```{r flattenTheCurve}
+
+leveled20pcDT <- gridDT[year == 2017 & season == "Winter"]
+overallMeanMWh <- mean(leveled20pcDT$meanMWh)
+leveled20pcDT[, diff := meanMWh - overallMeanMWh]
+leveled20pcDT[, levelled := (0.2 * -1 * diff) + meanMWh]
+leveled20pcDT[, meanMWh := levelled]
+leveled20pcDT[, model := "20% flatten"]
+
+leveled40pcDT <- gridDT[year == 2017 & season == "Winter"]
+leveled40pcDT[, diff := meanMWh - overallMeanMWh]
+leveled40pcDT[, meanMWh := (0.4 * -1 * diff) + meanMWh]
+leveled40pcDT[, model := "40% flatten"]
+
+leveled60pcDT <- gridDT[year == 2017 & season == "Winter"]
+leveled60pcDT[, diff := meanMWh - overallMeanMWh]
+leveled60pcDT[, meanMWh := (0.6 * -1 * diff) + meanMWh]
+leveled60pcDT[, model := "60% flatten"]
+
+leveled80pcDT <- gridDT[year == 2017 & season == "Winter"]
+leveled80pcDT[, diff := meanMWh - overallMeanMWh]
+leveled80pcDT[, meanMWh := (0.8 * -1 * diff) + meanMWh]
+leveled80pcDT[, model := "80% flatten"]
+
+# p <- ggplot(leveledDT, aes(x = halfHour)) + 
+#   geom_line(aes(y = levelled), colour = "red") +
+#   geom_line(aes(y = diff), colour = "blue") +
+#   geom_line(aes(y = meanMWh))
+
+modelDT <- rbind(winter2017DT[, .(year, halfHour, season, meanMWh, model)],
+                 winterHpCurrentDT[, .(year, halfHour, season, meanMWh, model)],
+                 winterHpFutureDT[, .(year, halfHour, season, meanMWh, model)], 
+                 leveled20pcDT[, .(year, halfHour, season, meanMWh, model)], 
+                 leveled40pcDT[, .(year, halfHour, season, meanMWh, model)], 
+                 leveled60pcDT[, .(year, halfHour, season, meanMWh, model)], 
+                 leveled80pcDT[, .(year, halfHour, season, meanMWh, model)])
+
+modelDT[, model := factor(model, levels = c("2017 generation",
+                                              "100% heat pump",
+                                              "20% flatten", 
+                                              "40% flatten", 
+                                              "60% flatten", 
+                                              "80% flatten")
+                           )
+        ]
+```
+
+```{r flattenTheCurvePlots}
+yMax <- max(modelDT$meanMWh/1000) # GWh
+myCap <- "Data: NZ Electricity Authority, NZ GREEN Grid households, \nNZ Census 2018, BRANZ HCS 2015"
+
+drawPlot <- function(dt){
+  p <- ggplot2::ggplot(dt, 
+                  aes(x = halfHour, y = meanMWh/1000,  colour = model)) +
+  geom_line() +
+  scale_color_discrete(name="Ambition") +
+  # theme(legend.position="bottom")
+  ylim(1.5,yMax) +
+  labs(x = "Time",
+       y = "Demand")
+  p <- p + theme_dark() +
+    theme(plot.background = element_rect(fill = "black"),
+          legend.background = element_rect(fill = "darkGrey"))
+  return(p)
+}
+
+plotDT <- modelDT[year == 2017 & !(model %like% "Modelled") & 
+                               !is.na(model)]
+dt <- plotDT[model %like% "gen"]
+p1 <- drawPlot(dt)
+p1
+ggplot2::ggsave(filename = "flattenTheCurve_1.png", 
+                     path = here::here("docs", "nz", "plots"))
+
+p2 <- drawPlot(plotDT[model %like% "gen" | 
+                               model %like% "100%"])
+p2
+ggplot2::ggsave(filename = "flattenTheCurve_2.png", 
+                     path = here::here("docs", "nz", "plots"))
+
+p3 <- drawPlot(plotDT[model %like% "gen" | 
+                               model %like% "100%" | 
+                               model %like% "20%"])
+p3
+ggplot2::ggsave(filename = "flattenTheCurve_3.png", 
+                     path = here::here("docs", "nz", "plots"))
+
+p4 <- drawPlot(plotDT[model %like% "gen" | 
+                               model %like% "100%" | 
+                               model %like% "20%" | 
+                               model %like% "40%"])
+p4
+ggplot2::ggsave(filename = "flattenTheCurve_4.png", 
+                     path = here::here("docs", "nz", "plots"))
+
+p5 <- drawPlot(plotDT[model %like% "gen" | 
+                               model %like% "100%" | 
+                               model %like% "20%" | 
+                               model %like% "40%" | 
+                               model %like% "60%" ])
+p5
+ggplot2::ggsave(filename = "flattenTheCurve_5.png", 
+                     path = here::here("docs", "nz", "plots"))
+
+p6 <- drawPlot(plotDT[model %like% "gen" | 
+                               model %like% "100%" | 
+                               model %like% "20%" | 
+                               model %like% "40%" | 
+                               model %like% "60%" | 
+                               model %like% "80%"])
+p6
+ggplot2::ggsave(filename = "flattenTheCurve_6.png", 
+                     path = here::here("docs", "nz", "plots"))
+```
+
+
+# Runtime
+
+```{r check runtime, include=FALSE}
+t <- proc.time() - startTime
+elapsed <- t[[3]]
+```
+
+Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` minutes) using [knitr](https://cran.r-project.org/package=knitr) in [RStudio](http://www.rstudio.com) with `r R.version.string` running on `r R.version$platform`.
+
+# R environment
+
+## R packages used
+
+ * base R [@baseR]
+ * bookdown [@bookdown]
+ * data.table [@data.table]
+ * ggplot2 [@ggplot2]
+ * kableExtra [@kableExtra]
+ * knitr [@knitr]
+ * lubridate [@lubridate]
+ * rmarkdown [@rmarkdown]
+
+## Session info
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+
+# References

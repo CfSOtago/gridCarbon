@@ -19,6 +19,9 @@ gcParams$nodename <- gcParams$info[[4]]
 gcParams$login <- gcParams$info[[6]]
 gcParams$user <- gcParams$info[[7]]
 
+gcParams$nzData <- "No idea, you need to edit env.R so I can find it!"
+gcParams$ukData <- "No idea, you need to edit env.R so I can find it!"
+
 # > Set data path ----
 if((gcParams$user == "dataknut" | gcParams$user == "carsten" ) & 
    gcParams$sysname == "Linux"){ # Otago CS RStudio server
@@ -61,6 +64,7 @@ if(gcParams$user == "ba1e12" & gcParams$sysname == "Linux" & gcParams$nodename =
   gcParams$nzData <- path.expand("/mnt/SERG_data/NZ_EA_EMI")
   gcParams$nzGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Generation_Data/"))
   gcParams$nzNonGridDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_Embedded_Generation_Data/"))
+  gcParams$nzGxpDataLoc <- path.expand(paste0(gcParams$nzData, "/EA_GXP_Data/"))
 }
 
 # > Misc data ----

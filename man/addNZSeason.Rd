@@ -17,6 +17,7 @@ addNZSeason(dt, date)
 \seealso{
 Other utils: 
 \code{\link{addLockdownRect}()},
+\code{\link{addSeason}()},
 \code{\link{alignDates}()},
 \code{\link{getDuration}()},
 \code{\link{gzipFile}()},
@@ -29,10 +30,13 @@ Other utils:
 Other NZ: 
 \code{\link{cleanNZEmbEA}()},
 \code{\link{cleanNZGridEA}()},
+\code{\link{cleanNZGxpEA}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZEmbMeta}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
+\code{\link{getNZGxpEA}()},
+\code{\link{getNZGxpMeta}()},
 \code{\link{makeNZYearlyData}()}
 }
 \author{

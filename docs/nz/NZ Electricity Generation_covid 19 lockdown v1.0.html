@@ -1,0 +1,3512 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Ben Anderson, Carsten Dortans and Marilette Lotte" />
+
+
+<title>NZ Electricity Generation</title>
+
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="NZ Electricity Generation_covid 19 lockdown v1.0_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="NZ Electricity Generation_covid 19 lockdown v1.0_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/navigation-1.1/tabsets.js"></script>
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/navigation-1.1/codefolding.js"></script>
+<link href="NZ Electricity Generation_covid 19 lockdown v1.0_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/highlightjs-9.12.0/highlight.js"></script>
+<script src="NZ Electricity Generation_covid 19 lockdown v1.0_files/kePrint-0.0.1/kePrint.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">NZ Electricity Generation</h1>
+<h3 class="subtitle">covid 19 lockdown v1.0</h3>
+<h4 class="author">Ben Anderson, Carsten Dortans and Marilette Lotte</h4>
+<h4 class="date">Last run at: 2020-06-24 14:04:33</h4>
+
+</div>
+
+
+
+<div id="about" class="section level1">
+<h1><span class="header-section-number">1</span> About</h1>
+<div id="citation" class="section level2">
+<h2><span class="header-section-number">1.1</span> Citation</h2>
+<p>If you wish to use any of the material from this report please cite as:</p>
+<ul>
+<li>Ben Anderson, Carsten Dortans and Marilette Lotte (2020) <em>NZ Electricity Generation: covid 19 lockdown v1.0</em>, <a href="http://www.otago.ac.nz/centre-sustainability/">Centre for Sustainability</a>, University of Otago: Dunedin.</li>
+</ul>
+<p>This work is (c) 2020 the authors. Usage rights are specified in the License section (<a href="#license">1.4</a>).</p>
+</div>
+<div id="report-circulation" class="section level2">
+<h2><span class="header-section-number">1.2</span> Report circulation</h2>
+<ul>
+<li>Public – this report is intended for publication following EECA approval.</li>
+</ul>
+</div>
+<div id="code" class="section level2">
+<h2><span class="header-section-number">1.3</span> Code</h2>
+<p>All code used to create this report is available from:</p>
+<ul>
+<li><a href="https://github.com/CfSOtago/gridCarbon" class="uri">https://github.com/CfSOtago/gridCarbon</a></li>
+</ul>
+</div>
+<div id="license" class="section level2">
+<h2><span class="header-section-number">1.4</span> License</h2>
+<p>This work is made available under the Creative Commons <a href="https://creativecommons.org/licenses/by-sa/4.0/">Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) License</a>.</p>
+<p>This means you are free to:</p>
+<ul>
+<li><em>Share</em> — copy and redistribute the material in any medium or format</li>
+<li><em>Adapt</em> — remix, transform, and build upon the material for any purpose, even commercially.</li>
+</ul>
+<p>Under the following terms:</p>
+<ul>
+<li><em>Attribution</em> — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</li>
+<li><em>ShareAlike</em> — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.</li>
+<li><em>No additional restrictions</em> — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.</li>
+</ul>
+<p><strong>Notices:</strong></p>
+<ul>
+<li>You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.</li>
+<li>No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.</li>
+</ul>
+<p>For the avoidance of doubt and explanation of terms please refer to the full <a href="https://creativecommons.org/licenses/by-sa/4.0/">license notice</a> and <a href="https://creativecommons.org/licenses/by-sa/4.0/legalcode">legal code</a>.</p>
+</div>
+<div id="history" class="section level2">
+<h2><span class="header-section-number">1.5</span> History</h2>
+<p>You may not be reading the most recent version of this report. Please check:</p>
+<ul>
+<li>the github <a href="https://github.com/CfSOtago/gridCarbon">R code repository</a>;</li>
+<li>our <a href="https://github.com/CfSOtago/gridCarbon/issues">issues list</a> for any unfixed problems;</li>
+<li>our <a href="https://cfsotago.github.io/gridCarbon/">project publictions</a>;</li>
+</ul>
+<p>We do not 'support' the code but if you notice a problem please check the <a href="https://github.com/CfSOtago/gridCarbon/issues">issues</a> on our <a href="https://github.com/CfSOtago/gridCarbon">repo</a> and if it doesn't already exist, please open a new one. * this <a href="https://github.com/CfSOtago/gridCarbon/commits/master/dataAnalysis/">report's edit history</a></p>
+</div>
+<div id="support" class="section level2">
+<h2><span class="header-section-number">1.6</span> Support</h2>
+<p>This work was supported by:</p>
+<ul>
+<li>The <a href="https://www.otago.ac.nz/">University of Otago</a>;</li>
+<li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton's Sustainable Energy Research Group (2019-2020).</li>
+<li>The European Union via <a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a>, a Marie Skłodowska-Curie <a href="https://ec.europa.eu/research/mariecurieactions/actions/individual-fellowships_en">Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Sustainable Energy Research Group</a> (2019-2020) (Anderson);</li>
+<li>The Uniersity of Otago via a Centre for Sustainability Summer Scholarship (Lotte) and PhD Studentship (Dortans)</li>
+</ul>
+
+</div>
+</div>
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">2</span> Introduction</h1>
+<p>Building on <span class="citation">(Khan, Jack, and Stephenson 2018)</span>, we are interested in GHG emissions from the NZ electricity generation over time. We are especially interested in how this might change during the NZ covid-19 lockdown period (2020-03-24 to 2020-06-24).</p>
+<p>We use two different GHG emissions indicators:</p>
+<ul>
+<li>% of total generation in a halfhour which was 'low emissions' where this is defined as wind + solar + hydro</li>
+<li>Calculated CO2e emissions per half hour (not yet implemented)</li>
+</ul>
+</div>
+<div id="data" class="section level1">
+<h1><span class="header-section-number">3</span> Data</h1>
+<div id="wholesale-generation-data" class="section level2">
+<h2><span class="header-section-number">3.1</span> Wholesale generation data</h2>
+<p>Essentially 'grid' generation from major power stations of various kinds. Data downloaded from <code>https://www.emi.ea.govt.nz/Wholesale/Datasets/Generation/Generation_MD/</code> and pre-processed.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:testGrid">Table 3.1: </span>Grid gen data (first 6 rows)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Site_Code
+</th>
+<th style="text-align:left;">
+POC_Code
+</th>
+<th style="text-align:left;">
+Nwk_Code
+</th>
+<th style="text-align:left;">
+Gen_Code
+</th>
+<th style="text-align:left;">
+Fuel_Code
+</th>
+<th style="text-align:left;">
+Tech_Code
+</th>
+<th style="text-align:left;">
+Trading_date
+</th>
+<th style="text-align:left;">
+Time_Period
+</th>
+<th style="text-align:right;">
+kWh
+</th>
+<th style="text-align:left;">
+strTime
+</th>
+<th style="text-align:left;">
+rTime
+</th>
+<th style="text-align:left;">
+rDate
+</th>
+<th style="text-align:left;">
+rDateTime
+</th>
+<th style="text-align:right;">
+month
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:left;">
+rDateTimeOrig
+</th>
+<th style="text-align:left;">
+rDateTimeNZT
+</th>
+<th style="text-align:left;">
+rMonth
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+2017-01-01
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+11510
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-01
+</td>
+<td style="text-align:left;">
+2017-01-01 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-01 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+2017-01-02
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+11570
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-02
+</td>
+<td style="text-align:left;">
+2017-01-02 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-02T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-02 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+2017-01-03
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+11090
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-03
+</td>
+<td style="text-align:left;">
+2017-01-03 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-03T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-03 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+2017-01-04
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+13970
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-04
+</td>
+<td style="text-align:left;">
+2017-01-04 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-04T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-04 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+2017-01-05
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+19680
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-05
+</td>
+<td style="text-align:left;">
+2017-01-05 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-05T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-05 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ARA
+</td>
+<td style="text-align:left;">
+ARA2201
+</td>
+<td style="text-align:left;">
+MRPL
+</td>
+<td style="text-align:left;">
+aratiatia
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:left;">
+2017-01-06
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+27190
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-06
+</td>
+<td style="text-align:left;">
+2017-01-06 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-06T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-06 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+</tbody>
+</table>
+<pre><code>##    Fuel_Code         sd
+## 1:      Coal  74.355197
+## 2:    Diesel   2.304637
+## 3:       Gas 112.835965
+## 4:       Geo  26.775132
+## 5:     Hydro 312.406184
+## 6:      Wind  53.371768
+## 7:      Wood   5.573086</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/testFuels-1.png" width="672" /><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/testFuels-2.png" width="672" /></p>
+</div>
+<div id="embedded-generation-data" class="section level2">
+<h2><span class="header-section-number">3.2</span> Embedded generation data</h2>
+<p>Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points (GXP). Data downloaded from <code>https://www.emi.ea.govt.nz/Wholesale/Datasets/Metered_data/Embedded_generation</code> and pre-processed.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:headEmbedded">Table 3.2: </span>Embedded gen data (first 6 rows)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+POC
+</th>
+<th style="text-align:left;">
+NWK_Code
+</th>
+<th style="text-align:left;">
+Participant_Code
+</th>
+<th style="text-align:left;">
+Loss_Code
+</th>
+<th style="text-align:left;">
+Flow_Direction
+</th>
+<th style="text-align:left;">
+Trading_date
+</th>
+<th style="text-align:left;">
+Time_Period
+</th>
+<th style="text-align:right;">
+kWh
+</th>
+<th style="text-align:left;">
+strTime
+</th>
+<th style="text-align:left;">
+rTime
+</th>
+<th style="text-align:left;">
+rDate
+</th>
+<th style="text-align:left;">
+rDateTime
+</th>
+<th style="text-align:right;">
+month
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:left;">
+rDateTimeOrig
+</th>
+<th style="text-align:left;">
+rDateTimeNZT
+</th>
+<th style="text-align:left;">
+rMonth
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ASB0661
+</td>
+<td style="text-align:left;">
+EASH
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+H01
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:left;">
+01/01/2017
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-01
+</td>
+<td style="text-align:left;">
+2017-01-01 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-01T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-01 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ASB0661
+</td>
+<td style="text-align:left;">
+EASH
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+H01
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:left;">
+02/01/2017
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-02
+</td>
+<td style="text-align:left;">
+2017-01-02 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-02T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-02 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ASB0661
+</td>
+<td style="text-align:left;">
+EASH
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+H01
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:left;">
+03/01/2017
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-03
+</td>
+<td style="text-align:left;">
+2017-01-03 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-03T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-03 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ASB0661
+</td>
+<td style="text-align:left;">
+EASH
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+H01
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:left;">
+04/01/2017
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-04
+</td>
+<td style="text-align:left;">
+2017-01-04 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-04T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-04 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ASB0661
+</td>
+<td style="text-align:left;">
+EASH
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+H01
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:left;">
+05/01/2017
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-05
+</td>
+<td style="text-align:left;">
+2017-01-05 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-05T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-05 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ASB0661
+</td>
+<td style="text-align:left;">
+EASH
+</td>
+<td style="text-align:left;">
+TRUS
+</td>
+<td style="text-align:left;">
+H01
+</td>
+<td style="text-align:left;">
+I
+</td>
+<td style="text-align:left;">
+06/01/2017
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+0:15:00
+</td>
+<td style="text-align:left;">
+00:15:00
+</td>
+<td style="text-align:left;">
+2017-01-06
+</td>
+<td style="text-align:left;">
+2017-01-06 00:15:00
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+2017-01-06T00:15:00Z
+</td>
+<td style="text-align:left;">
+2017-01-06 00:15:00
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+</tr>
+</tbody>
+</table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:testEmbedded">Table 3.3: </span>Mean kWh by flow direction
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+sumkWh_I
+</th>
+<th style="text-align:right;">
+sumkWh_X
+</th>
+<th style="text-align:right;">
+nObs_I
+</th>
+<th style="text-align:right;">
+nObs_X
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+5058591128
+</td>
+<td style="text-align:right;">
+96830431
+</td>
+<td style="text-align:right;">
+406372
+</td>
+<td style="text-align:right;">
+1225680
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+5069984029
+</td>
+<td style="text-align:right;">
+121534268
+</td>
+<td style="text-align:right;">
+527004
+</td>
+<td style="text-align:right;">
+1577056
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+5208373429
+</td>
+<td style="text-align:right;">
+105300995
+</td>
+<td style="text-align:right;">
+437276
+</td>
+<td style="text-align:right;">
+1394172
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+1930154103
+</td>
+<td style="text-align:right;">
+46174154
+</td>
+<td style="text-align:right;">
+181824
+</td>
+<td style="text-align:right;">
+619872
+</td>
+</tr>
+</tbody>
+</table>
+<p>Not entirely sure what these codes mean yet. Limited <a href="https://forum.emi.ea.govt.nz/thread/grid-export-and-embedded-generation-data">guidance</a> available? TBC</p>
+<blockquote>
+<p>For now embedded generation data is <em>not</em> included in the following analysis.</p>
+</blockquote>
+</div>
+</div>
+<div id="background-trends-and-patterns" class="section level1">
+<h1><span class="header-section-number">4</span> Background trends and patterns</h1>
+<p>Demand profiles by season</p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/kWhBySeason2019-1.png" width="672" /></p>
+<pre><code>## Warning in checkPrep(mydata, vars, type, remove.calm = FALSE): Detected data with Daylight Saving Time,
+## converting to UTC/GMT</code></pre>
+<pre><code>## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;
+## [1] &quot;Taking bootstrap samples. Please wait.&quot;</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/theilSenMWh-1.png" width="672" /></p>
+<pre><code>## png 
+##   2</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:theilSenMWh">Table 4.1: </span>Mean half-hourly GWh by year and peak period - 2020 incomplete
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+Early morning
+</th>
+<th style="text-align:right;">
+Morning peak
+</th>
+<th style="text-align:right;">
+Day time
+</th>
+<th style="text-align:right;">
+Evening peak
+</th>
+<th style="text-align:right;">
+Late evening
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+1.87
+</td>
+<td style="text-align:right;">
+2.58
+</td>
+<td style="text-align:right;">
+2.53
+</td>
+<td style="text-align:right;">
+2.64
+</td>
+<td style="text-align:right;">
+2.32
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+1.86
+</td>
+<td style="text-align:right;">
+2.59
+</td>
+<td style="text-align:right;">
+2.54
+</td>
+<td style="text-align:right;">
+2.65
+</td>
+<td style="text-align:right;">
+2.32
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+1.88
+</td>
+<td style="text-align:right;">
+2.60
+</td>
+<td style="text-align:right;">
+2.55
+</td>
+<td style="text-align:right;">
+2.66
+</td>
+<td style="text-align:right;">
+2.34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:right;">
+1.77
+</td>
+<td style="text-align:right;">
+2.32
+</td>
+<td style="text-align:right;">
+2.40
+</td>
+<td style="text-align:right;">
+2.50
+</td>
+<td style="text-align:right;">
+2.19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="analysis-think-this-section-needs-some-structuresub-headings" class="section level1">
+<h1><span class="header-section-number">5</span> Analysis (think this section needs some structure/sub-headings!)</h1>
+<p>In this section we analyse the current developments in electricity generation during the Covid-19 level four alert. The level four alert came into effect on March 25 2020 at 11.59pm as part of the fight agianst the novel Covid-19 virus. The minimum lockdown period is four weeks, ending on April 28 This period has wide-spread implications across New Zealand's economy and electriicty consumption, amongst other effects such as everyday life in general.</p>
+<p>All non-essential busineeses are closed and staff is asked to work from home. This analysis aims to provide insights on developments in electriicty generation. Essential research questions company this research:</p>
+<ul>
+<li><p>To what extent has electricity generation shown deviation of 'normal' generation patterns during the level four alert?</p></li>
+<li><p>Has the composition of fuel sources supplying electriicty demand in New Zealand changed during the level four alert?</p></li>
+<li><p>Has the level four alert impacted greenhouse-gas emissions associated with electriicty generation?</p></li>
+</ul>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:nobsTable">Table 5.1: </span>Number of observations by fuel
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+nObs
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:right;">
+5808
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Diesel
+</td>
+<td style="text-align:right;">
+5808
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gas
+</td>
+<td style="text-align:right;">
+52272
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Geo
+</td>
+<td style="text-align:right;">
+63888
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hydro
+</td>
+<td style="text-align:right;">
+220128
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Wind
+</td>
+<td style="text-align:right;">
+52272
+</td>
+</tr>
+</tbody>
+</table>
+<p>We extracted electricity generation data from /INSERT DATES/. Table <a href="#tab:nobsTable">5.1</a> shows the number of observations for each fuel type for the aforementioned dates. It becomes clear that Hydro was the most used fuel type, followed by Geothermal, Wind, Gas, Coal, and Diesel.</p>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:lockdowncalc">Table 5.2: </span>Example summary data
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Fuel_Code
+</th>
+<th style="text-align:left;">
+rDateTimeNZT
+</th>
+<th style="text-align:left;">
+Time_Period
+</th>
+<th style="text-align:left;">
+rMonth
+</th>
+<th style="text-align:right;">
+year
+</th>
+<th style="text-align:right;">
+meankWh
+</th>
+<th style="text-align:right;">
+sumkWh
+</th>
+<th style="text-align:right;">
+nObs
+</th>
+<th style="text-align:right;">
+meanMW
+</th>
+<th style="text-align:right;">
+sumMW
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:left;">
+2018-01-01 00:15:00
+</td>
+<td style="text-align:left;">
+TP1
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+102674
+</td>
+<td style="text-align:right;">
+102674
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+205.348
+</td>
+<td style="text-align:right;">
+205.348
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:left;">
+2018-01-01 00:45:00
+</td>
+<td style="text-align:left;">
+TP2
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+90091
+</td>
+<td style="text-align:right;">
+90091
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+180.182
+</td>
+<td style="text-align:right;">
+180.182
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:left;">
+2018-01-01 01:15:00
+</td>
+<td style="text-align:left;">
+TP3
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+85373
+</td>
+<td style="text-align:right;">
+85373
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+170.746
+</td>
+<td style="text-align:right;">
+170.746
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:left;">
+2018-01-01 01:45:00
+</td>
+<td style="text-align:left;">
+TP4
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+84806
+</td>
+<td style="text-align:right;">
+84806
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+169.612
+</td>
+<td style="text-align:right;">
+169.612
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:left;">
+2018-01-01 02:15:00
+</td>
+<td style="text-align:left;">
+TP5
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+63093
+</td>
+<td style="text-align:right;">
+63093
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+126.186
+</td>
+<td style="text-align:right;">
+126.186
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Coal
+</td>
+<td style="text-align:left;">
+2018-01-01 02:45:00
+</td>
+<td style="text-align:left;">
+TP6
+</td>
+<td style="text-align:left;">
+Jan
+</td>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:right;">
+54723
+</td>
+<td style="text-align:right;">
+54723
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+109.446
+</td>
+<td style="text-align:right;">
+109.446
+</td>
+</tr>
+</tbody>
+</table>
+<p>Table <a href="#tab:lockdowncalc">5.2</a> shows exemplary data of our data extraction. In addition, Figure <a href="#fig:plotgeneration1">5.1</a> pictures total generation (this is the sum for each fuel type for all generatinfg plants and all trading periods). Hydro had the highest power output in January and February. Geothermnal was used for base load and an increase in Gas output is viible for the second half of February. Wind intermittently generated while Coal was occasionally integrated. Wood and Diesel did not contribute much in January and February.</p>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<div class="figure"><span id="fig:plotgeneration1"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/plotgeneration1-1.png" alt="Total generation by fuel" width="672" />
+<p class="caption">
+Figure 5.1: Total generation by fuel
+</p>
+</div>
+<p>Figure <a href="#fig:fourmonthsplot">5.2</a> shows total generation for the first four months of 2020. A red box indicates the alert level four period.</p>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<div class="figure"><span id="fig:fourmonthsplot"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/fourmonthsplot-1.png" alt="Four months of total generation for 2020" width="672" />
+<p class="caption">
+Figure 5.2: Four months of total generation for 2020
+</p>
+</div>
+<pre><code>## `geom_smooth()` using method = &#39;gam&#39; and formula &#39;y ~ s(x, bs = &quot;cs&quot;)&#39;</code></pre>
+<p>In order to provide information on how generation changed over time it is helpful to compare it with previous years. Twenty matching weekdays were extracted for January to March for 2020, 2019, and 2018. We would like to make sure that the weekdays really 'match up'. Figure <a href="#fig:checkplot">5.3</a> shows twenty days of extracted data for the three years for March We see that the weekdays match up.</p>
+<div class="figure"><span id="fig:checkplot"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/checkplot-1.png" alt="Twenty days of total generation for March by year" width="672" />
+<p class="caption">
+Figure 5.3: Twenty days of total generation for March by year
+</p>
+</div>
+<p>Figure <a href="#fig:closeupplot">5.4</a> shows a close-up for one day in March for the three years. We see that on this particular Saturdays during the lockdown period the morning peak was shifted towards mid-day. Total generation at morning peak dropped by 11% compared to previous years. Interestingly, the evening peak reached almost the same total generation despite the lockdown but was shifted by one hour.</p>
+<div class="figure"><span id="fig:closeupplot"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/closeupplot-1.png" alt="Total generation over time for the third Saturday in April by year " width="672" />
+<p class="caption">
+Figure 5.4: Total generation over time for the third Saturday in April by year
+</p>
+</div>
+<p>A less distorted view on total generation data is provided in Figure <a href="#fig:dailymeanplot">5.5</a>. Instead of 15-minute granularity data daily means represent ttoal generation. We can see how close the analysed years were togetehr before the lockdowm and as the lockdown starts a large rop in generation occurs.</p>
+<div class="figure"><span id="fig:dailymeanplot"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/dailymeanplot-1.png" alt="Daily mean generation by year for March" width="672" />
+<p class="caption">
+Figure 5.5: Daily mean generation by year for March
+</p>
+</div>
+<p>A mean over 2018 and 2019 data was compared with 2020 in Figure <a href="#fig:dailymeanplot2">5.6</a>. In addition, previous months were considered in this plot as well and show that the variation apparent during the lockdown period is significant between the two reference periods.</p>
+<p>Figure <a href="#fig:dailyperdiffplot">5.7</a> highlights the percentage difference between 2020 and the reference period of 2018-2019. On a daily mean granularity, generation dropped by over 15% during the lockdown period.</p>
+<div class="figure"><span id="fig:dailymeanplot2"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/dailymeanplot2-1.png" alt="Daily mean total generation for 2020 and reference period by month" width="672" />
+<p class="caption">
+Figure 5.6: Daily mean total generation for 2020 and reference period by month
+</p>
+</div>
+<div class="figure"><span id="fig:dailyperdiffplot"></span>
+<img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/dailyperdiffplot-1.png" alt="Percentage difference in daily mean between 2018-2019 and 2020" width="672" />
+<p class="caption">
+Figure 5.7: Percentage difference in daily mean between 2018-2019 and 2020
+</p>
+</div>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/test-1.png" width="672" /></p>
+<p>Seems to break</p>
+<p>This also breaks?</p>
+</div>
+<div id="experiments-with-openair" class="section level1">
+<h1><span class="header-section-number">6</span> Experiments with openair</h1>
+<p><a href="https://davidcarslaw.github.io/openair/">openair</a> is an R package designed for air quality analysis but it has some useful plots that we can make use of.</p>
+<p>For example, Figure <a href="#fig:TheilSenGWPlot"><strong>??</strong></a> uses the openair <code>TheilSen()</code> function <span class="citation">(Carslaw and Ropkins 2012)</span> to create a de-seasoned trend plot for mean monthly half-hourly (i.e. the mean of all half-hourly GW values for each month) generation in GW split by weekdays and weekend days. These plots show that there has been a steady decline in generation (and thus demand) over the period.</p>
+<blockquote>
+<p>currently fails as openair needs latticeExtra which needs R (≥ 3.6.0)</p>
+</blockquote>
+</div>
+<div id="annexes" class="section level1">
+<h1><span class="header-section-number">7</span> Annexes</h1>
+<div id="wholesale-generation-data-grid" class="section level2">
+<h2><span class="header-section-number">7.1</span> Wholesale generation data ('grid')</h2>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+<span id="tab:skimGrid">Table 7.1: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+allGridDT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+4218256
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+difftime
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSIXct
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Site_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+61
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POC_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+61
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nwk_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gen_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+63
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fuel_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tech_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trading_date
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1247
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Time_Period
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+strTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDate
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1247
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeOrig
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+59844
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: difftime</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+900 secs
+</td>
+<td style="text-align:left;">
+85500 secs
+</td>
+<td style="text-align:left;">
+43200 secs
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rMonth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+May: 419616, Mar: 419328, Jan: 418128, Apr: 405216
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+season
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+Aut: 1244160, Sum: 1112736, Win: 936192, Spr: 925168
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+kWh
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+32819.23
+</td>
+<td style="text-align:right;">
+49002.88
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+4577
+</td>
+<td style="text-align:right;">
+16660.82
+</td>
+<td style="text-align:right;">
+42186
+</td>
+<td style="text-align:right;">
+402430
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+month
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.10
+</td>
+<td style="text-align:right;">
+3.46
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+6.00
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+▇▆▅▅▆
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2018.25
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+2018.00
+</td>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:right;">
+2020
+</td>
+<td style="text-align:left;">
+▇▇▁▇▃
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rDateTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2017-01-01 00:15:00
+</td>
+<td style="text-align:left;">
+2020-05-31 23:45:00
+</td>
+<td style="text-align:left;">
+2018-09-18 04:15:00
+</td>
+<td style="text-align:right;">
+59844
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeNZT
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2016-12-31 11:15:00
+</td>
+<td style="text-align:left;">
+2020-05-31 11:45:00
+</td>
+<td style="text-align:left;">
+2018-09-17 16:15:00
+</td>
+<td style="text-align:right;">
+59844
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="embedded-generation-data-nongrid" class="section level2">
+<h2><span class="header-section-number">7.2</span> Embedded generation data ('nongrid')</h2>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+<span id="tab:skimNonGrid">Table 7.2: </span>Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+allEmbeddedDT
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+6369256
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+difftime
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+factor
+</td>
+<td style="text-align:left;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+POSIXct
+</td>
+<td style="text-align:left;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+POC
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+NWK_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Participant_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+41
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Loss_Code
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Flow_Direction
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trading_date
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1247
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Time_Period
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+strTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDate
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1247
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeOrig
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+59844
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: difftime</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+900 secs
+</td>
+<td style="text-align:left;">
+85500 secs
+</td>
+<td style="text-align:left;">
+43200 secs
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+ordered
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:left;">
+top_counts
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rMonth
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+May: 645456, Apr: 615552, Mar: 603936, Jan: 596928
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+kWh
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2769.07
+</td>
+<td style="text-align:right;">
+7231.23
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.02
+</td>
+<td style="text-align:right;">
+13.41
+</td>
+<td style="text-align:right;">
+221.88
+</td>
+<td style="text-align:right;">
+63472.69
+</td>
+<td style="text-align:left;">
+▇▁▁▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+month
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+6.19
+</td>
+<td style="text-align:right;">
+3.46
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3.00
+</td>
+<td style="text-align:right;">
+6.00
+</td>
+<td style="text-align:right;">
+9.00
+</td>
+<td style="text-align:right;">
+12.00
+</td>
+<td style="text-align:left;">
+▇▆▅▅▆
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+year
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+2018.28
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:right;">
+2017.00
+</td>
+<td style="text-align:right;">
+2018.00
+</td>
+<td style="text-align:right;">
+2019.00
+</td>
+<td style="text-align:right;">
+2020.00
+</td>
+<td style="text-align:left;">
+▆▇▁▇▃
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: POSIXct</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:left;">
+min
+</th>
+<th style="text-align:left;">
+max
+</th>
+<th style="text-align:left;">
+median
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+rDateTime
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2017-01-01 00:15:00
+</td>
+<td style="text-align:left;">
+2020-05-31 23:45:00
+</td>
+<td style="text-align:left;">
+2018-10-01 21:45:00
+</td>
+<td style="text-align:right;">
+59844
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+rDateTimeNZT
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2016-12-31 11:15:00
+</td>
+<td style="text-align:left;">
+2020-05-31 11:45:00
+</td>
+<td style="text-align:left;">
+2018-10-01 08:45:00
+</td>
+<td style="text-align:right;">
+59844
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="conversion-factors" class="section level2">
+<h2><span class="header-section-number">7.3</span> Conversion factors</h2>
+</div>
+<div id="heat-pump-imact-simple-simulation" class="section level2">
+<h2><span class="header-section-number">7.4</span> Heat pump imact simple simulation</h2>
+<p>Create an animation of a simulation of flattening peak.</p>
+<p>We use GREEN Grid heat pump data to calculate the mean kW per half hour.</p>
+<pre><code>##              r_dateTime r_dateTimeLubridated        rDateTimeNZT halfHour
+## 1: 2015-04-01T00:00:00Z  2015-04-01 00:00:00 2015-04-01 13:00:00 13:00:00
+## 2: 2015-04-01T00:01:00Z  2015-04-01 00:01:00 2015-04-01 13:01:00 13:00:00
+## 3: 2015-04-01T00:02:00Z  2015-04-01 00:02:00 2015-04-01 13:02:00 13:00:00
+## 4: 2015-04-01T00:03:00Z  2015-04-01 00:03:00 2015-04-01 13:03:00 13:00:00
+## 5: 2015-04-01T00:04:00Z  2015-04-01 00:04:00 2015-04-01 13:04:00 13:00:00
+## 6: 2015-04-01T00:05:00Z  2015-04-01 00:05:00 2015-04-01 13:05:00 13:00:00</code></pre>
+<pre><code>##     halfHour  minTime  maxTime
+##  1: 00:00:00 00:00:00 00:29:00
+##  2: 00:30:00 00:30:00 00:59:00
+##  3: 01:00:00 01:00:00 01:29:00
+##  4: 01:30:00 01:30:00 01:59:00
+##  5: 02:00:00 02:00:00 02:29:00
+##  6: 02:30:00 02:30:00 02:59:00
+##  7: 03:00:00 03:00:00 03:29:00
+##  8: 03:30:00 03:30:00 03:59:00
+##  9: 04:00:00 04:00:00 04:29:00
+## 10: 04:30:00 04:30:00 04:59:00
+## 11: 05:00:00 05:00:00 05:29:00
+## 12: 05:30:00 05:30:00 05:59:00
+## 13: 06:00:00 06:00:00 06:29:00
+## 14: 06:30:00 06:30:00 06:59:00
+## 15: 07:00:00 07:00:00 07:29:00
+## 16: 07:30:00 07:30:00 07:59:00
+## 17: 08:00:00 08:00:00 08:29:00
+## 18: 08:30:00 08:30:00 08:59:00
+## 19: 09:00:00 09:00:00 09:29:00
+## 20: 09:30:00 09:30:00 09:59:00
+## 21: 10:00:00 10:00:00 10:29:00
+## 22: 10:30:00 10:30:00 10:59:00
+## 23: 11:00:00 11:00:00 11:29:00
+## 24: 11:30:00 11:30:00 11:59:00
+## 25: 12:00:00 12:00:00 12:29:00
+## 26: 12:30:00 12:30:00 12:59:00
+## 27: 13:00:00 13:00:00 13:29:00
+## 28: 13:30:00 13:30:00 13:59:00
+## 29: 14:00:00 14:00:00 14:29:00
+## 30: 14:30:00 14:30:00 14:59:00
+## 31: 15:00:00 15:00:00 15:29:00
+## 32: 15:30:00 15:30:00 15:59:00
+## 33: 16:00:00 16:00:00 16:29:00
+## 34: 16:30:00 16:30:00 16:59:00
+## 35: 17:00:00 17:00:00 17:29:00
+## 36: 17:30:00 17:30:00 17:59:00
+## 37: 18:00:00 18:00:00 18:29:00
+## 38: 18:30:00 18:30:00 18:59:00
+## 39: 19:00:00 19:00:00 19:29:00
+## 40: 19:30:00 19:30:00 19:59:00
+## 41: 20:00:00 20:00:00 20:29:00
+## 42: 20:30:00 20:30:00 20:59:00
+## 43: 21:00:00 21:00:00 21:29:00
+## 44: 21:30:00 21:30:00 21:59:00
+## 45: 22:00:00 22:00:00 22:29:00
+## 46: 22:30:00 22:30:00 22:59:00
+## 47: 23:00:00 23:00:00 23:29:00
+## 48: 23:30:00 23:30:00 23:59:00
+##     halfHour  minTime  maxTime</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/loadHeatPump-1.png" width="672" /></p>
+<p>which suggests ~0.6 kW power in the morning peak and 0.5 in the evening. Perhaps people light woodburners in the evening?</p>
+<p>BRANZ HCS 2015: * 40% owner-occupiers have HPs * 25% rentals</p>
+<p>NZ Census: * 64% X m owner-occupied -&gt; 1,228,500 * 32% Y m rentals -&gt; 609,700 * 4% (?) rent-free -&gt; 65,200 (we treat these as owned)</p>
+<p><a href="https://www.stats.govt.nz/information-releases/dwelling-and-household-estimates-september-2019-quarter" class="uri">https://www.stats.govt.nz/information-releases/dwelling-and-household-estimates-september-2019-quarter</a></p>
+<p>First we inflate it by adding 1 kW heat pump per house - which we assume needs 0.5 kWh per half hour. For 2 million households. That +1 GWh :-)</p>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/kWhWinterSimulation-1.png" width="672" /></p>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/buildHPModel-1.png" width="672" /><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/buildHPModel-2.png" width="672" /></p>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/flattenTheCurvePlots-1.png" width="672" /></p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/flattenTheCurvePlots-2.png" width="672" /></p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/flattenTheCurvePlots-3.png" width="672" /></p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/flattenTheCurvePlots-4.png" width="672" /></p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/flattenTheCurvePlots-5.png" width="672" /></p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+<p><img src="NZ%20Electricity%20Generation_covid%2019%20lockdown%20v1.0_files/figure-html/flattenTheCurvePlots-6.png" width="672" /></p>
+<pre><code>## Saving 7 x 5 in image</code></pre>
+</div>
+</div>
+<div id="runtime" class="section level1">
+<h1><span class="header-section-number">8</span> Runtime</h1>
+<p>Analysis completed in 243.4 seconds ( 4.06 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.6.0 (2019-04-26) running on x86_64-redhat-linux-gnu.</p>
+</div>
+<div id="r-environment" class="section level1">
+<h1><span class="header-section-number">9</span> R environment</h1>
+<div id="r-packages-used" class="section level2">
+<h2><span class="header-section-number">9.1</span> R packages used</h2>
+<ul>
+<li>base R <span class="citation">(R Core Team 2016)</span></li>
+<li>bookdown <span class="citation">(Xie 2016a)</span></li>
+<li>data.table <span class="citation">(Dowle et al. 2015)</span></li>
+<li>ggplot2 <span class="citation">(Wickham 2009)</span></li>
+<li>kableExtra <span class="citation">(Zhu 2018)</span></li>
+<li>knitr <span class="citation">(Xie 2016b)</span></li>
+<li>lubridate <span class="citation">(Grolemund and Wickham 2011)</span></li>
+<li>rmarkdown <span class="citation">(Allaire et al. 2018)</span></li>
+</ul>
+</div>
+<div id="session-info" class="section level2">
+<h2><span class="header-section-number">9.2</span> Session info</h2>
+<pre><code>## R version 3.6.0 (2019-04-26)
+## Platform: x86_64-redhat-linux-gnu (64-bit)
+## Running under: Red Hat Enterprise Linux
+## 
+## Matrix products: default
+## BLAS/LAPACK: /usr/lib64/R/lib/libRblas.so
+## 
+## locale:
+##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C               LC_TIME=en_GB.UTF-8       
+##  [4] LC_COLLATE=en_GB.UTF-8     LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+##  [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                  LC_ADDRESS=C              
+## [10] LC_TELEPHONE=C             LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] gtools_3.8.1      openair_2.7-2     gapminder_0.3.0   gganimate_1.0.5   zoo_1.8-4        
+##  [6] hms_0.5.3         curl_3.3          lubridate_1.7.9   kableExtra_1.1.0  ggplot2_3.3.1    
+## [11] skimr_2.1.1       drake_7.12.2      data.table_1.12.0 gridCarbon_0.1.0  here_0.1         
+## 
+## loaded via a namespace (and not attached):
+##  [1] nlme_3.1-139        filelock_1.0.2      webshot_0.5.2       RColorBrewer_1.1-2  progress_1.2.2     
+##  [6] httr_1.4.1          rprojroot_1.3-2     repr_1.1.0          tools_3.6.0         backports_1.1.3    
+## [11] utf8_1.1.4          R6_2.3.0            mgcv_1.8-28         colorspace_1.4-0    withr_2.1.2        
+## [16] tidyselect_1.1.0    prettyunits_1.0.2   compiler_3.6.0      cli_2.0.2           rvest_0.3.5        
+## [21] xml2_1.3.2          labeling_0.3        bookdown_0.19       scales_1.0.0        hexbin_1.27.2      
+## [26] readr_1.3.1         stringr_1.4.0       digest_0.6.25       txtq_0.2.0          rmarkdown_2.2      
+## [31] R.utils_2.7.0       base64enc_0.1-3     pkgconfig_2.0.2     htmltools_0.3.6     highr_0.7          
+## [36] maps_3.3.0          rlang_0.4.6         rstudioapi_0.11     farver_2.0.3        generics_0.0.2     
+## [41] jsonlite_1.6        dplyr_1.0.0         R.oo_1.22.0         magrittr_1.5        Matrix_1.2-17      
+## [46] Rcpp_1.0.1          munsell_0.5.0       fansi_0.4.0         lifecycle_0.2.0     R.methodsS3_1.7.1  
+## [51] stringi_1.2.4       yaml_2.2.0          MASS_7.3-51.4       storr_1.2.1         grid_3.6.0         
+## [56] parallel_3.6.0      forcats_0.5.0       crayon_1.3.4        lattice_0.20-38     splines_3.6.0      
+## [61] mapproj_1.2.7       knitr_1.28          pillar_1.4.4        igraph_1.2.2        base64url_1.4      
+## [66] codetools_0.2-16    glue_1.4.1          evaluate_0.14       latticeExtra_0.6-28 vctrs_0.3.1        
+## [71] tweenr_1.0.1        gtable_0.2.0        purrr_0.3.4         tidyr_1.1.0         assertthat_0.2.0   
+## [76] xfun_0.14           viridisLite_0.3.0   tibble_3.0.1        cluster_2.0.8       ellipsis_0.3.1</code></pre>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-rmarkdown">
+<p>Allaire, JJ, Yihui Xie, Jonathan McPherson, Javier Luraschi, Kevin Ushey, Aron Atkins, Hadley Wickham, Joe Cheng, and Winston Chang. 2018. <em>Rmarkdown: Dynamic Documents for R</em>. <a href="https://CRAN.R-project.org/package=rmarkdown" class="uri">https://CRAN.R-project.org/package=rmarkdown</a>.</p>
+</div>
+<div id="ref-openair">
+<p>Carslaw, David C., and Karl Ropkins. 2012. “Openair — an R Package for Air Quality Data Analysis.” <em>Environmental Modelling &amp; Software</em> 27–28 (0): 52–61. doi:<a href="https://doi.org/10.1016/j.envsoft.2011.09.008">10.1016/j.envsoft.2011.09.008</a>.</p>
+</div>
+<div id="ref-data.table">
+<p>Dowle, M, A Srinivasan, T Short, S Lianoglou with contributions from R Saporta, and E Antonyan. 2015. <em>Data.table: Extension of Data.frame</em>. <a href="https://CRAN.R-project.org/package=data.table" class="uri">https://CRAN.R-project.org/package=data.table</a>.</p>
+</div>
+<div id="ref-lubridate">
+<p>Grolemund, Garrett, and Hadley Wickham. 2011. “Dates and Times Made Easy with lubridate.” <em>Journal of Statistical Software</em> 40 (3): 1–25. <a href="http://www.jstatsoft.org/v40/i03/" class="uri">http://www.jstatsoft.org/v40/i03/</a>.</p>
+</div>
+<div id="ref-khan_analysis_2018">
+<p>Khan, Imran, Michael W. Jack, and Janet Stephenson. 2018. “Analysis of Greenhouse Gas Emissions in Electricity Systems Using Time-Varying Carbon Intensity.” <em>Journal of Cleaner Production</em> 184 (May): 1091–1101. doi:<a href="https://doi.org/10.1016/j.jclepro.2018.02.309">10.1016/j.jclepro.2018.02.309</a>.</p>
+</div>
+<div id="ref-baseR">
+<p>R Core Team. 2016. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-ggplot2">
+<p>Wickham, Hadley. 2009. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="http://ggplot2.org" class="uri">http://ggplot2.org</a>.</p>
+</div>
+<div id="ref-bookdown">
+<p>Xie, Yihui. 2016a. <em>Bookdown: Authoring Books and Technical Documents with R Markdown</em>. Boca Raton, Florida: Chapman; Hall/CRC. <a href="https://github.com/rstudio/bookdown" class="uri">https://github.com/rstudio/bookdown</a>.</p>
+</div>
+<div id="ref-knitr">
+<p>———. 2016b. <em>Knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. <a href="https://CRAN.R-project.org/package=knitr" class="uri">https://CRAN.R-project.org/package=knitr</a>.</p>
+</div>
+<div id="ref-kableExtra">
+<p>Zhu, Hao. 2018. <em>KableExtra: Construct Complex Table with ’Kable’ and Pipe Syntax</em>. <a href="https://CRAN.R-project.org/package=kableExtra" class="uri">https://CRAN.R-project.org/package=kableExtra</a>.</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
