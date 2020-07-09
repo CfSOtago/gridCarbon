@@ -9,11 +9,11 @@
 #' @export
 #'
 addWhitsunDateTime <- function(p, yLoc, yMin, yMax){
-  p <- p + annotate("rect", xmin = as.Date("2020-05-25 00:00:00"),
-           xmax = as.Date("2020-05-25 23:59:59"), # 3 day weekend starting Saturday (in UK)
+  p <- p + annotate("rect", xmin = lubridate::as_datetime("2020-05-25 00:00:00"),
+           xmax = lubridate::as_datetime("2020-05-25 23:59:59"), # 3 day weekend starting Saturday (in UK)
            ymin = yMin, ymax = yMax,
            alpha = 0.5, fill = gcParams$weFill) +
-    annotate("text", x = as.Date("2020-05-25"),
+    annotate("text", x = lubridate::as_datetime("2020-05-25 12:00:00"),
              y = yLoc * yMax,
              label = "Whitsun 2020")
   return(p)
