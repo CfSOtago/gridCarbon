@@ -88,7 +88,6 @@ message("embeddedGen data to: ", max(gridMetaDataDT$dateTo))
 t <- proc.time() - startTime # how long did it take?
 elapsed <- t[[3]]
 
-
 print("Done")
 print(paste0("Completed in ", round(elapsed/60,2), " minutes using ",
              R.version.string, " running on ", R.version$platform))
