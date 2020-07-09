@@ -8,6 +8,7 @@
 #' @param dt the data, assumed to be the aligned data (use alignDates() to do this)
 #' @param yVar the variable you want to plot
 #' @param yCap the caption for the y axis
+#' @param form do you want a "line" = geom_line() or a "step" = geom_step()? Step is the default
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = 1
 #' @param lockDownStart date for start of lockdown rectangle annotation
 #' @param lockDownEnd date for end of lockdown rectangle annotation
@@ -18,7 +19,7 @@
 #' @export
 #' @family plot
 #'
-createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1, lockDownStart, lockDownEnd){
+createDailyMeanComparePlot <- function(dt, yVar, yCap, form = "step", yDiv = 1, lockDownStart, lockDownEnd){
   # assumes the dateFixed half-hourly data
   # assumes we want mean of half-hourly obs
   plotDT <- dt[dateFixed <= lubridate::today() & 
@@ -37,12 +38,9 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1, lockDownStart, 
                                    shape = weekDay,
                                    colour = compareYear)) +
     geom_point() +
-    geom_line(aes(shape = NULL), linetype = "dashed") + # joint the dots within compareYear
     scale_x_date(date_breaks = "7 day", date_labels =  "%a %d %b")  +
     theme(axis.text.x=element_text(angle=90, hjust=1)) +
-    labs(caption = paste0(localParams$lockdownCap, localParams$weekendCap,
-                          "\n", localParams$loessCap),
-         x = "Date",
+    labs(x = "Date",
          y = yCap
     ) +
     theme(legend.position = "bottom") + 
@@ -51,7 +49,14 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, yDiv = 1, lockDownStart, 
     scale_shape_discrete(name = "Weekday") +
     guides(colour=guide_legend(nrow=2)) +
     guides(shape=guide_legend(nrow=2))
-  
+  if(form == "line"){
+    p <- p + geom_line(aes(shape = NULL), 
+                       linetype = "dashed") # join the dots within compareYear
+  }
+  if(form == "step"){
+    p <- p + geom_step(aes(shape = NULL), 
+                       linetype = "dashed") # join the dots within compareYear
+  }
   p <- addLockdownRect(p, 
                        from = lockDownStart, 
                        to = lockDownEnd,

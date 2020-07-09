@@ -6,6 +6,8 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #' @family data
+#' @family grid
+#' @family uk
 #'
 cleanUkGridESO <- function(dt){
   # cleans & returns a dt

@@ -245,36 +245,86 @@ dev.off()
 ```
 
 
+## Embedded generation data
+
+Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
+
+> We have not yet found a source of this data (if we even need it).
+
+> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).
+
+# Analysis
+
+In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data. 
+
+## General patterns
+
+
 Figure @\ref(fig:tilePlotGWh): Tile plot of halfhourly GWh over time. We like tile plots.
 
 ```{r tilePlotGWh, fig.cap="halfhourly consumption GWh over time"}
-p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, fill = consGWh)) +
-  geom_tile() +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c(name="GWh") +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
-       )
-yMin <- min(gridGenDT$hms)
-yMax <- max(gridGenDT$hms)
-p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
-                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
 
-p
+makeTilePlot <- function(dt, fillVar, fillDiv, fillVarLabel){
+  p <- ggplot2::ggplot(dt, 
+                       aes(x = obsDate, y = hms, 
+                           fill = get(fillVar)/fillDiv)) +
+    geom_tile() +
+    #scale_fill_continuous(low = "green", high = "red") +
+    scale_fill_viridis_c(name=fillVarLabel) +
+    #theme(legend.position="bottom") +
+    scale_x_date(date_breaks = "2 months", date_labels =  "%b - %Y")  +
+    theme(axis.text.x=element_text(angle=90, hjust=1)) +
+    #scale_y_time(breaks = 6) +
+    # labels = c("00:00:00", "04:00:00", "08:00:00",
+    #            "12:00:00", "16:00:00", "20:00:00")) +
+    labs(x = "Date",
+         y = "Half-hour"
+    )
+  
+  p <- addLockdownRect(p, yMin = 0, yMax = 84600, # 0 to 00:00:00 
+                       from = gcParams$UKlockDownStartDate, 
+                       to = max(gridGenDT$obsDate))
+  f <- paste0("UK_all", fillVar ,"_TilePlotForPaper.png")
+  ggplot2::ggsave(filename = f, path = here::here("docs","uk","plots"), 
+                plot = p, height = 7, width = 17, units = "cm")
 
-p <- p + labs(x = "Date",
+twip <- p + labs(x = "Date",
               y = "Half-hour",
-              caption = paste0(localParams$gridCaption, localParams$lockdownCap),
+              caption = paste0(localParams$gridCaption, localParams$lockdownCap,
                         "\nPlot by @dataknut @energySoton")
+              )
 
-ggplot2::ggsave(filename = "UK_allGWhPlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
+twif <- paste0("UK_all", fillVar ,"_TilePlotForTwitter.png")
+ggplot2::ggsave(filename = twif, 
+                path = here::here("docs","uk","plots"), 
+                plot = twip, width = 9, units = "in")
+return(p)
+}
+
+
+makeTilePlot(gridGenDT, 
+                  fillVar = "consGWh",  
+                  fillDiv = 1, 
+                  fillVarLabel = "GWh"
+             )
+```
+
+Figure @\ref(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots.
+
+```{r tilePlotCI, fig.cap="halfhourly CI over time"}
+makeTilePlot(gridGenDT, fillVar = "CARBON_INTENSITY",  
+                  fillDiv = 1, 
+                  fillVarLabel = "g CO2e/kWh"
+             )
+```
+
+Figure @\ref(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots
+
+```{r tilePlotCO2e, fig.cap="halfhourly total CO2e (kT) over time"}
+p <- makeTilePlot(gridGenDT, fillVar = "C02e_T", 
+                  fillDiv = 1000, 
+                  fillVarLabel = "kT CO2e"
+                  )
 
 ```
 
@@ -310,76 +360,9 @@ ggplot2::ggsave(filename = "UK_allGWhlineBySeasonForTwitter.png", path = here::h
 p
 ```
 
+Figure @\ref(fig:profilePlotGWhBySeason2019): halfhourly mean GWh by season in 2019. 
 
-Figure @\ref(fig:tilePlotCI): Tile plot of halfhourly CI over time. We like tile plots
-
-```{r tilePlotCI, fig.cap="halfhourly CI over time"}
-p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, 
-                         fill = CARBON_INTENSITY)) +
-  geom_tile() +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c(name = "g CO2e/kWh") +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
-       )
-yMin <- min(gridGenDT$hms)
-yMax <- max(gridGenDT$hms)
-p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
-                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-
-p
-
-p <- p + labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
-       )
-ggplot2::ggsave(filename = "UK_allCIPlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
-
-```
-
-Figure @\ref(fig:tilePlotCO2e): Tile plot of halfhourly total CO2e (kT) over time. We like tile plots
-
-```{r tilePlotCO2e, fig.cap="halfhourly total CO2e (kT) over time"}
-p <- ggplot2::ggplot(gridGenDT[obsDate > as.Date("2018-01-01")], 
-                     aes(x = obsDate, y = hms, fill = C02e_T/1000)) +
-  geom_tile() +
-  #scale_fill_continuous(low = "green", high = "red") +
-  scale_fill_viridis_c(name="CO2e (kT)") +
-  theme(legend.position="bottom") +
-  #scale_y_time(breaks = 6) +
-               # labels = c("00:00:00", "04:00:00", "08:00:00",
-               #            "12:00:00", "16:00:00", "20:00:00")) +
-  labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap)
-       )
-yMin <- min(gridGenDT$hms)
-yMax <- max(gridGenDT$hms)
-p <- addLockdownRect(p, yMin = yMin, yMax = yMax, 
-                from = gcParams$UKlockDownStartDate, to = max(gridGenDT$obsDate))
-p
-
-p <- p + labs(x = "Date",
-       y = "Half-hour",
-       caption = paste0(localParams$gridCaption, localParams$lockdownCap,
-                        "\nPlot by @dataknut @energySoton")
-       )
-ggplot2::ggsave(filename = "UK_allCO2ePlotTileForTwitter.png", path = here::here("docs","uk","plots"), 
-                plot = p, width = 9, units = "in")
-
-```
-
-Figure @\ref(fig:GWhBySeason2019): halfhourly mean GWh by season in 2019. We like tile plots
-
-```{r GWhBySeason2019, fig.cap="halfhourly mean GWh by season in 2019"}
+```{r profilePlotGWhBySeason2019, fig.cap="halfhourly mean GWh by season in 2019"}
 gridGenDT <- gridCarbon::addSeason(gridGenDT, date = "obsDate", h = "N")
 plotDT <- gridGenDT[year == 2019, .(meanGWh = mean(consGWh)), keyby = .(hms, season)]
 p <- ggplot2::ggplot(plotDT, 
@@ -402,19 +385,52 @@ ggplot2::ggsave(filename = "UK_meanGWhBySeason_2019.png", path = here::here("doc
 p
 ```
 
-## Embedded generation data
+Find highs and lows. Good for a story
 
-Essentially 'non-grid' generation from solar photovoltaic and small scale wind which is 'embedded' - i.e. non-grid connected as it is connected 'downstream' of the grid exit points. We are not entirely sure if this is accounted for in the grid dataset or not.
+```{r findMaxMin}
+gridGenDT[, wkday := lubridate::wday(obsDate, label = TRUE)]
+bottomGWh <- head(gridGenDT[, .(rDateTimeUTC, wkday, consGWh, 
+                                CARBON_INTENSITY,
+                                C02e_T)][order(consGWh)],10)
+kableExtra::kable(bottomGWh, cpation = "Lowest GWh half hour occured on...") %>%
+  kable_styling()
 
-> We have not yet found a source of this data (if we even need it).
+bottomCI <- head(gridGenDT[, .(rDateTimeUTC, wkday, consGWh, 
+                                CARBON_INTENSITY,
+                                C02e_T)][order(CARBON_INTENSITY)],10)
+kableExtra::kable(bottomCI, cpation = "Lowest CI half hour occured on...") %>%
+  kable_styling()
 
-> For now embedded generation data is probably _not_ included in the following analysis but we would expect it to depress grid demand when there is greatest insolation (middle of the day, obvs) and wind (largely random in the UK?).
+bottomCO2e <- head(gridGenDT[, .(rDateTimeUTC, wkday, consGWh, 
+                                CARBON_INTENSITY,
+                                C02e_T)][order(C02e_T)],10)
+kableExtra::kable(bottomCO2e, cpation = "Lowest CI half hour occured on...") %>%
+  kable_styling()
+```
 
-# Analysis
+```{r findDailyMaxMin}
+dailyDT <- gridGenDT[, .(meanGWh = mean(consGWh),
+                         minGWh = min(consGWh),
+                         maxGWh = max(consGWh),
+                         meanCI = mean(CARBON_INTENSITY),
+                         minCI = min(CARBON_INTENSITY),
+                         maxCI = max(CARBON_INTENSITY),
+                         meanCO2eT = mean(C02e_T),
+                         minCO2eT = min(C02e_T),
+                         maxCO2eT = max(C02e_T)
+                         ), keyby = .(obsDate)]
 
-In this section we analyse changes in electricity demand and associated carbon emissions during the UK Covid-19 lockdown via analysis of the generation data. 
+kableExtra::kable(head(dailyDT[order(minGWh)],10), cpation = "Lowest GWh half hour occured on...") %>%
+  kable_styling()
 
-## Generation: Analysing deviation from 'normal'
+kableExtra::kable(head(dailyDT[order(minCI)],10), cpation = "Lowest CI half hour occured on...") %>%
+  kable_styling()
+
+kableExtra::kable(head(dailyDT[order(minCO2eT)],10), cpation = "Lowest CO2e half hour occured on...") %>%
+  kable_styling()
+```
+
+## Consumption: Analysing deviation from 'normal' 
 
 Several [articles](https://theconversation.com/we-analysed-electricity-demand-and-found-coronavirus-has-turned-weekdays-into-weekends-134606) and [analyses](https://twitter.com/DrIAGWilson/status/1255100828781883394) have suggested that demand (and thus generation) patterns have shifted so that [weekdays have become more like weekends](http://www.ukerc.ac.uk/news/covid-lockdown-electricity-demand.html).
 
@@ -440,11 +456,17 @@ oaGWh <- openair::TheilSen(gridGenDT, "consGWh",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
 p <- oaGWh$plot
-png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenGWhPlot.png"), 
-    width = 960, units = "px")
+saveTheilSen <- function(p, f){
+  of <- paste0(here::here("docs", "uk","plots"),"/openAir_UK_TheilSen_",f,"_Plot.png")
+  message("Saving to ", of)
+  png(filename=of, 
+    width = 960, height = 380, units = "px")
 # dpi = 600, width = 13.333, height = 7.5, units = "in"
 plot(p)
 dev.off()
+}
+f <- "consGWh"
+saveTheilSen(p, f)
 
 t <- gridGenDT[, .("Mean GWh" = mean(consGWh),
                    "N obs" = .N), keyby = .(year, peakPeriod)]
@@ -525,7 +547,9 @@ Figure \@ref(fig:recentDateTimeGWhPlot) shows total half-hourly generation since
 p <- drake::readd(recentDateTimeGWhPlot)
 yMax <- max(p$data$consGWh) #RTFM
 yMin <- min(p$data$consGWh)
-addVeDayDateTime(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDateTime(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
+p <- addWhitsunDateTime(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
+p
 ```
 
 Figure \@ref(fig:recentHalfHourlyProfileGWhPlot) shows the daily generation profiles over time for each day of the week. Clearly the shapes are both reducing in magnitude (seasonal and lockdown effects) and also converging in shape.
@@ -547,12 +571,16 @@ thisMonth <- lubridate::month(today())
 Figure \@ref(fig:makeWeekDayGWhPlot) shows the mean half-hourly GWh per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayGWhPlot, fig.cap="Half-hourly GWh"}
-dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < localParams$toDate]
+todDT <- alignedGridGenDT[dateFixed >= as.Date("2020-02-01") & 
+                                               dateFixed <= localParams$toDate]
 yVar <- "consGWh"
 yLab <- "GWh"
 xVar <- "wkdayFixed"
-p <- gridCarbon::makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = yLab, yDiv = 1)
+p <- gridCarbon::makeWeekdayPlot(todDT, 
+                                 xVar = xVar, 
+                                 yVar = yVar, 
+                                 yLab = yLab, 
+                                 yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
                   path = here::here("docs", "uk", "plots"), 
@@ -565,11 +593,14 @@ Figure \@ref(fig:makeWeekdayTimeGWhPlot) shows the mean half-hourly CO2e per hal
 
 ```{r makeWeekdayTimeGWhPlot, fig.cap="% half-hourly GWh"}
 
-p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+p <- makeWeekdayTimePlot(todDT, 
+                         yVar = yVar,  
+                         yForm = "prop",
+                         yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
                   path = here::here("docs","uk","plots"), 
-                  plot = p, width = 9, units = "in")
+                  plot = p, width = 6, units = "in")
 p
 ```
 
@@ -656,12 +687,15 @@ Figure \@ref(fig:compareDailyGWhPlot) shows the most recent mean daily half-hour
 p <- drake::readd(compareDailyGWhPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
-p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
+
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh.png"), 
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
 p
+
 ```
 
 Figure \@ref(fig:compareDailyGWhpcPlot) shows the percentage difference between the mean half-hourly generation per day in 2020 and the pre 2020 average for the same day. As we can see January 2020 was already slightly lower than previous years but February appears similar. There appears to be a substantial lockdown effect albiet with some fluctuations and very large dips on VE Day (Friday 8th May) and Thursday 28th May.
@@ -671,8 +705,9 @@ Figure \@ref(fig:compareDailyGWhpcPlot) shows the percentage difference between 
 p <- drake::readd(compareDailyGWhpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
-p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_GWh_pcCompare.png"), 
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
@@ -721,7 +756,10 @@ p <- addLockdownRect(p,
   
 yMax <- max(p$data$peakyNess) #RTFM
 yMin <- min(p$data$peakyNess)
-addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
+p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
+p
 ```
 
 
@@ -762,11 +800,8 @@ kableExtra::kable(t, digits = 2,
   kable_styling()
 
 p <- oaCI$plot
-png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenCIPlot.png"), 
-    width = 960, units = "px")
-# dpi = 600, width = 13.333, height = 7.5, units = "in"
-plot(p)
-dev.off()
+f <- "CARBON_INTENSITY"
+saveTheilSen(p, f)
 
 ```
 
@@ -812,7 +847,9 @@ Figure \@ref(fig:recentDateTimeCIPlot) shows half-hourly carbon intensity since 
 p <- drake::readd(recentDateTimeCIPlot)
 yMax <- max(p$data$yVals) #RTFM
 yMin <- min(p$data$yVals)
-addVeDayDateTime(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDateTime(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
+p <- addWhitsunDateTime(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
+p
 ```
 
 Figure \@ref(fig:recentHalfHourlyProfileCIPlot) shows the daily carbon intensity profiles over time for each day of the week.
@@ -822,30 +859,39 @@ p <- drake::readd(recentHalfHourlyProfileCIPlot)
 p
 ```
 
-Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
+Figure \@ref(fig:makeWeekDayCIPlot) shows the mean half-hourly carbon intensity per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayCIPlot, fig.cap="half-hourly CI"}
-dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < localParams$toDate]
+
+todDT <- alignedGridGenDT[dateFixed >= as.Date("2020-02-01") & 
+                                               dateFixed <= localParams$toDate]
 yVar <- "CARBON_INTENSITY"
+yLab <- "g CO2e/kWh"
 xVar <- "wkdayFixed"
-p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "g C02e/kWh", yDiv = 1)
+p <- gridCarbon::makeWeekdayPlot(todDT, 
+                                 xVar = xVar, 
+                                 yVar = yVar, 
+                                 yLab = yLab, 
+                                 yDiv = 1)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs","uk","plots"), 
+                  path = here::here("docs", "uk", "plots"), 
                   plot = p, width = 9, units = "in")
 p
+
 ```
 
-Figure \@ref(fig:makeWeekdayTimeCIplot) shows the mean half-hourly CO2e per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
+Figure \@ref(fig:makeWeekdayTimeCIplot) shows the mean half-hourly carbon intensity per half-hour of each day. This plot shows the values as a proportion of the sum of the means across all half hours of each day to illustrate the relative, rather than absolute, shift in generation.
 
 ```{r makeWeekdayTimeCIplot, fig.cap="% half-hourly CI"}
 
-p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+p <- makeWeekdayTimePlot(todDT, yVar = yVar,  
+                         yForm = "prop",
+                         yLab = "%", yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
                   path = here::here("docs","uk","plots"), 
-                  plot = p, width = 9, units = "in")
+                  plot = p, width = 6, units = "in")
 p
 ```
 
@@ -898,8 +944,9 @@ Figure \@ref(fig:compareDailyCIPlot) shows the mean half-hourly carbon intensity
 p <- drake::readd(compareDailyCIPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
-p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI.png"), 
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
@@ -912,8 +959,9 @@ Figure \@ref(fig:compareDailyCIpcPlot) shows the percentage difference between t
 p <- drake::readd(compareDailyCIpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
-p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CI_pcCompare.png"), 
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
@@ -937,18 +985,15 @@ This plot shows that total CO2e emissions intensity has fallen by a half-hourly 
 ```{r TheilSenC02eTPlot, fig.cap=paste0("Theil-Sen plot of mean half-hourly kg CO2e emissions per month since ", min(gridGenDT$rDateTimeUTC))}
 gridGenDT[, date := as.Date(rDateTimeUTC)]  # set date to date for this one
 
-oaCO2 <- openair::TheilSen(gridGenDT, "C02e_T", 
+oaCO2e <- openair::TheilSen(gridGenDT, "C02e_T", 
                   ylab = "Mean half-hourly C02e (T)", deseason = TRUE,
                   xlab = "Year",
                   date.format = "%Y",
                   date.breaks = 4,
                   type = c("peakPeriod"), layout = c(5,1))
-p <- oaCO2$plot
-png(filename=here::here("docs/uk/plots/openAir_UK_TheilSenTotalCO2ePlot.png"), 
-    width = 960, units = "px")
-# dpi = 600, width = 13.333, height = 7.5, units = "in"
-plot(p)
-dev.off()
+p <- oaCO2e$plot
+f <- "C02e_T"
+saveTheilSen(p, f)
 
 t <- gridGenDT[, .("Mean half-hourly C02e (T)" = mean(C02e_T),
                    "N obs" = .N), keyby = .(year, peakPeriod)]
@@ -999,7 +1044,9 @@ Figure \@ref(fig:recentDateTimeC02ekgPlot) shows total half-hourly CO2e emission
 p <- drake::readd(recentDateTimeC02ekgPlot)
 yMax <- max(p$data$yVals) #RTFM
 yMin <- min(p$data$yVals)
-addVeDayDateTime(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDateTime(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
+p <- addWhitsunDateTime(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
+p
 ```
 
 Figure \@ref(fig:recentHalfHourlyProfileC02ekgPlot) shows the daily CO2e emissions profiles over time for each day of the week since `r localParams$recentCutDate`.
@@ -1012,14 +1059,19 @@ p
 Figure \@ref(fig:makeWeekDayCO2eTPlot) shows the mean half-hourly CO2e per day. Need to bear in mind the trends identified above.
 
 ```{r makeWeekDayCO2eTPlot, fig.cap="half-hourly CO2e"}
-dt <- alignedGridGenDT[dateFixed > as.Date("2020-01-01") & 
-                                               dateFixed < localParams$toDate]
+todDT <- alignedGridGenDT[dateFixed >= as.Date("2020-02-01") & 
+                                               dateFixed <= localParams$toDate]
 yVar <- "C02e_T"
+yLab <- "kT CO2e"
 xVar <- "wkdayFixed"
-p <- makeWeekdayPlot(dt, xVar, yVar = yVar, yLab = "C02e (kT)", yDiv = 1000)
+p <- gridCarbon::makeWeekdayPlot(todDT, 
+                                 xVar = xVar, 
+                                 yVar = yVar, 
+                                 yLab = yLab, 
+                                 yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayPlot_",yVar,".png"), 
-                  path = here::here("docs","uk","plots"), 
+                  path = here::here("docs", "uk", "plots"), 
                   plot = p, width = 9, units = "in")
 p
 ```
@@ -1028,11 +1080,18 @@ Figure \@ref(fig:makeWeekdayTimeCO2eTplot) shows the mean half-hourly CO2e per h
 
 ```{r makeWeekdayTimeCO2eTplot, fig.cap="% half-hourly CO2e"}
 
-p <- makeWeekdayTimePlot(dt, yVar = yVar, yLab = "%", yDiv = 1000)
+yVar <- "C02e_T"
+yLab <- "kT CO2e"
+
+p <- makeWeekdayTimePlot(todDT, 
+                         yVar = yVar, 
+                         yForm = "prop",
+                         yLab = yLab, 
+                         yDiv = 1000)
 
 ggplot2::ggsave(filename = paste0("UK_weekdayTimePlot_",yVar,".png"), 
                   path = here::here("docs","uk","plots"), 
-                  plot = p, width = 9, units = "in")
+                  plot = p, width = 6, units = "in")
 p
 ```
 
@@ -1085,8 +1144,9 @@ Figure \@ref(fig:compareDailyCO2ekgPlot) shows the mean half-hourly carbon inten
 p <- drake::readd(compareDailyCO2ekgPlot)
 yMax <- max(p$data$yMean) #RTFM
 yMin <- min(p$data$yMean)
-p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e.png"), 
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")
@@ -1099,8 +1159,9 @@ Figure \@ref(fig:compareDailyC02ekgpcPlot) shows the percentage difference betwe
 p <- drake::readd(compareDailyC02ekgpcPlot)
 yMax <- max(p$data$pcDiffMean) #RTFM
 yMin <- min(p$data$pcDiffMean)
-p <- addVeDayDate(p, yMin = yMin, yMax = yMax)
+p <- addVeDayDate(p, yLoc = 0.95, yMin = yMin, yMax = yMax)
 p <- addDSTBreakDate(p, yMin = yMin, yMax = yMax)
+p <- addWhitsunDate(p, yLoc = 0.85, yMin = yMin, yMax = yMax)
 ggplot2::ggsave(filename = paste0("UK_dailyPlot_CO2e_pcCompare.png"), 
                   path = here::here("docs","uk","plots"), 
                   plot = p, width = 9, units = "in")

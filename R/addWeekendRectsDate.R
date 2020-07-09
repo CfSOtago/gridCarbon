@@ -47,10 +47,10 @@ addWeekendRectsDate <- function(p, yMin, yMax){
              xmax = as.Date("2020-05-04"),
              ymin = yMin, ymax = yMax,
              alpha = gcParams$weAlpha, fill = gcParams$weFill) +
-    annotate("rect", xmin = as.Date("2020-05-08"),
+    annotate("rect", xmin = as.Date("2020-05-09"),
              xmax = as.Date("2020-05-11"),
              ymin = yMin, ymax = yMax,
-             alpha = gcParams$weAlpha, fill = gcParams$weFill) + # VE Day
+             alpha = gcParams$weAlpha, fill = gcParams$weFill) +
     annotate("rect", xmin = as.Date("2020-05-16"),
              xmax = as.Date("2020-05-18"),
              ymin = yMin, ymax = yMax,

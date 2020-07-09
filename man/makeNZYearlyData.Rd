@@ -36,7 +36,6 @@ Other data:
 \code{\link{loadNZEAYearlyEmbeddedGenData}()},
 \code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
-\code{\link{makeUkGridESOYearlyData}()},
 \code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
@@ -47,7 +46,10 @@ Other data:
 
 Other embedded: 
 \code{\link{cleanNZEmbEA}()},
-\code{\link{getNZEmbMeta}()}
+\code{\link{cleanUkEmbeddedESO}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{saveUkEmbeddedESO}()}
 
 Other gxp: 
 \code{\link{getNZGxpMeta}()}
@@ -55,11 +57,13 @@ Other gxp:
 Other grid: 
 \code{\link{cleanNZGridEA}()},
 \code{\link{cleanNZGxpEA}()},
+\code{\link{cleanUkGridESO}()},
 \code{\link{getNZEmbData}()},
 \code{\link{getNZGridEA}()},
 \code{\link{getNZGridMeta}()},
 \code{\link{getNZGxpEA}()},
-\code{\link{getNZGxpMeta}()}
+\code{\link{getNZGxpMeta}()},
+\code{\link{saveUkGridESO}()}
 
 Other NZ: 
 \code{\link{addNZSeason}()},

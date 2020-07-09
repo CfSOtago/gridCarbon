@@ -2,9 +2,9 @@
 % Please edit documentation in R/saveUkEmbeddedESO.R
 \name{saveUkEmbeddedESO}
 \alias{saveUkEmbeddedESO}
-\title{\code{saveUkEmbeddedESO} saves the clean latest UK embedded ESO data}
+\title{\code{saveUkEmbeddedESO} saves the latest cleaned UK embedded ESO data}
 \usage{
-saveUkEmbeddedESO(dt, processedPath)
+saveUkEmbeddedESO(dt, path)
 }
 \arguments{
 \item{dt}{the data.table to save (returned by \code{cleanUkGridESO})}
@@ -12,7 +12,7 @@ saveUkEmbeddedESO(dt, processedPath)
 \item{processedPath}{the folder to put it in}
 }
 \description{
-\code{saveUkEmbeddedESO} saves the clean latest UK embedded ESO data
+\code{saveUkEmbeddedESO} saves the latest cleaned UK embedded ESO data
 }
 \seealso{
 Other data: 
@@ -35,15 +35,29 @@ Other data:
 \code{\link{loadNZEAYearlyGridGenData}()},
 \code{\link{loadUKESOYearlyGenData}()},
 \code{\link{makeNZYearlyData}()},
-\code{\link{makeUkGridESOYearlyData}()},
 \code{\link{nzCalculateCO2e}()},
 \code{\link{reshapeEmbeddedGenDT}()},
 \code{\link{reshapeGenDT}()},
 \code{\link{saveUkGridESO}()},
 \code{\link{setEmbeddedGenTimePeriod}()},
 \code{\link{setGridGenTimePeriod}()}
+
+Other embedded: 
+\code{\link{cleanNZEmbEA}()},
+\code{\link{cleanUkEmbeddedESO}()},
+\code{\link{getNZEmbMeta}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{makeNZYearlyData}()}
+
+Other uk: 
+\code{\link{cleanUkEmbeddedESO}()},
+\code{\link{cleanUkGridESO}()},
+\code{\link{getUkEmbeddedESO}()},
+\code{\link{saveUkGridESO}()}
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
 }
 \concept{data}
+\concept{embedded}
+\concept{uk}

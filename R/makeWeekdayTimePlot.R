@@ -6,6 +6,7 @@
 #'
 #' @param dt the data
 #' @param yVar the variable you want to plot
+#' @param yForm whether you want an abs(olute) (default) or a prop(ortional) plot
 #' @param yLab the label for the y axis
 #' @param yDiv the value you want to divide yVar by to make the y axis more sensible. Default = `1`
 #' 
@@ -16,26 +17,49 @@
 #' @export
 #' @family plot
 #'
-makeWeekdayTimePlot <- function(dt, yVar, yLab, yDiv){
+makeWeekdayTimePlot <- function(dt, yVar, yForm = "abs", yLab = "y Lab", yDiv = 1){
   # by weekday and hour
-  # use proportion to show relative shifts
-  # wkdayFixed = obs (they are the same - that was the whole idea!)
-  dt <- dt[, .(yVals = mean(get(yVar))/yDiv), keyby = .(hms, plotPeriod, compareYear, wkdayFixed)]
-  sums <- dt[, .(sum = sum(yVals)), keyby = .(compareYear, plotPeriod, wkdayFixed)]
-  setkey(sums, compareYear, plotPeriod, wkdayFixed)
-  setkey(dt, compareYear, plotPeriod, wkdayFixed)
-  mDT <- sums[dt]
-  mDT[, pVal := (yVals/sum)*100]
-  p <- ggplot2::ggplot(mDT, aes(x = hms, y = pVal, 
-                                colour = compareYear)) + 
-    #geom_line() +
-    geom_point() +
-    scale_x_time(labels = NULL) +
-    #scale_x_datetime(breaks=date_breaks('4 hour'),labels=date_format('%H:%M')) +
-    theme(legend.position="bottom") +
-    scale_color_discrete(name="Year") +
-    facet_grid(plotPeriod ~ wkdayFixed ) +
-    labs( y = yLab,
-          x = "Time")
-  return(p)
+  if(yForm == "prop"){
+    # use proportion to show relative shifts
+    # wkdayFixed = obs (they are the same - that was the whole idea!)
+    # use month as the facet to link to other plots
+    dt[, month := lubridate::month(dateFixed, label = TRUE)]
+    dt <- dt[, .(pVals = mean(get(yVar))/yDiv), 
+             keyby = .(hms, month, compareYear, wkdayFixed)]
+    sums <- dt[, .(sum = sum(pVals)), keyby = .(compareYear, month, wkdayFixed)]
+    setkey(sums, compareYear, month, wkdayFixed)
+    setkey(dt, compareYear, month, wkdayFixed)
+    plotDT <- sums[dt]
+    plotDT[, yVal := (pVals/sum)*100]
+    ok <- TRUE
+  }
+  if(yForm == "abs"){
+    #message("abs")
+    dt[, month := lubridate::month(dateFixed, label = TRUE)]
+    plotDT <- dt[, .(yVal = mean(get(yVar))/yDiv), 
+              keyby = .(hms, month, compareYear, wkdayFixed)]
+    ok <- TRUE
+  }
+  if(yForm != "abs" & yForm != "prop"){# be explicit
+    # neither
+    e <- "yForm not recognised - function understands 'abs' or 'prop"
+    return(e)
+  }
+  if(ok){
+    #message("Building plot with ", yForm)
+    p <- ggplot2::ggplot(plotDT, aes(x = hms, y = yVal, 
+                                  colour = compareYear)) + 
+      geom_step() +
+      #geom_point(size = 1, stroke = 1, shape = 16) +
+      #scale_x_time(labels = NULL) +
+      #scale_x_time(date_format('%H:%M'))
+      #scale_x_datetime(breaks=date_breaks('4 hour'),labels=date_format('%H:%M')) +
+      theme(axis.text.x=element_text(angle=90, hjust=1)) +
+      theme(legend.position="bottom") +
+      scale_color_discrete(name="Year") +
+      facet_grid(month ~ wkdayFixed ) +
+      labs( y = yLab,
+            x = "Time")
+    return(p)
+  }
 }

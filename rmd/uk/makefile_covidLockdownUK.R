@@ -23,7 +23,7 @@ drake::expose_imports(gridCarbon) # should track our functions
 # check
 
 # Parameters ----
-update <- "please" # edit to force data re-load - forces everything re-build :-)
+update <- "yep" # edit to force data re-load - forces everything re-build :-)
 
 localParams <- list()
 
@@ -35,18 +35,12 @@ localParams <- list()
 localParams$fromYear <- 2016 # a way to limit the number of years of data files loaded
 
 # up to but not including
-#localParams$toDate <- as.Date("2020-06-01") # 1st June for paper
-localParams$toDate <- lubridate::today() # for latest
+localParams$toDate <- as.Date("2020-06-30") # 30th June for paper
+#localParams$toDate <- lubridate::today() # for latest
 
 # plot cut dates
 localParams$recentCutDate <- as.Date("2020-02-01")
 localParams$comparePlotCutDate <- as.Date("2020-02-01")
-
-# > data paths ----
-localParams$gridDataLoc <- paste0(gcParams$ukData, 
-                                  "/gridGen/processed/yearly/")
-localParams$embeddedDataLoc <- paste0(gcParams$ukData, 
-                                  "/embeddedGen/processed/")
 
 # > captions ----
 localParams$gridCaption <- paste0("Source: UK Electricity System Operator")
@@ -97,7 +91,7 @@ makeReport <- function(f){
 
 plan <- drake::drake_plan(
   ## >> data stuff ----
-  gridGenData = loadUKESOYearlyGenData(path = localParams$gridDataLoc, # from where?
+  gridGenData = loadUKESOYearlyGenData(path = gcParams$ukData, # from where?
                                        fromYear = localParams$fromYear, # from what date?
                                        toDate = localParams$toDate, # to when?
                                        update), 
@@ -105,12 +99,12 @@ plan <- drake::drake_plan(
   alignedGridGenData = alignDates(derivedGridGenData, 
                                   dateTime = "rDateTimeUTC",
                                   toDate = localParams$toDate), # to when? # fix the dates so they line up
-  embeddedGenData = loadEmbeddedGenData(localParams$embeddedDataLoc,
+  embeddedGenData = loadEmbeddedGenData(path = gcParams$ukData,
                                         toDate = localParams$toDate,update),
   alignedEmbeddedGenData = alignDates(embeddedGenData, 
                                   dateTime = "rDateTimeUTC",
                                   toDate = localParams$toDate),
-  ## >> GW stuff ----
+  ## >> GWh stuff ----
   recentDateTimeGWhPlot = createRecentDateTimePlot(derivedGridGenData, 
                                                    dateTime = "rDateTimeUTC",
                                                         yVar = "consGWh", 
@@ -129,6 +123,7 @@ plan <- drake::drake_plan(
                                                    yVar = "consGWh", 
                                                    yCap = "GWh",
                                                    yDiv = 1,
+                                                   form = "step", # default
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
@@ -159,6 +154,7 @@ plan <- drake::drake_plan(
                                                    yVar = "CARBON_INTENSITY", 
                                                    yCap = "Mean daily half hourly carbon intensity",
                                                    yDiv = 1 , # what to divide the y value by
+                                                  form = "step", # default
                                                   lockDownStart = gcParams$UKlockDownStartDate,
                                                   lockDownEnd = gcParams$UKlockDownEndDate 
   ),
@@ -187,7 +183,8 @@ plan <- drake::drake_plan(
   compareDailyCO2ekgPlot = createDailyMeanComparePlot(alignedGridGenData, 
                                                    yVar = "C02e_T", 
                                                    yCap = "Mean half hourly C02e (T)",
-                                                   yDiv = 1 , # totalC02e_kg is in kg
+                                                   yDiv = 1 , # totalC02e_kg is in T
+                                                   form = "step", # default
                                                    lockDownStart = gcParams$UKlockDownStartDate,
                                                    lockDownEnd = gcParams$UKlockDownEndDate
                                                    ),
@@ -247,6 +244,9 @@ names(gridGenDT)
 
 message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
         " to: ", max(embeddedGenDT$rDateTimeUTC))
+
+message("Variables:")
+names(embeddedGenDT)
 
 # >> run report ----
 rmdFile <- "covidLockdown_UK" # not the full path
