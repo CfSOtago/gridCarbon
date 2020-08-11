@@ -88,19 +88,19 @@ library(ggplot2)
 pEmbeddedWind <- ggplot2::ggplot(embeddedGenDT, aes(x = rDate, y = hms, fill = EMBEDDED_WIND_GENERATION/1000)) +
   geom_tile() +
   theme(legend.position = "bottom")
-ggplot2::ggsave(here::here("dataProcessing", "plots", "ukEmbeddedWind_tile.png"), pEmbeddedWind, width = 6, units = "in")
+ggplot2::ggsave(paste0(repoParams$ukData, "latestPlots/", "ukEmbeddedWind_tile.png"), pEmbeddedWind, width = 6, units = "in")
 
 pEmbeddedSolar <- ggplot2::ggplot(embeddedGenDT, aes(x = rDate, y = hms, fill = EMBEDDED_SOLAR_GENERATION/1000)) +
   geom_tile() +
   theme(legend.position = "bottom")
-ggplot2::ggsave(here::here("dataProcessing", "plots", "ukEmbeddedSolar_tile.png"), pEmbeddedSolar, width = 6, units = "in")
+ggplot2::ggsave(paste0(repoParams$ukData, "latestPlots/", "ukEmbeddedSolar_tile.png"), pEmbeddedSolar, width = 6, units = "in")
 
 gridGenDT[, rDate := as.Date(rDateTimeUTC)]
 gridGenDT[, hms := hms::as_hms(rDateTimeUTC)]
 pGrid <- ggplot2::ggplot(gridGenDT, aes(x = rDate, y = hms, fill = GENERATION/1000)) +
   geom_tile() +
   theme(legend.position = "bottom")
-ggplot2::ggsave(here::here("dataProcessing", "plots", "ukGridGen_tile.png"), pGrid,width = 6, units = "in")
+ggplot2::ggsave(paste0(repoParams$ukData, "latestPlots/", "ukGridGen_tile.png"), pGrid,width = 6, units = "in")
 
 embSolar <- embeddedGenDT[,.(rDateTimeUTC, EMBEDDED_SOLAR_GENERATION)]
 embSolar[, MW := EMBEDDED_SOLAR_GENERATION]
@@ -122,7 +122,7 @@ pAllGen <- ggplot2::ggplot(allGenDT, aes(x = rDate, y = hms, fill = MW/1000)) +
   geom_tile() +
   facet_grid(source ~ .) +
   theme(legend.position = "bottom")
-ggplot2::ggsave(here::here("dataProcessing", "plots", "ukAllGen_tile.png"), pAllGen, width = 6, units = "in")
+ggplot2::ggsave(paste0(repoParams$ukData, "latestPlots", "ukAllGen_tile.png"), pAllGen, width = 6, units = "in")
 
 
 # latest dates feedback - save it out for ease of reference
