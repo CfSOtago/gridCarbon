@@ -125,11 +125,19 @@ pAllGen <- ggplot2::ggplot(allGenDT, aes(x = rDate, y = hms, fill = MW/1000)) +
 ggplot2::ggsave(here::here("dataProcessing", "plots", "ukAllGen_tile.png"), pAllGen, width = 6, units = "in")
 
 
-# latest dates:
-message("We now have gridGen data from, " , min(gridGenDT$rDateTimeUTC), 
+# latest dates feedback - save it out for ease of reference
+gridMeta <- paste0("We now have gridGen data from, " , min(gridGenDT$rDateTimeUTC), 
         " to: ", max(gridGenDT$rDateTimeUTC))
-message("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
+embeddedMeta <- paste0("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
         " to: ", max(embeddedGenDT$rDateTimeUTC))
+
+f <- file(here::here("dataProcessing","gridMeta.txt"))
+writeLines(gridMeta, f)
+close(f)
+
+f <- file(here::here("dataProcessing","embeddedMeta.txt"))
+writeLines(embeddedMeta, f)
+close(f)
 
 # Finish off ----
 
