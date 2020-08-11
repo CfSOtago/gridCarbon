@@ -131,11 +131,11 @@ gridMeta <- paste0("We now have gridGen data from, " , min(gridGenDT$rDateTimeUT
 embeddedMeta <- paste0("We now have embeddedGen data from, " , min(embeddedGenDT$rDateTimeUTC), 
         " to: ", max(embeddedGenDT$rDateTimeUTC))
 
-f <- file(here::here("dataProcessing","gridMeta.txt"))
+f <- file(paste0(repoParams$ukData,"latest_gridMeta.txt"))
 writeLines(gridMeta, f)
 close(f)
 
-f <- file(here::here("dataProcessing","embeddedMeta.txt"))
+f <- file(paste0(repoParams$ukData,"latest_embeddedMeta.txt"))
 writeLines(embeddedMeta, f)
 close(f)
 
