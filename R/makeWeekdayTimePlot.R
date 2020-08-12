@@ -20,12 +20,14 @@
 #'
 makeWeekdayTimePlot <- function(dt, xVar, yVar, yForm = "abs", yLab = "y Lab", yDiv = 1){
   # by weekday and hour
+  # we can't get HMS to format right so...
+  dt[, hmsKludge := lubridate::as_datetime(paste0(today(), hms))]
   if(yForm == "prop"){
     # use proportion to show relative shifts
     # use month as the facet to link to other plots
     dt[, month := lubridate::month(dateFixed, label = TRUE)]
     dt <- dt[, .(pVals = mean(get(yVar))/yDiv), 
-             keyby = .(hms, month, compareYear, xVar = get(xVar))]
+             keyby = .(hmsKludge, month, compareYear, xVar = get(xVar))]
     sums <- dt[, .(sum = sum(pVals)), keyby = .(compareYear, month, xVar)]
     setkey(sums, compareYear, month, xVar)
     setkey(dt, compareYear, month, xVar)
@@ -37,7 +39,7 @@ makeWeekdayTimePlot <- function(dt, xVar, yVar, yForm = "abs", yLab = "y Lab", y
     #message("abs")
     dt[, month := lubridate::month(dateFixed, label = TRUE)]
     plotDT <- dt[, .(yVal = mean(get(yVar))/yDiv), 
-              keyby = .(hms, month, compareYear, xVar = get(xVar))]
+              keyby = .(hmsKludge, month, compareYear, xVar = get(xVar))]
     ok <- TRUE
   }
   if(yForm != "abs" & yForm != "prop"){# be explicit
@@ -47,7 +49,7 @@ makeWeekdayTimePlot <- function(dt, xVar, yVar, yForm = "abs", yLab = "y Lab", y
   }
   if(ok){
     #message("Building plot with ", yForm)
-    p <- ggplot2::ggplot(plotDT, aes(x = hms, y = yVal, 
+    p <- ggplot2::ggplot(plotDT, aes(x = hmsKludge, y = yVal, 
                                   colour = compareYear)) + 
       geom_step() +
       #geom_point(size = 1, stroke = 1, shape = 16) +
@@ -56,6 +58,7 @@ makeWeekdayTimePlot <- function(dt, xVar, yVar, yForm = "abs", yLab = "y Lab", y
       #scale_x_datetime(breaks=date_breaks('4 hour'),labels=date_format('%H:%M')) +
       theme(axis.text.x=element_text(angle=90, hjust=1)) +
       theme(legend.position="bottom") +
+      scale_x_datetime(date_breaks = "2 hours", date_labels = "%H:%M") +
       scale_color_discrete(name="Year") +
       facet_grid(month ~ xVar) +
       labs( y = yLab,
