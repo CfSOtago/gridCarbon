@@ -25,6 +25,9 @@ createDailyMeanComparePlot <- function(dt, yVar, yCap, form = "step", yDiv = 1,
                                        lockDownStart, lockDownEnd, 
                                        comparePlotCut = as.Date("2020-01-01"),
                                        toDate = lubridate::today()){
+  message("lockDownStart: ", lockDownStart)
+  message("lockDownEnd: ", lockDownEnd)
+  message("toDate: ", toDate)
   # assumes the dateFixed half-hourly data
   # assumes we want mean of half-hourly obs
   plotDT <- dt[dateFixed >= comparePlotCut & dateFixed <= lubridate::as_date(toDate), # otherwise we get the whole year 
