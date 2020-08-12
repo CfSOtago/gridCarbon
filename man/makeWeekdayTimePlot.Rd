@@ -4,10 +4,12 @@
 \alias{makeWeekdayTimePlot}
 \title{Creates a plot by weekday from the data.table given}
 \usage{
-makeWeekdayTimePlot(dt, yVar, yForm = "abs", yLab = "y Lab", yDiv = 1)
+makeWeekdayTimePlot(dt, xVar, yVar, yForm = "abs", yLab = "y Lab", yDiv = 1)
 }
 \arguments{
 \item{dt}{the data}
+
+\item{xVar}{the x axis - probably days of the week but you can be creative (needs to be a factor)}
 
 \item{yVar}{the variable you want to plot}
 
