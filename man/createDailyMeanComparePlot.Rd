@@ -12,7 +12,8 @@ createDailyMeanComparePlot(
   yDiv = 1,
   lockDownStart,
   lockDownEnd,
-  comparePlotCut = as.Date("2020-01-01")
+  comparePlotCut = as.Date("2020-01-01"),
+  toDate = lubridate::today()
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ createDailyMeanComparePlot(
 \item{lockDownEnd}{date for end of lockdown rectangle annotation}
 
 \item{comparePlotCut}{start date to cut the plot (default 2020-01-01)}
+
+\item{toDate}{date to end the plot (usually the most recent observation), default = today()}
 }
 \description{
 `createDailyMeanComparePlot` returns a plot which calculates the mean of yVar and plots it for 2020 and 2017-2019 to 
