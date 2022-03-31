@@ -43,6 +43,20 @@ dataPath <- path.expand("~/Dropbox/data/UK_NGESO/genMix/") # change to your data
 #dt <- data.table::fread("https://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/f93d1835-75bc-43e5-84ad-12472b180a98/download/df_fuel_ckan.csv")
 ```
 
+# License
+
+Code copyright the [author](https://twitter.com/dataknut) (2020)
+
+License: 
+ 
+ * [CC-BY](https://creativecommons.org/licenses/by/4.0/legalcode)
+
+To cite:
+
+ * Anderson, B, (2020) GB generation share trends: NG ESO data. 
+
+Code:
+
 # Introduction
 
 Inspired by https://twitter.com/DrSimEvans/status/1508409309775994892
@@ -62,7 +76,7 @@ message("Data range from: ", min(dt_orig$dv_dateTime))
 message("...to: ", max(dt_orig$dv_dateTime))
 ```
 
-# Recreating @DrSimEvans' plot
+# Recreating DrSimEvans' plot
 
 This looks like daily data.
 
@@ -98,7 +112,7 @@ table(plotDT$nObs)
 
 Figure \@ref(fig:plotMeanHalfHourPC) shows the mean half-hourly % generation by each type per day. This is slightly convoluted - it is the mean of the sum of the half-hourly XXX_perc values in the original data where XXX is the generation type.
 
-The smoothed curve is estimated for each year via gam. 
+The smoothed curves are estimated for each year via gam. I'm still trying to decide if they tell us anything useful.
 
 ```{r plotMeanHalfHourPC, fig.cap="Mean half-hourly % generation by each type per day"}
 ggplot2::ggplot(plotDT[dv_year > 2011], aes(x = mean_dv_solar_wind_pc, 
@@ -166,9 +180,15 @@ ggplot2::ggsave(filename = "GB_plotHalfHourlyPC.png",
                 path = here::here("rmd","plots"),
                 height = 5)
 ```
+
 # Summary
 
-That's it.
+That's it. 
+
+You might want to look at recent academic research on this topic:
+
+ * [@staffell_measuring_2017]
+ * [@staffell_increasing_2018]
 
 # Annex
 
