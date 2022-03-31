@@ -1,12 +1,12 @@
 # gridCarbon
-Code to analyse the carbon footprint of NZ electricity generation over time.
+Code to analyse the carbon footprint of NZ & UK electricity generation over time.
 
 Inspired by:
 
  * [Staffell 2017](http://www.sciencedirect.com/science/article/pii/S0301421516307017) (UK analysis)
  * [Khan et al, 2018](http://www.sciencedirect.com/science/article/pii/S0959652618306474) (NZ Analysis)
 
-Started out as part of a CfS summer student scholarship project and has evolved into something slightly larger and more complicated :-)
+Started out as part of a [CfS](https://cfsotago.github.io/) summer student scholarship project and has evolved into something slightly larger and more complicated :-)
 
 ## Results
 
