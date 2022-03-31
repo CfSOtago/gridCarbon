@@ -29,7 +29,7 @@ update <- "yes" # doesn't matter what this is but to force an update, edit it :-
 #source(paste0(here::here(), "/env.R")) # gcParams - just in case not already loaded by grifCarbon (should be)
 
 localParams <- list() # repo level params are in gcParams
-localParams$gridUrl <- "http://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/7b41ea4d-cada-491e-8ad6-7b62f6a63193/download/df_fuel_ckan.csv"
+localParams$gridUrl <- "https://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/f93d1835-75bc-43e5-84ad-12472b180a98/download/df_fuel_ckan.csv"
 
 
 # "https://data.nationalgrideso.com/demand/daily-demand-update/r/demand_data_update_daily"
