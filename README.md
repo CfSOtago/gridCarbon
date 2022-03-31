@@ -10,7 +10,7 @@ Started out as part of a [CfS](https://cfsotago.github.io/) summer student schol
 
 ## Results
 
-Reports and results best viewed at https://cfsotago.github.io/gridCarbon/
+Reports and results best viewed at https://dataknut.github.io/gridCarbon/
 
 ## Code
 

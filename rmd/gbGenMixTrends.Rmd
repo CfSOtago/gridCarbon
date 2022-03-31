@@ -1,0 +1,255 @@
+---
+title: "GB generation share trends"
+subtitle: "NG ESO data"
+author: "Ben Anderson (b.anderson@soton.ac.uk)"
+date: 'Last run at: `r Sys.time()`'
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    toc: TRUE
+    toc_depth: 4
+    toc_float: TRUE
+    code_folding: hide
+bibliography: '`r path.expand("~/bibliography.bib")`'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE) # but folded by yaml setting
+
+library(gridCarbon) # useful functions
+
+myLibs <- c("data.table", # fast data munching
+            "lubridate", # time stuff
+            "flextable", # pretty tables
+            "ggplot2", # plots obvs
+            "here", # where are we?
+            "hms" # more time stuff
+            )
+gridCarbon::loadLibraries(myLibs) # load the libs (installs if not present)
+
+# local functions ----
+makeFlexTable <- function(df, cap = "caption", digits = 1){
+  # makes a pretty flextable - see https://cran.r-project.org/web/packages/flextable/index.html
+  ft <- flextable::flextable(df)
+  ft <- colformat_double(ft, digits = digits)
+  ft <- fontsize(ft, size = 9)
+  ft <- fontsize(ft, size = 10, part = "header")
+  ft <- set_caption(ft, caption = cap)
+  return(ft)
+}
+
+# parameters ----
+dataPath <- path.expand("~/Dropbox/data/UK_NGESO/genMix/") # change to your data loc or for extra points download from https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix#
+
+#dt <- data.table::fread("https://data.nationalgrideso.com/backend/dataset/88313ae5-94e4-4ddc-a790-593554d8c6b9/resource/f93d1835-75bc-43e5-84ad-12472b180a98/download/df_fuel_ckan.csv")
+
+plotCap <- "Data: NG ESO Generation Mix\nPlot: @dataknut (b.anderson@soton.ac.uk)\nCode: https://github.com/dataknut/gridCarbon"
+```
+
+# License
+
+Code copyright the [author](https://twitter.com/dataknut) (2020)
+
+License: 
+ 
+ * [CC-BY](https://creativecommons.org/licenses/by/4.0/legalcode)
+
+To cite:
+
+ * Anderson, B, (2020) GB generation share trends: NG ESO data. https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html
+
+Code:
+
+ * https://github.com/dataknut/gridCarbon/blob/master/rmd/gbGenMixTrends.Rmd
+
+# Introduction
+
+Inspired by https://twitter.com/DrSimEvans/status/1508409309775994892
+
+# Data
+
+This analysis uses the [UK NG ESO generation mix](https://data.nationalgrideso.com/carbon-intensity1/historic-generation-mix/r/historic_gb_generation_mix) data. The data also happens to include a half-hourly carbon intensity value.
+
+As far as we can work out this data does _not_ include distributed (i.e. non-grid connected) generation such as small scale wind, solar, hydro, biomass etc which is connected to the LV network. This means the ESO data is likely to _underestimate_ total generation and potentially underestimate the proportion of total generation that is renewable. It is possible that this could be fixed using embedded wind & solar generation data from the [demand update file](https://data.nationalgrideso.com/demand/daily-demand-update).
+
+```{r loadData}
+dt_orig <- data.table::fread(paste0(dataPath, "df_fuel_ckan.csv"))
+
+dt_orig[, dv_dateTime := lubridate::as_datetime(DATETIME)] # proper date time
+
+message("Data range from: ", min(dt_orig$dv_dateTime))
+message("...to: ", max(dt_orig$dv_dateTime))
+```
+
+# Recreating DrSimEvans' plot
+
+This looks like daily data.
+
+ * Solar + wind (% of gen) vs coal + gas (& of gen))
+
+```{r simEvansData}
+# add together the % and totals we want (half-hourly)
+dt_orig[, dv_coal_gas_pc := COAL_perc + GAS_perc]
+dt_orig[, dv_solar_wind_pc := SOLAR_perc + WIND_perc]
+dt_orig[, dv_coal_gas := COAL + GAS]
+dt_orig[, dv_solar_wind := SOLAR + WIND]
+
+# keep the vars we want for clarity
+temp <- dt_orig[, .(dv_dateTime, dv_coal_gas, dv_solar_wind,
+                    dv_coal_gas_pc, dv_solar_wind_pc, GENERATION)]
+
+temp[, dv_date := lubridate::date(dv_dateTime)]
+
+# aggregate to daily data for plotting
+plotDT <- temp[,
+               .(mean_dv_solar_wind_pc = mean(dv_solar_wind_pc),
+                 mean_dv_coal_gas_pc = mean(dv_coal_gas_pc),
+                 total_dv_coal_gas = sum(dv_coal_gas),
+                 total_dv_solar_wind = sum(dv_solar_wind),
+                 total_GENERATION = sum(GENERATION),
+                 nObs = .N), # to check for days with < 48 half hours
+               keyby = .(dv_date)
+               ]
+plotDT[, dv_year := lubridate::year(dv_date)] # for plots
+plotDT[, total_dv_coal_gas_pc := total_dv_coal_gas/total_GENERATION] # daily %
+plotDT[, total_dv_solar_wind_pc := total_dv_solar_wind/total_GENERATION]
+
+message("Check for days with less than 48 hours - this will be truncated data")
+table(plotDT$nObs)
+```
+
+Figure \@ref(fig:plotMeanHalfHourPC) shows the mean half-hourly % generation by each type per day. This is slightly convoluted - it is the mean of the sum of the 48 daily half-hourly XXX_perc values in the original data where XXX is the generation type. Unfold the code above for clarity.
+
+The smoothed curves are estimated for each year via gam. The lines terminate at the maximum value for the year. I'm still trying to decide if they tell us anything useful.
+
+```{r plotMeanHalfHourPC, fig.cap="Mean half-hourly % generation by each type per day"}
+ggplot2::ggplot(plotDT[dv_year > 2011], aes(x = mean_dv_solar_wind_pc, 
+                            y = mean_dv_coal_gas_pc,
+                            colour = as.factor(dv_year))) +
+  geom_point() +
+  geom_smooth() +
+  scale_colour_viridis_d(name = "Year") +
+  labs(x = "Solar & wind (mean % of half-hourly generation per day)",
+       y = "Coal & gas (mean % of half-hourly generation per day)",
+       caption = plotCap)
+
+# save it
+ggplot2::ggsave(filename = "GB_plotMeanHalfHourPC.png", 
+                path = here::here("rmd","plots"),
+                height = 5)
+```
+[Download](plots/GB_plotMeanHalfHourPC.png) plot.
+
+Figure \@ref(fig:plotDailyPC) shows the percentage of daily generation by type. This is less convoluted as it is the sum of generation per day for the two categories (solar + wind vs gas + coal) as a % of total daily generation.
+
+Again the smoothed curve is estimated for each year via gam. 
+
+```{r plotDailyPC, fig.cap="Percentage of daily generation by type"}
+ggplot2::ggplot(plotDT[dv_year > 2011], aes(x = 100 * total_dv_solar_wind_pc, 
+                            y = 100 * total_dv_coal_gas_pc,
+                            colour = as.factor(dv_year))) +
+  geom_point() +
+  geom_smooth() +
+  scale_colour_viridis_d(name = "Year") +
+  labs(x = "Solar & wind (% of total daily generation)",
+       y = "Coal & gas (% of total daily generation)",
+       caption = plotCap)
+
+ggplot2::ggsave(filename = "GB_plotDailyPC.png", 
+                path = here::here("rmd","plots"),
+                height = 5)
+```
+
+[Download](plots/GB_plotDailyPC.png) plot.
+
+
+# Half-hourly plots
+
+Just cos we can... helpfully split into 'peak' and 'off peak' periods. 
+
+Peak period definitions:
+
+ * Morning 07:00 - 09:00
+ * Daytime 09:00 - 16:00
+ * Evening 16:00 - 21:00
+ * Night - all other times
+
+Again the smoothed curve is estimated for each year (and demand period) via gam. 
+
+```{r plotHalfHourlyPC, fig.cap="Percentage of half-hourly generation by type"}
+dt_orig[, dv_year := lubridate::year(dv_dateTime)]
+dt_orig[, dv_hms := hms::as_hms(dv_dateTime)]
+# half-hours are the start of the half hours (we think)
+dt_orig[, dv_peak := "Night"] # default
+dt_orig[, dv_peak := ifelse(dv_hms >= hms::as_hms("07:00:00") & dv_hms < hms::as_hms("09:00:00") , "Morning peak", dv_peak)]
+dt_orig[, dv_peak := ifelse(dv_hms > hms::as_hms("09:00:00") & dv_hms < hms::as_hms("16:00:00") , "Daytime", dv_peak)]
+dt_orig[, dv_peak := ifelse(dv_hms >= hms::as_hms("16:00:00") & dv_hms < hms::as_hms("21:00:00") , "Evening peak", dv_peak)]
+
+# re-order for plots & tables
+
+dt_orig[, dv_peak := factor(dv_peak, levels = c("Morning peak", "Daytime", "Evening peak", "Night"))]
+
+#table(dt_orig$dv_peak)
+
+# t <- dt_orig[, .(nObs = .N,
+#                  startHour = min(lubridate::hour(dv_hms)),
+#                  endHour = max(lubridate::hour(dv_hms))
+#                  ), keyby = .(dv_peak)]
+# 
+# makeFlexTable(t, cap = "Definition of peak")
+
+dt_orig[, dv_hour := lubridate::hour(dv_dateTime)]
+# check coding
+# table(dt_orig$dv_hour, dt_orig$dv_peak, useNA = "always")
+
+ggplot2::ggplot(dt_orig[dv_year > 2011], aes(x = dv_solar_wind_pc, 
+                            y = dv_coal_gas_pc,
+                            colour = as.factor(dv_year))) +
+  geom_point() +
+  facet_wrap(. ~ dv_peak) +
+  geom_smooth() +
+  scale_colour_viridis_d(name = "Year") +
+  labs(x = "Solar & wind (% of half-hourly generation)",
+       y = "Coal & gas (% of half-hourly generation)",
+       caption = plotCap)
+
+ggplot2::ggsave(filename = "GB_plotHalfHourlyPC.png", 
+                path = here::here("rmd","plots"),
+                height = 5)
+```
+[Download](plots/GB_plotHalfHourlyPC.png) plot.
+
+# Summary
+
+That's it. 
+
+You might want to look at recent academic research on this topic:
+
+ * [@staffell_measuring_2017]
+ * [@staffell_increasing_2018]
+
+# Annex
+
+## Data descriptors
+
+### NGESO gen mix data
+
+```{r skimESO}
+skimr::skim(dt_orig)
+```
+
+## R environment
+
+Packages etc:
+
+ * base R [@baseR]
+ * bookdown [@bookdown]
+ * data.table [@data.table]
+ * ggplot2 [@ggplot2]
+ * here [@here]
+ * hms [@hms]
+ * knitr [@knitr]
+ * lubridate [@lubridate]
+ * rmarkdown [@rmarkdown]
+
+# References
