@@ -277,21 +277,21 @@ div.tocify {
 <h1 class="title toc-ignore">GB generation share trends</h1>
 <h3 class="subtitle">NG ESO data</h3>
 <h4 class="author">Ben Anderson (<a href="mailto:b.anderson@soton.ac.uk" class="email">b.anderson@soton.ac.uk</a>)</h4>
-<h4 class="date">Last run at: 2022-03-31 15:32:58</h4>
+<h4 class="date">Last run at: 2022-04-01 09:20:51</h4>
 
 </div>
 
 
 <div id="license" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> License</h1>
-<p>Code copyright the <a href="https://twitter.com/dataknut">author</a> (2020)</p>
+<p>Code copyright the <a href="https://twitter.com/dataknut">author</a> (2022)</p>
 <p>License:</p>
 <ul>
 <li><a href="https://creativecommons.org/licenses/by/4.0/legalcode">CC-BY</a></li>
 </ul>
 <p>To cite:</p>
 <ul>
-<li>Anderson, B, (2020) GB generation share trends: NG ESO data. <a href="https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html" class="uri">https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html</a></li>
+<li>Anderson, B, (2022) GB generation share trends: NG ESO data. <a href="https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html" class="uri">https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html</a></li>
 </ul>
 <p>Code:</p>
 <ul>
@@ -314,6 +314,7 @@ message(&quot;Data range from: &quot;, min(dt_orig$dv_dateTime))</code></pre>
 <pre><code>## Data range from: 2009-01-01</code></pre>
 <pre class="r"><code>message(&quot;...to: &quot;, max(dt_orig$dv_dateTime))</code></pre>
 <pre><code>## ...to: 2022-03-31 07:00:00</code></pre>
+<p>The data covers more years than we need - we’ll start at 2012 too.</p>
 </div>
 <div id="recreating-drsimevans-plot" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Recreating DrSimEvans’ plot</h1>
@@ -354,7 +355,7 @@ message(&quot;Check for days with less than 48 hours - this will be truncated da
 ##   15   48 
 ##    1 4837</code></pre>
 <p>Figure <a href="#fig:plotMeanHalfHourPC">4.1</a> shows the mean half-hourly % generation by each type per day. This is slightly convoluted - it is the mean of the sum of the 48 daily half-hourly XXX_perc values in the original data where XXX is the generation type. Unfold the code above for clarity.</p>
-<p>The smoothed curves are estimated for each year via gam. The lines terminate at the maximum value for the year. I’m still trying to decide if they tell us anything useful.</p>
+<p>The smoothed curves are estimated for each year. The lines terminate at the maximum value for the year. I’m still trying to decide if they tell us anything useful.</p>
 <pre class="r"><code>ggplot2::ggplot(plotDT[dv_year &gt; 2011], aes(x = mean_dv_solar_wind_pc, 
                             y = mean_dv_coal_gas_pc,
                             colour = as.factor(dv_year))) +
@@ -379,7 +380,7 @@ ggplot2::ggsave(filename = &quot;GB_plotMeanHalfHourPC.png&quot;,
 ## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
 <p><a href="plots/GB_plotMeanHalfHourPC.png">Download</a> plot.</p>
 <p>Figure <a href="#fig:plotDailyPC">4.2</a> shows the percentage of daily generation by type. This is less convoluted as it is the sum of generation per day for the two categories (solar + wind vs gas + coal) as a % of total daily generation.</p>
-<p>Again the smoothed curve is estimated for each year via gam.</p>
+<p>Again the smoothed curve is estimated for each year.</p>
 <pre class="r"><code>ggplot2::ggplot(plotDT[dv_year &gt; 2011], aes(x = 100 * total_dv_solar_wind_pc, 
                             y = 100 * total_dv_coal_gas_pc,
                             colour = as.factor(dv_year))) +
@@ -413,7 +414,7 @@ Figure 4.2: Percentage of daily generation by type
 <li>Evening 16:00 - 21:00</li>
 <li>Night - all other times</li>
 </ul>
-<p>Again the smoothed curve is estimated for each year (and demand period) via gam.</p>
+<p>Again the smoothed curve is estimated for each year (and demand period).</p>
 <pre class="r"><code>dt_orig[, dv_year := lubridate::year(dv_dateTime)]
 dt_orig[, dv_hms := hms::as_hms(dv_dateTime)]
 # half-hours are the start of the half hours (we think)
