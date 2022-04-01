@@ -277,21 +277,21 @@ div.tocify {
 <h1 class="title toc-ignore">GB generation share trends</h1>
 <h3 class="subtitle">NG ESO data</h3>
 <h4 class="author">Ben Anderson (<a href="mailto:b.anderson@soton.ac.uk" class="email">b.anderson@soton.ac.uk</a>)</h4>
-<h4 class="date">Last run at: 2022-04-01 09:17:37</h4>
+<h4 class="date">Last run at: 2022-04-01 09:20:51</h4>
 
 </div>
 
 
 <div id="license" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> License</h1>
-<p>Code copyright the <a href="https://twitter.com/dataknut">author</a> (2020)</p>
+<p>Code copyright the <a href="https://twitter.com/dataknut">author</a> (2022)</p>
 <p>License:</p>
 <ul>
 <li><a href="https://creativecommons.org/licenses/by/4.0/legalcode">CC-BY</a></li>
 </ul>
 <p>To cite:</p>
 <ul>
-<li>Anderson, B, (2020) GB generation share trends: NG ESO data. <a href="https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html" class="uri">https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html</a></li>
+<li>Anderson, B, (2022) GB generation share trends: NG ESO data. <a href="https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html" class="uri">https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html</a></li>
 </ul>
 <p>Code:</p>
 <ul>
@@ -314,6 +314,7 @@ message(&quot;Data range from: &quot;, min(dt_orig$dv_dateTime))</code></pre>
 <pre><code>## Data range from: 2009-01-01</code></pre>
 <pre class="r"><code>message(&quot;...to: &quot;, max(dt_orig$dv_dateTime))</code></pre>
 <pre><code>## ...to: 2022-03-31 07:00:00</code></pre>
+<p>The data covers more years than we need - we’ll start at 2012 too.</p>
 </div>
 <div id="recreating-drsimevans-plot" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Recreating DrSimEvans’ plot</h1>

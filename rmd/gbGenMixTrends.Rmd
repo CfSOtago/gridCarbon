@@ -48,7 +48,7 @@ plotCap <- "Data: NG ESO Generation Mix\nPlot: @dataknut (b.anderson@soton.ac.uk
 
 # License
 
-Code copyright the [author](https://twitter.com/dataknut) (2020)
+Code copyright the [author](https://twitter.com/dataknut) (2022)
 
 License: 
  
@@ -56,7 +56,7 @@ License:
 
 To cite:
 
- * Anderson, B, (2020) GB generation share trends: NG ESO data. https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html
+ * Anderson, B, (2022) GB generation share trends: NG ESO data. https://dataknut.github.io/gridCarbon/rmd/gbGenMixTrends.html
 
 Code:
 
@@ -80,6 +80,8 @@ dt_orig[, dv_dateTime := lubridate::as_datetime(DATETIME)] # proper date time
 message("Data range from: ", min(dt_orig$dv_dateTime))
 message("...to: ", max(dt_orig$dv_dateTime))
 ```
+
+The data covers more years than we need - we'll start at 2012 too.
 
 # Recreating DrSimEvans' plot
 
